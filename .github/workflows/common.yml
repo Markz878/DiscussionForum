@@ -1,0 +1,39 @@
+name: DiscussionForum common infrastructure pipeline
+
+permissions:
+  id-token: write
+  contents: read
+  
+on:
+  push:
+    paths: 
+      - '.github/workflows/common.yml'
+      - 'Infrastructure/common.bicep'
+    branches: 
+      [ main ]
+
+  # Allow mannually trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Common Infra
+        run: > 
+          az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/common.bicep

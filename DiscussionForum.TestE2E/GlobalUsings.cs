@@ -1,0 +1,15 @@
+global using DiscussionForum.Core.DataAccess;
+global using DiscussionForum.Core.DataAccess.Models;
+global using DiscussionForum.Server.HelperMethods;
+global using FluentAssertions;
+global using Microsoft.AspNetCore.Hosting;
+global using Microsoft.AspNetCore.Mvc.Testing;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Playwright;
+global using System.Net;
+global using Xunit;
+global using Xunit.Abstractions;

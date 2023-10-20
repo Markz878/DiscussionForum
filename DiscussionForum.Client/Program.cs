@@ -1,0 +1,22 @@
+global using DiscussionForum.Client.Authentication;
+global using DiscussionForum.Shared;
+global using DiscussionForum.Shared.HelperMethods;
+global using DiscussionForum.Shared.Interfaces;
+global using DiscussionForum.Shared.Models.Messages;
+global using DiscussionForum.Shared.Models.Topics;
+global using DiscussionForum.Shared.Models.Users;
+global using MediatR;
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Components.Authorization;
+global using Microsoft.AspNetCore.Components.Forms;
+global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+global using System.ComponentModel.DataAnnotations;
+global using System.Net.Http.Json;
+
+WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
+builder.Services.AddHttpClient("Client", config => config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<Program>());
+await builder.Build().RunAsync();

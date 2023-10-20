@@ -1,0 +1,214 @@
+using DiscussionForum.Client.Components.Common;
+using DiscussionForum.Shared.Models.MessageLikes;
+using Microsoft.AspNetCore.Http.Connections.Client;
+using Microsoft.AspNetCore.SignalR.Client;
+
+namespace DiscussionForum.Client.Components.ViewTopic;
+
+public sealed partial class ViewTopic : IAsyncDisposable
+{
+    [Inject] public required IMediator Mediator { get; set; }
+    [Inject] public required NavigationManager Navigation { get; init; }
+    [Parameter][EditorRequired] public required long TopicId { get; set; }
+    [CascadingParameter] public required Task<AuthenticationState> AuthenticationStateTask { get; init; }
+
+    private GetTopicByIdResult? _topic;
+    private HubConnection? _hubConnection;
+    private EditTitleModel _editTitle = new();
+    private bool _isEditingTitle;
+    private UserInfo? _userInfo;
+    private Modal? modal;
+    private string modalHeader = "";
+    private string modalMessage = "";
+    private RenderFragment? modalContent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _userInfo = await AuthenticationStateTask.GetUserInfo();
+        _topic = await Mediator.Send(new GetTopicById() { Id = TopicId, UserId = _userInfo.TryGetUserId() });
+        _editTitle = new() { Title = _topic?.Title ?? "" };
+        _hubConnection = BuildHubConnection(Navigation.ToAbsoluteUri("/topichub"));
+        await _hubConnection.StartAsync();
+        await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.JoinTopic), TopicId);
+    }
+
+    private HubConnection BuildHubConnection(Uri hubUri, Action<HttpConnectionOptions>? configureHttpConnection = null)
+    {
+        HubConnection hub = new HubConnectionBuilder().WithUrl(hubUri, configureHttpConnection ?? (_ => { })).WithAutomaticReconnect().Build();
+
+        hub.On<string>(nameof(ITopicHubNotifications.TopicTitleEdited), (title) =>
+        {
+            ArgumentNullException.ThrowIfNull(_topic);
+            _topic.Title = title;
+            StateHasChanged();
+        });
+
+        hub.On(nameof(ITopicHubNotifications.TopicDeleted), async () =>
+        {
+            modalHeader = "Topic deleted";
+            modalMessage = "The topic you were viewing has been deleted by the author, going back to home page...";
+            modalContent = ModalMessage();
+            await (modal?.Show() ?? Task.CompletedTask);
+            await Task.Delay(3000);
+            Navigation.NavigateTo("/");
+        });
+
+        hub.On(nameof(ITopicHubNotifications.MessageAdded), (TopicMessage message) =>
+        {
+            ArgumentNullException.ThrowIfNull(_topic);
+            _topic.Messages.Add(message);
+            StateHasChanged();
+        });
+
+        hub.On<long, string, DateTimeOffset>(nameof(ITopicHubNotifications.MessageEdited), (messageId, content, editedAt) =>
+        {
+            ArgumentNullException.ThrowIfNull(_topic);
+            TopicMessage? messageToEdit = _topic.Messages.FirstOrDefault(x => x.Id == messageId);
+            if (messageToEdit is not null)
+            {
+                messageToEdit.Content = content;
+                messageToEdit.EditedAt = editedAt;
+                StateHasChanged();
+            }
+        });
+
+        hub.On<long>(nameof(ITopicHubNotifications.MessageDeleted), (messageId) =>
+        {
+            ArgumentNullException.ThrowIfNull(_topic);
+            _topic.Messages.RemoveAll(x => x.Id == messageId);
+            StateHasChanged();
+        });
+
+        hub.On<long, int, bool, Guid>(nameof(ITopicHubNotifications.MessageLikesChanged), (messageId, likesCount, likeAdded, userId) =>
+        {
+            ArgumentNullException.ThrowIfNull(_topic);
+            TopicMessage? messageToEdit = _topic.Messages.FirstOrDefault(x => x.Id == messageId);
+            if (messageToEdit is not null)
+            {
+                messageToEdit.LikesCount = likesCount;
+                if (_userInfo?.TryGetUserId() == userId)
+                {
+                    messageToEdit.HasUserUpvoted = likeAdded;
+                }
+                StateHasChanged();
+            }
+        });
+
+        return hub;
+    }
+
+    private bool CanUserAddComment()
+    {
+        return string.IsNullOrEmpty(_userInfo?.GetUserName()) is false;
+    }
+
+    private bool CanUserEdit()
+    {
+        return (_topic?.Messages.Count <= 1 && _userInfo?.GetUserName() == _topic.UserName) || _userInfo?.GetUserRole() == Role.Admin;
+    }
+
+    private void StartTitleEdit()
+    {
+        _isEditingTitle = true;
+    }
+
+    private void CancelTitleEdit()
+    {
+        _isEditingTitle = false;
+        _editTitle = new() { Title = _topic?.Title ?? "" };
+    }
+
+    private async Task SubmitTitleEdit()
+    {
+        ArgumentNullException.ThrowIfNull(_topic);
+        _topic.Title = _editTitle.Title;
+        _isEditingTitle = false;
+        await Mediator.Send(new EditTopicTitle() { NewTitle = _editTitle.Title, TopicId = _topic.Id });
+    }
+
+    private async Task ShowDeleteTopicConfirm()
+    {
+        modalHeader = "Confirm delete";
+        modalMessage = "Are you sure you want to delete this topic?";
+        modalContent = ModalConfirm(ConfirmTopicDeletion);
+        await (modal?.Show() ?? Task.CompletedTask);
+    }
+
+    private async Task ConfirmTopicDeletion()
+    {
+        ArgumentNullException.ThrowIfNull(_topic);
+        await Mediator.Send(new DeleteTopic() { TopicId = _topic.Id });
+    }
+
+    private async Task EditMessageHandler(EditMessage command)
+    {
+        ArgumentNullException.ThrowIfNull(_topic);
+        if (string.IsNullOrEmpty(command.Message))
+        {
+            return;
+        }
+        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == command.MessageId);
+        if (message is not null)
+        {
+            message.Content = command.Message;
+            await Mediator.Send(command);
+        }
+    }
+
+    private async Task ShowDeleteMessageConfirm(DeleteMessage deletionCommand)
+    {
+        modalHeader = "Confirm delete";
+        modalMessage = "Are you sure you want to delete this message?";
+        messageIdToDelete = deletionCommand.MessageId;
+        modalContent = ModalConfirm(ConfirmMessageDeletion);
+        await (modal?.Show() ?? Task.CompletedTask);
+    }
+    private long messageIdToDelete;
+    private async Task ConfirmMessageDeletion()
+    {
+        ArgumentNullException.ThrowIfNull(_topic);
+        _topic.Messages.RemoveAll(x => x.Id == messageIdToDelete);
+        await Mediator.Send(new DeleteMessage() { MessageId = messageIdToDelete });
+    }
+
+    private async Task AddMessageLikeHandler(AddMessageLike command)
+    {
+        ArgumentNullException.ThrowIfNull(_topic);
+        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == command.MessageId);
+        if (message is not null)
+        {
+            message.HasUserUpvoted = true;
+            message.LikesCount++;
+        }
+        await Mediator.Send(command);
+    }
+
+    private async Task DeleteMessageLikeHandler(DeleteMessageLike command)
+    {
+        ArgumentNullException.ThrowIfNull(_topic);
+        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == command.MessageId);
+        if (message is not null)
+        {
+            message.HasUserUpvoted = false;
+            message.LikesCount--;
+        }
+        await Mediator.Send(command);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.LeaveTopic), TopicId);
+            await _hubConnection.StopAsync();
+        }
+    }
+}
+
+public class EditTitleModel
+{
+    [Required]
+    [MinLength(1)]
+    [MaxLength(ValidationConstants.TopicTitleMaxLength)]
+    public string Title { get; set; } = "";
+}

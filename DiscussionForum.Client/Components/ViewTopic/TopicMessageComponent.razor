@@ -1,0 +1,61 @@
+﻿@using DiscussionForum.Shared.Models.Messages;
+
+<div class="mb-4 p-2 border-[1px] border-gray-400 rounded">
+    <div class="flex flex-wrap gap-4 items-center">
+        <b class="order-1">@Message.UserName</b>
+        <div class="flex flex-wrap gap-x-6 w-full sm:w-auto order-2 sm:order-1">
+            <span class="text-sm">@DateTimeHelpers.GetDateTimeAge(Message.CreatedAt)</span>
+            @if (Message.EditedAt is not null)
+            {
+                <span class="text-sm">Edited @DateTimeHelpers.GetDateTimeAge(Message.EditedAt.Value)</span>
+            }
+        </div>
+        @if (CanUserEditMessage(Message.UserName) && !_isEditing)
+        {
+            <div class="flex order-1 ml-auto">
+                <button type="button" class="mx-1" @onclick="StartMessageEdit"><img src="icons/edit.svg" alt="edit" width="15" class="action-icon" /></button>
+                <button type="button" class="mx-1" @onclick="ClickDelete"><img src="icons/delete.svg" alt="delete" width="14" class="action-icon" /></button>
+            </div>
+        }
+    </div>
+    @if (CanUserEditMessage(Message.UserName) && _isEditing)
+    {
+        <EditForm Model="_editingMessage" OnValidSubmit="SubmitMessageEdit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <InputTextArea @bind-Value=_editingMessage.Message class="bg-transparent my-2 w-full max-h-80 min-h-[2rem]" />
+            <div class="flex">
+                <button class="btn-small btn-primary mr-1" type="submit">Submit</button>
+                <button type="button" class="btn-small btn-secondary mx-1" @onclick="CancelMessageEdit">Cancel</button>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        @foreach (string paragraph in Message.Content.Split(Environment.NewLine))
+        {
+            <p class="my-2">@paragraph</p>
+        }
+        <div class="flex">
+            @if (CurrentUserInfo.IsAuthenticated)
+            {
+                <button type="button" class="mr-2" @onclick="ClickUpvote" aria-label="upvote comment">
+                    <img src="icons/thumbs-up.svg" alt="upvote" width="18" class="@(Message.HasUserUpvoted ? "dark:invert" : "invert-[.5]") hover:scale-110" />
+                </button>
+            }
+            <span>@Message.LikesCount @(Message.LikesCount == 1 ? "like" : "likes")</span>
+        </div>
+        @if (Message.AttachedFiles?.Length > 0)
+        {
+            <div class="flex flex-wrap gap-1 mt-2">
+                @foreach (AttachedFileInfo file in Message.AttachedFiles)
+                {
+                    <a href="api/download/@file.Id" target="_blank" class="flex px-2 py-4 h-8 bg-gray-300 items-center rounded overflow-x-clip dark:bg-gray-900">
+                        <img src="icons/file.svg" alt="File" class="h-5 dark:invert" />
+                        <span>@GetShortenedFileName(file.Name)</span>
+                    </a>
+                }
+            </div>
+        }
+    }
+</div>

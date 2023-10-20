@@ -1,0 +1,93 @@
+name: DiscussionForum webapp deploy pipeline
+
+permissions:
+  id-token: write
+  contents: read
+  
+on:
+  push:
+    paths: 
+      - '.github/workflows/webapp.yml'
+      - 'Infrastructure/webapp.bicep'
+      - 'DiscussionForum.Client/**'
+      - 'DiscussionForum.Server/**'
+      - 'DiscussionForum.Shared/**'
+      - 'DiscussionForum.Core/**'
+      - 'DiscussionForum.Tests/**'
+      - 'DiscussionForum.TestE2E/**'
+      - '!DiscussionForum.Core/Migrations/**'
+    branches: 
+      [ main ]
+
+  # Allow mannually trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      AddLogging: false
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Minify tailwind output
+        run: |
+          cd DiscussionForum.Client
+          npm install -D tailwindcss
+          npx tailwindcss -i Styles/tailwind.css -o wwwroot/css/output.css --minify
+
+      - name: Run SQL Server in Docker
+        run: docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=yourStrong(!)Password" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+
+      - name: Run Azurite in Docker
+        run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
+
+      - name: Run Tests
+        continue-on-error: true
+        run: dotnet test DiscussionForum.Tests -c Release
+
+      - name: Setup Playwright
+        run: |
+            dotnet build DiscussionForum.TestE2E -c Release
+            pwsh DiscussionForum.TestE2E/bin/Release/net7.0/playwright.ps1 install
+
+      - name: Run E2E Tests
+        continue-on-error: true
+        run: dotnet test DiscussionForum.TestE2E -c Release
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set Current Datetime As TAG
+        run: |
+          echo "TAG=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+
+      - name: Log in to container registry
+        run: az acr login -n ${{ vars.CONTAINER_REGISTRY_NAME }}
+
+      - name: Publish App To Container Registry
+        run: |
+          docker build -t ${{ vars.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum:$TAG -f DiscussionForum.Server/Dockerfile .
+          docker push ${{ vars.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum:$TAG
+
+      - name: Deploy Webapp Infra
+        run: > 
+          az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/webapp.bicep --parameters
+          imageTag=${{ env.TAG }}
+          oidcClientId=${{ secrets.AZURE_CLIENT_ID }}

@@ -1,0 +1,86 @@
+﻿using DiscussionForum.Shared.Models.Topics;
+using FluentValidation;
+using FluentValidation.Results;
+using System.Reflection;
+
+namespace DiscussionForum.Server.Endpoints;
+
+public static class TopicEndpointsMapper
+{
+    public static void MapTopicEndpoints(this RouteGroupBuilder routeBuilder)
+    {
+        RouteGroupBuilder topicGroup = routeBuilder.MapGroup("topics");
+
+        topicGroup.MapGet("latest/{page:int}", ListLatestTopics).AllowAnonymous();
+        topicGroup.MapGet("{topicId:long}", GetTopicById).AllowAnonymous();
+        topicGroup.MapPost("", CreateTopic).Accepts<AddTopicBinder>("multipart/form-data");
+        topicGroup.MapDelete("{topicId:long}", DeleteTopic);
+        topicGroup.MapPatch("", EditTopicTitle);
+    }
+
+    public static async Task<Ok<ListLatestTopicsResult>> ListLatestTopics(int page, string? search, ClaimsPrincipal claimsPrincipal, IMediator mediator, CancellationToken cancellationToken)
+    {
+        ListLatestTopicsResult result = await mediator.Send(new ListLatestTopics() { PageNumber = page, TopicsCount = 10, SearchText = search }, cancellationToken);
+        return TypedResults.Ok(result);
+    }
+
+    public static async Task<Ok<GetTopicByIdResult>> GetTopicById(long topicId, ClaimsPrincipal claimsPrincipal, IMediator mediator, CancellationToken cancellationToken)
+    {
+        GetTopicByIdResult result = await mediator.Send(new GetTopicById() { Id = topicId, UserId = claimsPrincipal.TryGetUserId() }, cancellationToken);
+        return TypedResults.Ok(result);
+    }
+
+    public static async Task<Results<Ok<AddTopicResult>, ValidationProblem>> CreateTopic(AddTopicBinder topicRequest, IValidator<AddTopic> validator, IMediator mediator, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
+    {
+        AddTopic addTopicCommand = new()
+        {
+            Title = topicRequest.Title,
+            FirstMessage = topicRequest.FirstMessage,
+            UserId = claimsPrincipal.GetUserId(),
+            AttachedFiles = topicRequest.AttachedFiles?.Select(x => new AddAttachedFile() { Name = x.FileName, FileStream = x.OpenReadStream() }).ToArray()
+        };
+        ValidationResult validationResult = validator.Validate(addTopicCommand);
+        if (!validationResult.IsValid)
+        {
+            return TypedResults.ValidationProblem(validationResult.ToDictionary());
+        }
+        AddTopicResult result = await mediator.Send(addTopicCommand, cancellationToken);
+        return TypedResults.Ok(result);
+    }
+
+    public static async Task<NoContent> DeleteTopic(long topicId, ClaimsPrincipal claimsPrincipal, IMediator mediator, IHubContext<TopicHub> hub, CancellationToken cancellationToken)
+    {
+        await mediator.Send(new DeleteTopic() { TopicId = topicId, UserId = claimsPrincipal.GetUserId(), UserRole = claimsPrincipal.GetUserRole() }, cancellationToken);
+        await hub.Clients.Group(topicId.ToString()).SendAsync(nameof(ITopicHubNotifications.TopicDeleted), cancellationToken);
+        return TypedResults.NoContent();
+    }
+
+    public static async Task<NoContent> EditTopicTitle(EditTopicTitle request, ClaimsPrincipal claimsPrincipal, IMediator mediator, IHubContext<TopicHub> hub, CancellationToken cancellationToken)
+    {
+        await mediator.Send(new EditTopicTitle() { TopicId = request.TopicId, NewTitle = request.NewTitle, UserId = claimsPrincipal.GetUserId(), UserRole = claimsPrincipal.GetUserRole() }, cancellationToken);
+        await hub.Clients.Group(request.TopicId.ToString()).SendAsync(nameof(ITopicHubNotifications.TopicTitleEdited), request.NewTitle, cancellationToken);
+        return TypedResults.NoContent();
+    }
+}
+
+public class AddTopicBinder
+{
+    public required string Title { get; init; }
+    public required string FirstMessage { get; init; }
+    public IFormFileCollection? AttachedFiles { get; set; }
+
+    public static async ValueTask<AddTopicBinder> BindAsync(HttpContext httpContext, ParameterInfo _)
+    {
+        IFormCollection form = await httpContext.Request.ReadFormAsync();
+        AddTopicBinder binder = new()
+        {
+            Title = form["title"][0] ?? "",
+            FirstMessage = form["firstMessage"][0] ?? "",
+            AttachedFiles = form.Files
+        };
+        return binder;
+    }
+}
+
+
+

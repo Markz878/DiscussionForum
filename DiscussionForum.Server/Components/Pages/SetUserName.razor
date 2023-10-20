@@ -1,0 +1,15 @@
+﻿@page "/setusername"
+
+@if (CreateUserModel is not null)
+{
+    <div class="center-container p-4">
+        <EditForm Model="CreateUserModel" OnValidSubmit="SubmitUserName" FormName="SetUserName" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <label class="text-lg" for="user-name">Set your username:</label>
+            <InputText id="user-name" class="form-input" @bind-Value="CreateUserModel.UserName" />
+            <button type="submit" class="btn btn-primary my-2">Submit</button>
+            <a href="/" class="btn btn-secondary my-2 mx-2">Back</a>
+        </EditForm>
+    </div>
+}

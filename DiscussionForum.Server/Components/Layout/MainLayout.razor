@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager navigation
+
+<nav class="bg-green-400  dark:bg-green-700">
+    <div class="min-h-[3rem] flex justify-between items-center center-container">
+        <a href="/" class="block mx-4 font-bold text-3xl">Discussion Forum</a>
+        <AuthorizeView>
+            <Authorized>
+                <ProfileButton />
+            </Authorized>
+            <NotAuthorized>
+                <a class="mx-6" href="/.auth/login/aad?post_login_redirect_uri=@navigation.Uri">Log in</a>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</nav>
+
+<main>
+    @Body
+</main>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
