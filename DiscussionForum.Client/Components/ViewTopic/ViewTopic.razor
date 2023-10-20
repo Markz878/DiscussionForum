@@ -7,7 +7,7 @@
          <div class="flex justify-between w-full">
              @if (_isEditingTitle)
              {
-                 <EditForm Model="_editTitle" OnValidSubmit="SubmitTitleEdit" class="flex w-full">
+                 <EditForm Model="_editTitle" OnValidSubmit="SubmitTitleEdit" FormName="EditTitle" Enhance class="flex w-full">
                      <InputText @bind-Value="_editTitle.Title" class="grow form-input-small text-2xl font-bold bg-transparent" />
                      <button class="btn-small btn-primary mx-1" type="submit">Submit</button>
                      <button type="button" class="btn-small btn-secondary" @onclick="CancelTitleEdit">Cancel</button>

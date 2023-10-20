@@ -53,6 +53,8 @@ app.AddDevelopmentAuthentication();
 app.UseSerilogRequestLogging();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 app.UseRateLimiter();
 app.UseOutputCache();

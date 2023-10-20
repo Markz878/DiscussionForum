@@ -1,6 +1,6 @@
 ﻿@using DiscussionForum.Shared;
 <div class="border-gray-400 border-[1px] rounded @AdditionalClasses">
-    <EditForm Model=newMessage OnValidSubmit="SubmitMessage" class="p-2" id="add-message-form">
+    <EditForm Model=newMessage OnValidSubmit="SubmitMessage" class="p-2" id="add-message-form" FormName="AddTopicMessage" Enhance> 
         <DataAnnotationsValidator />
         <ValidationSummary />
         <InputTextArea id="title-input" class="w-full max-h-60 my-2 rounded p-1 bg-transparent" DisplayName="New message"

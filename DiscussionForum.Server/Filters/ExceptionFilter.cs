@@ -1,5 +1,4 @@
-﻿using DiscussionForum.Shared.Models.Errors;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Results;
 
 namespace DiscussionForum.Server.Filters;

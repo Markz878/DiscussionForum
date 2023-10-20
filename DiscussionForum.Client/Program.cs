@@ -16,7 +16,7 @@ global using System.Net.Http.Json;
 WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
+builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 builder.Services.AddHttpClient("Client", config => config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<Program>());
 await builder.Build().RunAsync();

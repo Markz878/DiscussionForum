@@ -20,7 +20,7 @@
     </div>
     @if (CanUserEditMessage(Message.UserName) && _isEditing)
     {
-        <EditForm Model="_editingMessage" OnValidSubmit="SubmitMessageEdit">
+        <EditForm Model="_editingMessage" OnValidSubmit="SubmitMessageEdit" FormName="EditMessage" Enhance>
             <DataAnnotationsValidator />
             <ValidationSummary />
             <InputTextArea @bind-Value=_editingMessage.Message class="bg-transparent my-2 w-full max-h-80 min-h-[2rem]" />

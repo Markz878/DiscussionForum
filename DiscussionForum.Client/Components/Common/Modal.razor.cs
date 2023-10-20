@@ -16,7 +16,7 @@ public sealed partial class Modal
     {
         if (firstRender)
         {
-            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Modal.razor.js");
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Common/Modal.razor.js");
         }
     }
 
