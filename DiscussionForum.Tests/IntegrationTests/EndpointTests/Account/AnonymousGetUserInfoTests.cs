@@ -14,7 +14,7 @@ public sealed class AccountEndpoints : BaseTest
     {
         HttpResponseMessage response = await client.GetAsync(uri);
         string body = await response.Content.ReadAsStringAsync();
-        UserAuthInfo? user = JsonSerializer.Deserialize<UserAuthInfo>(body, jsonOptions);
+        UserInfo? user = JsonSerializer.Deserialize<UserInfo>(body, jsonOptions);
         ArgumentNullException.ThrowIfNull(user);
         user.IsAuthenticated.Should().BeFalse();
         Assert.Empty(user.Claims);

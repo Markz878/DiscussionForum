@@ -18,7 +18,7 @@ public class AuthorizedBaseTests : BaseTest
     [Fact]
     public async Task WhenCreateNewTopic_RedirectedToTheTopic_AndCanInteractAndDeleteTopic()
     {
-        await page.GetByRole(AriaRole.Button, new() { Name = "Create new topic" }).ClickAsync();
+        await page.GetByRole(AriaRole.Link, new() { Name = "Create new topic" }).ClickAsync();
 
         await page.GetByLabel("Title:").FillAsync("Test");
 
@@ -27,6 +27,8 @@ public class AuthorizedBaseTests : BaseTest
         await page.Locator("input[type=\"file\"]").SetInputFilesAsync(new FilePayload() { Buffer = Convert.FromBase64String("VGVzdCB0ZXh0"), MimeType = "text/plain", Name = "Test.txt" });
 
         await page.GetByRole(AriaRole.Button, new() { Name = "Submit" }).ClickAsync();
+
+        await Task.Delay(2000); // Wait for WASM
 
         await page.GetByPlaceholder("New message").FillAsync("More content");
 

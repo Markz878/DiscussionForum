@@ -14,7 +14,7 @@ public class EasyAuthAuthenticationHandler : AuthenticationHandler<EasyAuthAuthe
     private readonly IDistributedCache _cache;
     private readonly DistributedCacheEntryOptions _cacheOptions = new() { SlidingExpiration = TimeSpan.FromMinutes(1) };
 
-    public EasyAuthAuthenticationHandler(IMediator mediator, IDistributedCache cache, IOptionsMonitor<EasyAuthAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+    public EasyAuthAuthenticationHandler(IMediator mediator, IDistributedCache cache, IOptionsMonitor<EasyAuthAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
     {
         _logger = logger.CreateLogger<EasyAuthAuthenticationHandler>();
         _mediator = mediator;
