@@ -1,4 +1,6 @@
-﻿<div class="relative z-20 mx-4 select-none">
+﻿@inject NavigationManager navigation
+
+<div class="relative z-20 mx-4 select-none">
     <label for="profile-btn" class="block relative z-10 bg-green-500 border-2 text-center leading-8 border-green-600 w-9 h-9 rounded-full hover:border-white">@GetUserInitials()</label>
     <input type="checkbox" id="profile-btn" class="appearance-none absolute top-0 w-9 h-9 rounded-full" />
     <div id="profile-menu" class="min-w-max hidden absolute rounded-lg right-0 p-3 mt-1 border-2 border-black bg-[#FEF9F3] dark:bg-gray-800 dark:border-white">
@@ -17,7 +19,7 @@
             </p>
         }
         <a class="block font-bold hover:text-gray-500 dark:hover:text-gray-300" href="/setusername">Change Username</a>
-        <a class="block font-bold hover:text-gray-500 dark:hover:text-gray-300" href="/.auth/logout?post_logout_redirect_uri=/">Log Out</a>
+        <a class="block font-bold hover:text-gray-500 dark:hover:text-gray-300" href="/.auth/logout?post_logout_redirect_uri=@navigation.Uri" data-enhance-nav="false">Log Out</a>
     </div>
 </div>
 

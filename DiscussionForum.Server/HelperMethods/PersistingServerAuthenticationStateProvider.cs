@@ -15,7 +15,6 @@ public sealed class PersistingServerAuthenticationStateProvider : Authentication
         _subscription = state.RegisterOnPersisting(OnPersistingAsync, RenderMode.InteractiveWebAssembly);
     }
 
-
     public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         return Task.FromResult(new AuthenticationState(httpContextAccessor.HttpContext?.User ?? new()));
