@@ -11,7 +11,9 @@ public sealed partial class ViewTopic : IAsyncDisposable
     [Inject] public required NavigationManager Navigation { get; init; }
     [Parameter][EditorRequired] public required long TopicId { get; set; }
     [CascadingParameter] public required Task<AuthenticationState> AuthenticationStateTask { get; init; }
+    [Inject] public required PersistentComponentState PersistentComponentState { get; init; }
 
+    private PersistingComponentStateSubscription stateSubscription;
     private GetTopicByIdResult? _topic;
     private HubConnection? _hubConnection;
     private EditTitleModel _editTitle = new();
@@ -25,11 +27,24 @@ public sealed partial class ViewTopic : IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         _userInfo = await AuthenticationStateTask.GetUserInfo();
-        _topic = await Mediator.Send(new GetTopicById() { Id = TopicId, UserId = _userInfo.TryGetUserId() });
-        _editTitle = new() { Title = _topic?.Title ?? "" };
-        _hubConnection = BuildHubConnection(Navigation.ToAbsoluteUri("/topichub"));
-        await _hubConnection.StartAsync();
-        await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.JoinTopic), TopicId);
+        stateSubscription = PersistentComponentState.RegisterOnPersisting(PersistData);
+        if (PersistentComponentState.TryTakeFromJson(nameof(_topic), out _topic))
+        {
+            _editTitle = new() { Title = _topic?.Title ?? "" };
+            _hubConnection = BuildHubConnection(Navigation.ToAbsoluteUri("/topichub"));
+            await _hubConnection.StartAsync();
+            await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.JoinTopic), TopicId);
+        }
+        else
+        {
+            _topic = await Mediator.Send(new GetTopicById() { Id = TopicId, UserId = _userInfo.TryGetUserId() });
+        }
+    }
+
+    private Task PersistData()
+    {
+        PersistentComponentState?.PersistAsJson(nameof(_topic), _topic);
+        return Task.CompletedTask;
     }
 
     private HubConnection BuildHubConnection(Uri hubUri, Action<HttpConnectionOptions>? configureHttpConnection = null)
@@ -197,6 +212,7 @@ public sealed partial class ViewTopic : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        stateSubscription.Dispose();
         if (_hubConnection is not null)
         {
             await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.LeaveTopic), TopicId);
