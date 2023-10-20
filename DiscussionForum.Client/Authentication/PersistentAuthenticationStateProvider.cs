@@ -1,7 +1,7 @@
 using System.Security.Claims;
 
 namespace DiscussionForum.Client.Authentication;
-public class PersistentAuthenticationStateProvider(PersistentComponentState persistentState) : AuthenticationStateProvider
+public sealed class PersistentAuthenticationStateProvider(PersistentComponentState persistentState) : AuthenticationStateProvider
 {
     private static readonly Task<AuthenticationState> _unauthenticatedTask =
         Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
@@ -20,8 +20,7 @@ public class PersistentAuthenticationStateProvider(PersistentComponentState pers
             new Claim(ClaimConstants.UserNameClaimName, userInfo.GetUserName() ?? "")];
 
         return Task.FromResult(
-            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-                authenticationType: nameof(PersistentAuthenticationStateProvider)))));
+            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "EasyAuth"))));
     }
 }
 

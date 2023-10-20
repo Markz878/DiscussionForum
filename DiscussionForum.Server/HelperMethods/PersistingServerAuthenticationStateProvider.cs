@@ -1,40 +1,30 @@
-﻿using Microsoft.AspNetCore.Components.Server;
-using Microsoft.AspNetCore.Components.Web;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Components.Web;
 
 namespace DiscussionForum.Server.HelperMethods;
 
-public class PersistingServerAuthenticationStateProvider : ServerAuthenticationStateProvider, IDisposable
+public sealed class PersistingServerAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
 {
+    private readonly IHttpContextAccessor httpContextAccessor;
     private readonly PersistentComponentState _state;
-
     private readonly PersistingComponentStateSubscription _subscription;
 
-    private Task<AuthenticationState>? _authenticationStateTask;
-
-    public PersistingServerAuthenticationStateProvider(PersistentComponentState state)
+    public PersistingServerAuthenticationStateProvider(IHttpContextAccessor httpContextAccessor, PersistentComponentState state)
     {
+        this.httpContextAccessor = httpContextAccessor;
         _state = state;
-        AuthenticationStateChanged += OnAuthenticationStateChanged;
         _subscription = state.RegisterOnPersisting(OnPersistingAsync, RenderMode.InteractiveWebAssembly);
     }
 
-    private void OnAuthenticationStateChanged(Task<AuthenticationState> authenticationStateTask)
+
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        _authenticationStateTask = authenticationStateTask;
+        return Task.FromResult(new AuthenticationState(httpContextAccessor.HttpContext?.User ?? new()));
     }
 
-    private async Task OnPersistingAsync()
+    private Task OnPersistingAsync()
     {
-        if (_authenticationStateTask is null)
-        {
-            throw new UnreachableException($"Authentication state not set in {nameof(RevalidatingServerAuthenticationStateProvider)}.{nameof(OnPersistingAsync)}().");
-        }
-
-        AuthenticationState authenticationState = await _authenticationStateTask;
-        ClaimsPrincipal principal = authenticationState.User;
-
-        if (principal.Identity?.IsAuthenticated == true)
+        ClaimsPrincipal? principal = httpContextAccessor.HttpContext?.User;
+        if (principal?.Identity?.IsAuthenticated == true)
         {
             string? userId = principal.FindFirst(ClaimConstants.IdClaimName)?.Value;
             string? email = principal.FindFirst(ClaimConstants.EmailNameClaimName)?.Value;
@@ -48,11 +38,11 @@ public class PersistingServerAuthenticationStateProvider : ServerAuthenticationS
                 });
             }
         }
+        return Task.CompletedTask;
     }
 
     public void Dispose()
     {
         _subscription.Dispose();
-        AuthenticationStateChanged -= OnAuthenticationStateChanged;
     }
 }
