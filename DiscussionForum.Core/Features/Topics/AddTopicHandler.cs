@@ -20,19 +20,19 @@ internal sealed class AddTopicHandler : IRequestHandler<AddTopic, AddTopicResult
             CreatedAt = timeStamp,
             UserId = request.UserId,
             LastMessageTimeStamp = timeStamp,
-            Messages = new List<Message>()
-            {
+            Messages =
+            [
                 new()
                 {
                     Content = request.FirstMessage,
                     CreatedAt = timeStamp,
                     UserId = request.UserId,
-                    AttachedFiles = request.AttachedFiles?.Select(x=>new MessageAttachedFile()
+                    AttachedFiles = request.AttachedFiles?.Select(x => new MessageAttachedFile()
                     {
                         Name = x.Name
-                    }).ToList() ?? new(),
+                    }).ToList() ?? [],
                 }
-            }
+            ]
         };
         _db.Topics.Add(newTopic);
         try
@@ -42,7 +42,8 @@ internal sealed class AddTopicHandler : IRequestHandler<AddTopic, AddTopicResult
             {
                 foreach (AddAttachedFile file in request.AttachedFiles)
                 {
-                    string? url = await _fileService.Upload(file.FileStream, file.Name, cancellationToken);
+                    Guid id = newTopic.Messages.First().AttachedFiles.First(x => x.Name == file.Name).Id;
+                    string? url = await _fileService.Upload(file.FileStream, id + file.Name, cancellationToken);
                 }
             }
             return new AddTopicResult { Id = newTopic.Id };

@@ -15,26 +15,25 @@ public partial class SetUserName
 
     protected override void OnInitialized()
     {
-        CreateUserModel ??= new();
         _userInfo = AuthenticationStateTask.GetUserInfo().Result;
-        CreateUserModel.UserName = _userInfo?.GetUserName() ?? "";
+        CreateUserModel ??= new() { UserName = _userInfo.GetUserName() ?? "" };
     }
 
     protected async Task SubmitUserName()
     {
         try
         {
-            if (_userInfo?.IsAuthenticated == true && CreateUserModel is not null && string.IsNullOrEmpty(CreateUserModel.UserName) is false)
+            if (_userInfo?.IsAuthenticated == true && string.IsNullOrEmpty(CreateUserModel?.UserName) is false)
             {
                 await Mediator.Send(new UpsertUser() { UserId = _userInfo.GetUserId(), Email = _userInfo.GetUserEmail(), UserName = CreateUserModel.UserName });
-                Navigation.NavigateTo("/", true);
+                Navigation.NavigateTo("/");
             }
         }
         catch (UserNameTakenException)
         {
             _errorMessage = "Username is already taken, try another one.";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not NavigationException)
         {
             _errorMessage = ex.Message;
         }
