@@ -16,10 +16,10 @@
     @if (SearchText is not null)
     {
         <EditForm class="flex" Model="@SearchText" OnSubmit="@SearchTopics" FormName="SearchTopics" Enhance>
-         <label for="search" class="sr-only">Search</label>
-         <InputText type="text" id="search" placeholder="Search" class="form-input" @bind-Value="SearchText.Text" />
-         <button type="submit" class="btn btn-primary ml-1">Search</button>
-     </EditForm>
+           <label for="search" class="sr-only">Search</label>
+           <InputText type="text" id="search" placeholder="Search" class="form-input" @bind-Value="SearchText.Text" />
+           <button type="submit" class="btn btn-primary ml-1">Search</button>
+        </EditForm>
     }
 
     @if (_topicsResult is not null)

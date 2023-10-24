@@ -12,6 +12,7 @@ public sealed partial class ViewTopic : IAsyncDisposable
     [Parameter][EditorRequired] public required long TopicId { get; set; }
     [CascadingParameter] public required Task<AuthenticationState> AuthenticationStateTask { get; init; }
     [Inject] public required PersistentComponentState PersistentComponentState { get; init; }
+    [Inject] public required RenderLocation RenderLocation { get; init; }
 
     private PersistingComponentStateSubscription stateSubscription;
     private GetTopicByIdResult? _topic;
@@ -28,16 +29,16 @@ public sealed partial class ViewTopic : IAsyncDisposable
     {
         _userInfo = await AuthenticationStateTask.GetUserInfo();
         stateSubscription = PersistentComponentState.RegisterOnPersisting(PersistData);
-        if (PersistentComponentState.TryTakeFromJson(nameof(_topic), out _topic))
+        _editTitle = new() { Title = _topic?.Title ?? "" };
+        if (!PersistentComponentState.TryTakeFromJson(nameof(_topic), out _topic))
         {
-            _editTitle = new() { Title = _topic?.Title ?? "" };
+            _topic = await Mediator.Send(new GetTopicById() { Id = TopicId, UserId = _userInfo.TryGetUserId() });
+        }
+        if (RenderLocation is ClientRenderLocation)
+        {
             _hubConnection = BuildHubConnection(Navigation.ToAbsoluteUri("/topichub"));
             await _hubConnection.StartAsync();
             await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.JoinTopic), TopicId);
-        }
-        else
-        {
-            _topic = await Mediator.Send(new GetTopicById() { Id = TopicId, UserId = _userInfo.TryGetUserId() });
         }
     }
 
@@ -216,7 +217,7 @@ public sealed partial class ViewTopic : IAsyncDisposable
         if (_hubConnection is not null)
         {
             await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.LeaveTopic), TopicId);
-            await _hubConnection.StopAsync();
+            await _hubConnection.DisposeAsync();
         }
     }
 }

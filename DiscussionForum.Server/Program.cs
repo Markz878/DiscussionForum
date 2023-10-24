@@ -29,6 +29,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.InstallAssemblyServices();
+builder.Services.AddSingleton<RenderLocation, ServerRenderLocation>();
 
 WebApplication app = builder.Build();
 

@@ -19,4 +19,5 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 builder.Services.AddHttpClient("Client", config => config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<Program>());
+builder.Services.AddSingleton<RenderLocation, ClientRenderLocation>();
 await builder.Build().RunAsync();
