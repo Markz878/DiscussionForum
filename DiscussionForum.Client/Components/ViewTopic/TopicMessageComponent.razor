@@ -18,7 +18,7 @@
             </div>
         }
     </div>
-    @if (CanUserEditMessage(Message.UserName) && _isEditing)
+    @if (_isEditing)
     {
         <EditForm Model="_editingMessage" OnValidSubmit="SubmitMessageEdit" FormName="EditMessage" Enhance>
             <DataAnnotationsValidator />
