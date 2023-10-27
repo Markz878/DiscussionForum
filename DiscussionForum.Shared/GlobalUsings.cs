@@ -1,3 +1,2 @@
-﻿global using DiscussionForum.Shared.Models.Users;
+﻿global using DiscussionForum.Shared.DTO.Messages;
 global using FluentValidation;
-global using MediatR;

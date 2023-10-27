@@ -1,4 +1,6 @@
-﻿namespace DiscussionForum.Server.Endpoints;
+﻿using DiscussionForum.Core.Features.Messages;
+
+namespace DiscussionForum.Server.Endpoints;
 
 public static class FileEndpointsMapper
 {
@@ -11,7 +13,7 @@ public static class FileEndpointsMapper
 
     private static async Task<Results<FileStreamHttpResult, NotFound>> Download(Guid id, IFileService fileService, IMediator mediator, CancellationToken cancellationToken)
     {
-        GetFileNameByIdResult? fileNameResult = await mediator.Send(new GetFileNameById() { Id = id }, cancellationToken);
+        GetFileNameByIdResult? fileNameResult = await mediator.Send(new GetFileNameByIdQuery() { Id = id }, cancellationToken);
         if (fileNameResult == null)
         {
             return TypedResults.NotFound();

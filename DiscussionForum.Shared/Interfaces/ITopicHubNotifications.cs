@@ -1,4 +1,4 @@
-﻿using DiscussionForum.Shared.Models.Topics;
+﻿using DiscussionForum.Shared.DTO.Topics;
 
 namespace DiscussionForum.Shared.Interfaces;
 

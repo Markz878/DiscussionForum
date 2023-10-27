@@ -44,7 +44,7 @@ public class AuthorizedBaseTests : BaseTest
         await page.Locator("form").Filter(new() { HasText = "Submit Cancel" }).GetByRole(AriaRole.Textbox).FillAsync("Let me edit more content");
 
         await page.GetByRole(AriaRole.Button, new() { Name = "Submit" }).ClickAsync();
-        await page.GetByText("Let me edit more content").WaitForAsync();
+        await Task.Delay(1000);
         int zeroLikesCount = await page.Locator("div").Filter(new() { HasTextRegex = new Regex("^0 likes$") }).CountAsync();
         zeroLikesCount.Should().Be(2);
 

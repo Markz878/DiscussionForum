@@ -7,7 +7,7 @@ internal sealed class Topic
     public DateTimeOffset LastMessageTimeStamp { get; set; }
     public Guid UserId { get; set; }
     public User? User { get; set; }
-    public List<Message> Messages { get; set; } = new();
+    public List<Message> Messages { get; set; } = [];
 }
 
 internal sealed class TopicConfiguration : IEntityTypeConfiguration<Topic>

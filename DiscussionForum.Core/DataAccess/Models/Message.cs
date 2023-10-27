@@ -10,8 +10,8 @@ internal sealed class Message
     public Topic? Topic { get; set; }
     public Guid UserId { get; set; }
     public User? User { get; set; }
-    public List<MessageLike> MessageLikes { get; set; } = new();
-    public List<MessageAttachedFile> AttachedFiles { get; set; } = new();
+    public List<MessageLike> MessageLikes { get; set; } = [];
+    public List<MessageAttachedFile> AttachedFiles { get; set; } = [];
 }
 
 internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>

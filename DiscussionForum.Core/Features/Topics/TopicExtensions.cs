@@ -1,4 +1,5 @@
 ﻿namespace DiscussionForum.Core.Features.Topics;
+
 internal static class TopicExtensions
 {
     internal static async Task<Guid> GetTopicUserId(this AppDbContext db, long topicId, CancellationToken cancellationToken = default)

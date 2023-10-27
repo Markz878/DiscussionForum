@@ -1,0 +1,30 @@
+﻿using DiscussionForum.Shared.DTO.Users;
+
+namespace DiscussionForum.Core.Features.Users;
+
+public sealed record GetUserInfoQuery : IRequest<GetUserInfoResult?>
+{
+    public required Guid Id { get; init; }
+}
+public sealed record GetUserInfoResult(Guid Id, string UserName, string Email, DateTimeOffset JoinedAt, Role Role);
+
+
+internal sealed class GetUserInfoQueryHandler : IRequestHandler<GetUserInfoQuery, GetUserInfoResult?>
+{
+    private readonly AppDbContext _db;
+
+    public GetUserInfoQueryHandler(AppDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task<GetUserInfoResult?> Handle(GetUserInfoQuery message, CancellationToken cancellationToken = default)
+    {
+        User? user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == message.Id, cancellationToken);
+        if (user == null)
+        {
+            return null;
+        }
+        return new GetUserInfoResult(user.Id, user.UserName, user.Email, user.JoinedAt, user.Role);
+    }
+}

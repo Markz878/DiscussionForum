@@ -1,4 +1,6 @@
-﻿using DiscussionForum.Shared.Models.Topics;
+﻿using DiscussionForum.Core.Features.Topics;
+using DiscussionForum.Shared.DTO.Topics;
+using DiscussionForum.Shared.DTO.Users;
 
 namespace DiscussionForum.Server.Components.Pages;
 
@@ -26,7 +28,7 @@ public partial class Index
         }
         if (SearchText.IsManuallySet)
         {
-            _topicsResult = await Mediator.Send(new ListLatestTopics() { PageNumber = _pageNumber, SearchText = Search });
+            _topicsResult = await Mediator.Send(new ListLatestTopicsQuery() { PageNumber = _pageNumber, SearchText = Search });
         }
     }
 

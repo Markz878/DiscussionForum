@@ -1,5 +1,7 @@
 ﻿using Azure.Identity;
 using Azure.Storage.Blobs;
+using DiscussionForum.Core.Services;
+using DiscussionForum.Shared.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +11,9 @@ public static class ServiceRegistrations
     public static IServiceCollection RegisterCoreServices(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {
         services.AddValidatorsFromAssemblyContaining<SharedAssemblyMarker>(ServiceLifetime.Singleton);
+        services.AddValidatorsFromAssemblyContaining<AppDbContext>(ServiceLifetime.Singleton);
         services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<AppDbContext>());
+        services.AddScoped<IDataFetchQueries, DataFetchServices>();
         services.AddDbContext<AppDbContext>(x =>
         {
             x.UseSqlServer(configuration.GetConnectionString("SqlServer"), o => o.EnableRetryOnFailure(3));

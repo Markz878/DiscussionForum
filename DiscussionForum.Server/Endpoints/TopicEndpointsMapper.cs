@@ -1,6 +1,5 @@
-﻿using DiscussionForum.Shared.Models.Topics;
-using FluentValidation;
-using FluentValidation.Results;
+﻿using DiscussionForum.Core.Features.Topics;
+using DiscussionForum.Shared.DTO.Topics;
 using System.Reflection;
 
 namespace DiscussionForum.Server.Endpoints;
@@ -13,51 +12,32 @@ public static class TopicEndpointsMapper
 
         topicGroup.MapGet("latest/{page:int}", ListLatestTopics).AllowAnonymous();
         topicGroup.MapGet("{topicId:long}", GetTopicById).AllowAnonymous();
-        topicGroup.MapPost("", CreateTopic).Accepts<AddTopicBinder>("multipart/form-data");
         topicGroup.MapDelete("{topicId:long}", DeleteTopic);
         topicGroup.MapPatch("", EditTopicTitle);
     }
 
-    public static async Task<Ok<ListLatestTopicsResult>> ListLatestTopics(int page, string? search, ClaimsPrincipal claimsPrincipal, IMediator mediator, CancellationToken cancellationToken)
+    public static async Task<Ok<ListLatestTopicsResult>> ListLatestTopics(int page, string? search, ClaimsPrincipal claimsPrincipal, IDataFetchQueries dataFetch, CancellationToken cancellationToken)
     {
-        ListLatestTopicsResult result = await mediator.Send(new ListLatestTopics() { PageNumber = page, TopicsCount = 10, SearchText = search }, cancellationToken);
+        ListLatestTopicsResult result = await dataFetch.ListLatestTopics(new ListLatestTopicsRequest() { PageNumber = page, TopicsCount = 10, SearchText = search }, cancellationToken);
         return TypedResults.Ok(result);
     }
 
-    public static async Task<Ok<GetTopicByIdResult>> GetTopicById(long topicId, ClaimsPrincipal claimsPrincipal, IMediator mediator, CancellationToken cancellationToken)
+    public static async Task<Results<Ok<GetTopicByIdResult>, NotFound>> GetTopicById(long topicId, ClaimsPrincipal claimsPrincipal, IDataFetchQueries dataFetch, CancellationToken cancellationToken)
     {
-        GetTopicByIdResult result = await mediator.Send(new GetTopicById() { Id = topicId, UserId = claimsPrincipal.TryGetUserId() }, cancellationToken);
-        return TypedResults.Ok(result);
-    }
-
-    public static async Task<Results<Ok<AddTopicResult>, ValidationProblem>> CreateTopic(AddTopicBinder topicRequest, IValidator<AddTopic> validator, IMediator mediator, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
-    {
-        AddTopic addTopicCommand = new()
-        {
-            Title = topicRequest.Title,
-            FirstMessage = topicRequest.FirstMessage,
-            UserId = claimsPrincipal.GetUserId(),
-            AttachedFiles = topicRequest.AttachedFiles?.Select(x => new AddAttachedFile() { Name = x.FileName, FileStream = x.OpenReadStream() }).ToArray()
-        };
-        ValidationResult validationResult = validator.Validate(addTopicCommand);
-        if (!validationResult.IsValid)
-        {
-            return TypedResults.ValidationProblem(validationResult.ToDictionary());
-        }
-        AddTopicResult result = await mediator.Send(addTopicCommand, cancellationToken);
-        return TypedResults.Ok(result);
+        GetTopicByIdResult? result = await dataFetch.GetTopicById(topicId, claimsPrincipal.GetUserId(), cancellationToken);
+        return result == null ? TypedResults.NotFound() : TypedResults.Ok(result);
     }
 
     public static async Task<NoContent> DeleteTopic(long topicId, ClaimsPrincipal claimsPrincipal, IMediator mediator, IHubContext<TopicHub> hub, CancellationToken cancellationToken)
     {
-        await mediator.Send(new DeleteTopic() { TopicId = topicId, UserId = claimsPrincipal.GetUserId(), UserRole = claimsPrincipal.GetUserRole() }, cancellationToken);
+        await mediator.Send(new DeleteTopicCommand() { TopicId = topicId, UserId = claimsPrincipal.GetUserId(), UserRole = claimsPrincipal.GetUserRole() }, cancellationToken);
         await hub.Clients.Group(topicId.ToString()).SendAsync(nameof(ITopicHubNotifications.TopicDeleted), cancellationToken);
         return TypedResults.NoContent();
     }
 
-    public static async Task<NoContent> EditTopicTitle(EditTopicTitle request, ClaimsPrincipal claimsPrincipal, IMediator mediator, IHubContext<TopicHub> hub, CancellationToken cancellationToken)
+    public static async Task<NoContent> EditTopicTitle(EditTopicTitleRequest request, ClaimsPrincipal claimsPrincipal, IMediator mediator, IHubContext<TopicHub> hub, CancellationToken cancellationToken)
     {
-        await mediator.Send(new EditTopicTitle() { TopicId = request.TopicId, NewTitle = request.NewTitle, UserId = claimsPrincipal.GetUserId(), UserRole = claimsPrincipal.GetUserRole() }, cancellationToken);
+        await mediator.Send(new EditTopicTitleCommand() { TopicId = request.TopicId, NewTitle = request.NewTitle, UserId = claimsPrincipal.GetUserId(), UserRole = claimsPrincipal.GetUserRole() }, cancellationToken);
         await hub.Clients.Group(request.TopicId.ToString()).SendAsync(nameof(ITopicHubNotifications.TopicTitleEdited), request.NewTitle, cancellationToken);
         return TypedResults.NoContent();
     }

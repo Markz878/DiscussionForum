@@ -1,4 +1,4 @@
-﻿@using DiscussionForum.Shared.Models.Messages;
+﻿@using DiscussionForum.Shared.DTO.Messages
 
 <div class="mb-4 p-2 border-[1px] border-gray-400 rounded">
     <div class="flex flex-wrap gap-4 items-center">
@@ -48,7 +48,7 @@
         @if (Message.AttachedFiles?.Length > 0)
         {
             <div class="flex flex-wrap gap-1 mt-2">
-                @foreach (AttachedFileInfo file in Message.AttachedFiles)
+                @foreach (AttachedFileResponse file in Message.AttachedFiles)
                 {
                     <a href="api/download/@file.Id" target="_blank" class="flex px-2 py-4 h-8 bg-gray-300 items-center rounded overflow-x-clip dark:bg-gray-900">
                         <img src="icons/file.svg" alt="File" class="h-5 dark:invert" />

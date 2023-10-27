@@ -1,3 +1,5 @@
+using DiscussionForum.Core.Features.Users;
+using DiscussionForum.Shared.DTO.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace DiscussionForum.Server.Components.Pages;
@@ -25,7 +27,7 @@ public partial class SetUserName
         {
             if (_userInfo?.IsAuthenticated == true && string.IsNullOrEmpty(CreateUserModel?.UserName) is false)
             {
-                await Mediator.Send(new UpsertUser() { UserId = _userInfo.GetUserId(), Email = _userInfo.GetUserEmail(), UserName = CreateUserModel.UserName });
+                await Mediator.Send(new UpsertUserCommand() { UserId = _userInfo.GetUserId(), Email = _userInfo.GetUserEmail(), UserName = CreateUserModel.UserName });
                 Navigation.NavigateTo("/");
             }
         }

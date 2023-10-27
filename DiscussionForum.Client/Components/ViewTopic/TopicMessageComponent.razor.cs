@@ -1,15 +1,13 @@
-using DiscussionForum.Shared.Models.MessageLikes;
-
 namespace DiscussionForum.Client.Components.ViewTopic;
 
 public partial class TopicMessageComponent
 {
     [Parameter][EditorRequired] public required TopicMessage Message { get; init; }
     [Parameter][EditorRequired] public required UserInfo CurrentUserInfo { get; init; }
-    [Parameter][EditorRequired] public required EventCallback<EditMessage> EditMessageHandler { get; init; }
-    [Parameter][EditorRequired] public required EventCallback<DeleteMessage> DeleteMessageHandler { get; init; }
-    [Parameter][EditorRequired] public required EventCallback<AddMessageLike> AddMessageLikeHandler { get; init; }
-    [Parameter][EditorRequired] public required EventCallback<DeleteMessageLike> DeleteMessageLikeHandler { get; init; }
+    [Parameter][EditorRequired] public required EventCallback<EditMessageRequest> EditMessageHandler { get; init; }
+    [Parameter][EditorRequired] public required EventCallback<long> DeleteMessageHandler { get; init; }
+    [Parameter][EditorRequired] public required EventCallback<long> AddMessageLikeHandler { get; init; }
+    [Parameter][EditorRequired] public required EventCallback<long> DeleteMessageLikeHandler { get; init; }
 
     private bool _isEditing;
     private EditMessageModel _editingMessage = new();
@@ -42,24 +40,24 @@ public partial class TopicMessageComponent
 
     private async Task SubmitMessageEdit()
     {
-        await EditMessageHandler.InvokeAsync(new EditMessage() { MessageId = Message.Id, Message = _editingMessage.Message, UserId = CurrentUserInfo.GetUserId(), UserRole = CurrentUserInfo.GetUserRole().GetValueOrDefault() });
+        await EditMessageHandler.InvokeAsync(new EditMessageRequest() { MessageId = Message.Id, Message = _editingMessage.Message });
         _isEditing = false;
     }
 
     private async Task ClickDelete()
     {
-        await DeleteMessageHandler.InvokeAsync(new DeleteMessage() { MessageId = Message.Id });
+        await DeleteMessageHandler.InvokeAsync(Message.Id);
     }
 
     private async Task ClickUpvote()
     {
         if (Message.HasUserUpvoted)
         {
-            await DeleteMessageLikeHandler.InvokeAsync(new DeleteMessageLike() { MessageId = Message.Id, UserId = CurrentUserInfo.GetUserId() });
+            await DeleteMessageLikeHandler.InvokeAsync(Message.Id);
         }
         else
         {
-            await AddMessageLikeHandler.InvokeAsync(new AddMessageLike() { MessageId = Message.Id, UserId = CurrentUserInfo.GetUserId() });
+            await AddMessageLikeHandler.InvokeAsync(Message.Id);
         }
     }
 }

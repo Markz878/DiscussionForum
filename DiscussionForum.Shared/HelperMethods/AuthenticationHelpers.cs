@@ -1,4 +1,5 @@
-﻿using DiscussionForum.Shared.Models.Errors;
+﻿using DiscussionForum.Shared.DTO.Users;
+using DiscussionForum.Shared.Models.Errors;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 

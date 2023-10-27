@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using DiscussionForum.Shared.DTO.Users;
 
 namespace DiscussionForum.Core.HelperMethods;
 

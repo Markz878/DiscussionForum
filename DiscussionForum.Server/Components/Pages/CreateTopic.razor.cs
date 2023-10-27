@@ -1,4 +1,6 @@
-using DiscussionForum.Shared.Models.Topics;
+using DiscussionForum.Core.Features.Topics;
+using DiscussionForum.Shared.DTO.Messages;
+using DiscussionForum.Shared.DTO.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace DiscussionForum.Server.Components.Pages;
@@ -30,13 +32,13 @@ public sealed partial class CreateTopic
         {
             ArgumentNullException.ThrowIfNull(_userInfo);
             ArgumentNullException.ThrowIfNull(AddTopicModel);
-            AddTopicResult response = await Mediator.Send(new AddTopic()
+            AddTopicResult response = await Mediator.Send(new AddTopicCommand()
             {
                 Title = AddTopicModel.Title,
                 FirstMessage = AddTopicModel.FirstMessage,
                 UserId = _userInfo.GetUserId(),
                 AttachedFiles = AddTopicModel?.Files?.Select(x =>
-                    new AddAttachedFile() { Name = x.FileName, FileStream = x.OpenReadStream() }).ToArray()
+                    new AttachedFileInfo() { Name = x.FileName, FileStream = x.OpenReadStream() }).ToArray()
             });
             Navigation.NavigateTo($"/topic/{response.Id}");
         }

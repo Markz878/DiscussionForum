@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using DiscussionForum.Core.Features.Users;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
 
@@ -33,11 +34,11 @@ public class EasyAuthAuthenticationHandler : AuthenticationHandler<EasyAuthAuthe
                 return AuthenticateResult.NoResult();
             }
             ClaimsPrincipal principal = new();
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimConstants.EmailNameClaimName, msClientPrincipalName),
                 new Claim(ClaimConstants.IdClaimName, msClientPrincipalId)
-            };
+            ];
             Guid userId = Guid.Parse(msClientPrincipalId);
             await GetOrCreateUserClaims(userId, claims);
             principal.AddIdentity(new ClaimsIdentity(claims, easyAuthProvider, ClaimConstants.EmailNameClaimName, ClaimConstants.RoleClaimName));
@@ -59,7 +60,7 @@ public class EasyAuthAuthenticationHandler : AuthenticationHandler<EasyAuthAuthe
         string? roleAndUserName = await _cache.GetStringAsync(cacheKey);
         if (roleAndUserName == null)
         {
-            GetUserInfoResult? response = await _mediator.Send(new GetUserInfo() { Id = userId });
+            GetUserInfoResult? response = await _mediator.Send(new GetUserInfoQuery() { Id = userId });
             if (response == null)
             {
                 return;

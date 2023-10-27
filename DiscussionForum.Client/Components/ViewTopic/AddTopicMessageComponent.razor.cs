@@ -31,11 +31,11 @@ public partial class AddTopicMessageComponent
         try
         {
             isBusy = true;
-            await Mediator.Send(new AddMessage()
+            await Mediator.Send(new AddMessageClientCommand()
             {
                 Message = newMessage.Message,
                 TopicId = TopicId,
-                AttachedFiles = newMessage?.Files?.Select(x => new AddAttachedFile() { Name = x.Name, FileStream = x.OpenReadStream(fileMaxSize) }).ToArray()
+                AttachedFiles = newMessage?.Files?.Select(x => new AttachedFileInfo() { Name = x.Name, FileStream = x.OpenReadStream(fileMaxSize) }).ToArray()
             });
             newMessage = new();
         }

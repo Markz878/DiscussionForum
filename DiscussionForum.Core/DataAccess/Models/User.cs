@@ -1,4 +1,6 @@
-﻿namespace DiscussionForum.Core.DataAccess.Models;
+﻿using DiscussionForum.Shared.DTO.Users;
+
+namespace DiscussionForum.Core.DataAccess.Models;
 internal sealed class User
 {
     public Guid Id { get; set; }

@@ -2,7 +2,6 @@ global using DiscussionForum.Core.DataAccess;
 global using DiscussionForum.Core.DataAccess.Models;
 global using DiscussionForum.Server.HelperMethods;
 global using DiscussionForum.Shared;
-global using DiscussionForum.Shared.Models.Users;
 global using DiscussionForum.Tests.IntegrationTests.Infrastructure;
 global using FluentAssertions;
 global using Microsoft.AspNetCore.Hosting;

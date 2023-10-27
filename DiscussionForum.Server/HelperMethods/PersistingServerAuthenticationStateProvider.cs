@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+﻿using DiscussionForum.Shared.DTO.Users;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace DiscussionForum.Server.HelperMethods;
 

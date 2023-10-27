@@ -4,7 +4,7 @@ public class OutputCacheInstaller : IInstaller
 {
     public void Install(WebApplicationBuilder builder)
     {
-        builder.Services.AddOutputCache(options => 
+        builder.Services.AddOutputCache(options =>
             options.AddBasePolicy(builder =>
                 builder.Expire(TimeSpan.FromSeconds(10))));
     }

@@ -1,3 +1,5 @@
+using DiscussionForum.Shared.DTO.Users;
+
 namespace DiscussionForum.Server.Components.Layout;
 
 [Authorize]
@@ -8,7 +10,7 @@ public sealed partial class ProfileButton
 
     private string? _email;
     private string? _userName;
-    private Role? role; 
+    private Role? role;
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,5 +1,4 @@
 using DiscussionForum.Client.Components.Common;
-using DiscussionForum.Shared.Models.MessageLikes;
 using Microsoft.AspNetCore.Http.Connections.Client;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -7,6 +6,7 @@ namespace DiscussionForum.Client.Components.ViewTopic;
 
 public sealed partial class ViewTopic : IAsyncDisposable
 {
+    [Inject] public required IDataFetchQueries DataFetchQueries { get; set; }
     [Inject] public required IMediator Mediator { get; set; }
     [Inject] public required NavigationManager Navigation { get; init; }
     [Parameter][EditorRequired] public required long TopicId { get; set; }
@@ -32,7 +32,7 @@ public sealed partial class ViewTopic : IAsyncDisposable
         _editTitle = new() { Title = _topic?.Title ?? "" };
         if (!PersistentComponentState.TryTakeFromJson(nameof(_topic), out _topic))
         {
-            _topic = await Mediator.Send(new GetTopicById() { Id = TopicId, UserId = _userInfo.TryGetUserId() });
+            _topic = await DataFetchQueries.GetTopicById(TopicId, _userInfo.TryGetUserId());
         }
         if (RenderLocation is ClientRenderLocation)
         {
@@ -139,7 +139,7 @@ public sealed partial class ViewTopic : IAsyncDisposable
         ArgumentNullException.ThrowIfNull(_topic);
         _topic.Title = _editTitle.Title;
         _isEditingTitle = false;
-        await Mediator.Send(new EditTopicTitle() { NewTitle = _editTitle.Title, TopicId = _topic.Id });
+        await Mediator.Send(new EditTopicTitleClientCommand() { NewTitle = _editTitle.Title, TopicId = _topic.Id });
     }
 
     private async Task ShowDeleteTopicConfirm()
@@ -153,10 +153,10 @@ public sealed partial class ViewTopic : IAsyncDisposable
     private async Task ConfirmTopicDeletion()
     {
         ArgumentNullException.ThrowIfNull(_topic);
-        await Mediator.Send(new DeleteTopic() { TopicId = _topic.Id });
+        await Mediator.Send(new DeleteTopicClientCommand() { TopicId = _topic.Id });
     }
 
-    private async Task EditMessageHandler(EditMessage command)
+    private async Task EditMessageHandler(EditMessageRequest command)
     {
         ArgumentNullException.ThrowIfNull(_topic);
         if (string.IsNullOrEmpty(command.Message))
@@ -167,15 +167,15 @@ public sealed partial class ViewTopic : IAsyncDisposable
         if (message is not null)
         {
             message.Content = command.Message;
-            await Mediator.Send(command);
+            await Mediator.Send(new EditMessageClientCommand() { MessageId = command.MessageId, Message = command.Message });
         }
     }
 
-    private async Task ShowDeleteMessageConfirm(DeleteMessage deletionCommand)
+    private async Task ShowDeleteMessageConfirm(long messageId)
     {
         modalHeader = "Confirm delete";
         modalMessage = "Are you sure you want to delete this message?";
-        messageIdToDelete = deletionCommand.MessageId;
+        messageIdToDelete = messageId;
         modalContent = ModalConfirm(ConfirmMessageDeletion);
         await (modal?.Show() ?? Task.CompletedTask);
     }
@@ -184,31 +184,31 @@ public sealed partial class ViewTopic : IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(_topic);
         _topic.Messages.RemoveAll(x => x.Id == messageIdToDelete);
-        await Mediator.Send(new DeleteMessage() { MessageId = messageIdToDelete });
+        await Mediator.Send(new DeleteMessageClientCommand() { MessageId = messageIdToDelete });
     }
 
-    private async Task AddMessageLikeHandler(AddMessageLike command)
+    private async Task AddMessageLikeHandler(long messageId)
     {
         ArgumentNullException.ThrowIfNull(_topic);
-        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == command.MessageId);
+        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == messageId);
         if (message is not null)
         {
             message.HasUserUpvoted = true;
             message.LikesCount++;
         }
-        await Mediator.Send(command);
+        await Mediator.Send(new AddMessageLikeClientCommand() { MessageId = messageId });
     }
 
-    private async Task DeleteMessageLikeHandler(DeleteMessageLike command)
+    private async Task DeleteMessageLikeHandler(long messageId)
     {
         ArgumentNullException.ThrowIfNull(_topic);
-        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == command.MessageId);
+        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == messageId);
         if (message is not null)
         {
             message.HasUserUpvoted = false;
             message.LikesCount--;
         }
-        await Mediator.Send(command);
+        await Mediator.Send(new DeleteMessageLikeClientCommand() { MessageId = messageId });
     }
 
     public async ValueTask DisposeAsync()

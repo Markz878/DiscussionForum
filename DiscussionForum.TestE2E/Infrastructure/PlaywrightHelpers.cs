@@ -13,9 +13,9 @@ internal static class PlaywrightHelpers
         {
             await browserContext.SetExtraHTTPHeadersAsync(new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>(EasyAuthAuthenticationHandler.EasyAuthPrincipalIDP, "aad"),
-                new KeyValuePair<string, string>(EasyAuthAuthenticationHandler.EasyAuthPrincipalID, fakeAuth.Id.ToString()),
-                new KeyValuePair<string, string>(EasyAuthAuthenticationHandler.EasyAuthPrincipalName, fakeAuth.Email)
+                new(EasyAuthAuthenticationHandler.EasyAuthPrincipalIDP, "aad"),
+                new(EasyAuthAuthenticationHandler.EasyAuthPrincipalID, fakeAuth.Id.ToString()),
+                new(EasyAuthAuthenticationHandler.EasyAuthPrincipalName, fakeAuth.Email)
             });
         }
         return browserContext;

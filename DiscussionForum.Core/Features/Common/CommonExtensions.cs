@@ -1,4 +1,6 @@
-﻿namespace DiscussionForum.Core.Features.Common;
+﻿using DiscussionForum.Shared.DTO.Users;
+
+namespace DiscussionForum.Core.Features.Common;
 internal sealed class CommonExtensions
 {
     internal static bool IsUserAdminOrOwner(Role userRole, Guid entityUserGuid, Guid actualUserGuid)

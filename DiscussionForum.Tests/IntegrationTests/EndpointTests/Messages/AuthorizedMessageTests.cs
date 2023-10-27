@@ -1,4 +1,4 @@
-﻿using DiscussionForum.Shared.Models.Messages;
+﻿using DiscussionForum.Shared.DTO.Messages;
 using System.Net.Http.Json;
 
 namespace DiscussionForum.Tests.IntegrationTests.EndpointTests.Messages;
@@ -22,7 +22,7 @@ public class AuthorizedMessageTests : AuthorizedBaseTest
             { new StreamContent(new MemoryStream(Convert.FromBase64String("VGVzdCB0ZXh0"))), "file.txt", "file.txt" }
         };
         HttpResponseMessage response = await client.PostAsync(uri, formData);
-        AddMessageResult? result = await response.Content.ReadFromJsonAsync<AddMessageResult>();
+        AddMessageResponse? result = await response.Content.ReadFromJsonAsync<AddMessageResponse>();
         ArgumentNullException.ThrowIfNull(result);
         _testOutputHelper.WriteLine($"ATTACHED FILES IS NULL: {result.AttachedFiles == null}");
         _testOutputHelper.WriteLine($"ATTACHED FILES: {result.AttachedFiles?.Length}");
@@ -82,7 +82,7 @@ public class AuthorizedMessageTests : AuthorizedBaseTest
             { new StringContent("Test message"), "message" },
         };
         HttpResponseMessage response = await client.PostAsync(uri, formData);
-        AddMessageResult? result = await response.Content.ReadFromJsonAsync<AddMessageResult>();
+        AddMessageResponse? result = await response.Content.ReadFromJsonAsync<AddMessageResponse>();
         ArgumentNullException.ThrowIfNull(result);
         response = await client.DeleteAsync($"{uri}/{result.Id}");
         response.EnsureSuccessStatusCode();
@@ -102,9 +102,9 @@ public class AuthorizedMessageTests : AuthorizedBaseTest
             { new StringContent("Test message"), "message" },
         };
         HttpResponseMessage response = await client.PostAsync(uri, formData);
-        AddMessageResult? result = await response.Content.ReadFromJsonAsync<AddMessageResult>();
+        AddMessageResponse? result = await response.Content.ReadFromJsonAsync<AddMessageResponse>();
         ArgumentNullException.ThrowIfNull(result);
-        EditMessage editMessage = new() { MessageId = result.Id, Message = "Edited message" };
+        EditMessageRequest editMessage = new() { MessageId = result.Id, Message = "Edited message" };
         response = await client.PatchAsJsonAsync(uri, editMessage);
         response.EnsureSuccessStatusCode();
         AppDbContext db = GetDbContext();

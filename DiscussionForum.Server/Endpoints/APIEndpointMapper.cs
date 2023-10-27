@@ -15,7 +15,6 @@ public static class APIEndpointMapper
             .CacheOutput()
             ;
 
-        apiGroup.MapAccountEndpoints();
         apiGroup.MapMessageLikesEndpoints();
         apiGroup.MapTopicEndpoints();
         apiGroup.MapMessageEndpoints();

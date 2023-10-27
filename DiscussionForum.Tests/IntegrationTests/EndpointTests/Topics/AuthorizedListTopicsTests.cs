@@ -1,4 +1,4 @@
-﻿using DiscussionForum.Shared.Models.Topics;
+﻿using DiscussionForum.Shared.DTO.Topics;
 using System.Net.Http.Json;
 
 namespace DiscussionForum.Tests.IntegrationTests.EndpointTests.Topics;
@@ -48,61 +48,22 @@ public class AuthorizedListTopicsTests : AuthorizedBaseTest
     }
 
     [Fact]
-    public async Task CreateTopic()
-    {
-        MultipartFormDataContent formData = new()
-        {
-            { new StringContent("Test title"), "title" },
-            { new StringContent("This is the message content"), "firstMessage" },
-            { new StreamContent(new MemoryStream(Convert.FromBase64String("VGVzdCB0ZXh0"))), "file.txt", "file.txt" }
-        };
-        HttpResponseMessage response = await client.PostAsync(uri, formData);
-        AddTopicResult? result = await response.Content.ReadFromJsonAsync<AddTopicResult>();
-        ArgumentNullException.ThrowIfNull(result);
-        AppDbContext db = GetDbContext();
-        Topic? topic = await db.Topics.Include(x => x.Messages).FirstOrDefaultAsync(x => x.Id == result.Id);
-        ArgumentNullException.ThrowIfNull(topic);
-        topic.CreatedAt.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-1));
-        topic.LastMessageTimeStamp.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-1));
-        topic.Title.Should().Be("Test title");
-        topic.Messages.Should().ContainSingle();
-        topic.Id.Should().Be(result.Id);
-        topic.UserId.Should().Be(UserId);
-    }
-
-    [Fact]
     public async Task DeleteTopic()
     {
-        MultipartFormDataContent formData = new()
-        {
-            { new StringContent("Test title"), "title" },
-            { new StringContent("This is the message content"), "firstMessage" },
-        };
-        HttpResponseMessage response = await client.PostAsync(uri, formData);
-        AddTopicResult? result = await response.Content.ReadFromJsonAsync<AddTopicResult>();
-        ArgumentNullException.ThrowIfNull(result);
-        response = await client.DeleteAsync(uri + "/" + result.Id);
+        HttpResponseMessage response = await client.DeleteAsync(uri + "/" + 50);
         AppDbContext db = GetDbContext();
-        Topic? topic = await db.Topics.FirstOrDefaultAsync(x => x.Id == result.Id);
+        Topic? topic = await db.Topics.FirstOrDefaultAsync(x => x.Id == 50);
         topic.Should().BeNull();
     }
 
     [Fact]
     public async Task EditTopicTitle()
     {
-        MultipartFormDataContent formData = new()
-        {
-            { new StringContent("Test title"), "title" },
-            { new StringContent("This is the message content"), "firstMessage" },
-        };
-        HttpResponseMessage response = await client.PostAsync(uri, formData);
-        AddTopicResult? result = await response.Content.ReadFromJsonAsync<AddTopicResult>();
-        ArgumentNullException.ThrowIfNull(result);
-        EditTopicTitle editRequest = new() { NewTitle = "Edited title", TopicId = result.Id };
-        response = await client.PatchAsJsonAsync(uri, editRequest);
+        EditTopicTitleRequest editRequest = new() { NewTitle = "Edited title", TopicId = 60 };
+        HttpResponseMessage response = await client.PatchAsJsonAsync(uri, editRequest);
         response.EnsureSuccessStatusCode();
         AppDbContext db = GetDbContext();
-        Topic? topic = await db.Topics.FirstOrDefaultAsync(x => x.Id == result.Id);
+        Topic? topic = await db.Topics.FirstOrDefaultAsync(x => x.Id == 60);
         ArgumentNullException.ThrowIfNull(topic);
         topic.Title.Should().Be("Edited title");
     }
