@@ -1,4 +1,6 @@
 ﻿using DiscussionForum.Shared.DTO.Topics;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace DiscussionForum.Core.Features.Topics;
 
@@ -12,10 +14,12 @@ public sealed record ListLatestTopicsQuery : IRequest<ListLatestTopicsResult>
 internal sealed class ListLatestTopicsQueryHandler : IRequestHandler<ListLatestTopicsQuery, ListLatestTopicsResult>
 {
     private readonly AppDbContext _db;
+    private readonly IDistributedCache cache;
 
-    public ListLatestTopicsQueryHandler(AppDbContext db)
+    public ListLatestTopicsQueryHandler(AppDbContext db, IDistributedCache cache)
     {
         _db = db;
+        this.cache = cache;
     }
 
     public async Task<ListLatestTopicsResult> Handle(ListLatestTopicsQuery request, CancellationToken cancellationToken = default)
@@ -23,6 +27,16 @@ internal sealed class ListLatestTopicsQueryHandler : IRequestHandler<ListLatestT
         if (request.TopicsCount <= 0)
         {
             throw new ValidationException($"{nameof(request.TopicsCount)} must be larger than 0.");
+        }
+        string cacheKey = $"topics-{request.PageNumber}-{request.TopicsCount}-{request.SearchText}";
+        byte[]? cachedResultBytes = await cache.GetAsync(cacheKey, cancellationToken);
+        if (cachedResultBytes is not null)
+        {
+            ListLatestTopicsResult? cachedResult = JsonSerializer.Deserialize<ListLatestTopicsResult>(cachedResultBytes);
+            if (cachedResult is not null)
+            {
+                return cachedResult;
+            }
         }
         IQueryable<Topic> query = _db.Topics;
         if (string.IsNullOrWhiteSpace(request.SearchText) is false)
@@ -36,6 +50,10 @@ internal sealed class ListLatestTopicsQueryHandler : IRequestHandler<ListLatestT
             Topics = topics,
             PageCount = Math.Max((topicsCount - 1) / request.TopicsCount, 0)
         };
+        await cache.SetAsync(cacheKey, JsonSerializer.SerializeToUtf8Bytes(result), new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
+        }, cancellationToken);
         return result;
     }
 

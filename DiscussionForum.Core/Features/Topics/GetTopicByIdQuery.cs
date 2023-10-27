@@ -1,5 +1,7 @@
 ﻿using DiscussionForum.Shared.DTO.Messages;
 using DiscussionForum.Shared.DTO.Topics;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace DiscussionForum.Core.Features.Topics;
 
@@ -12,13 +14,26 @@ public sealed record GetTopicByIdQuery : IRequest<GetTopicByIdResult>
 internal sealed class GetTopicByIdQueryHandler : IRequestHandler<GetTopicByIdQuery, GetTopicByIdResult?>
 {
     private readonly AppDbContext _db;
-    public GetTopicByIdQueryHandler(AppDbContext db)
+    private readonly IDistributedCache cache;
+
+    public GetTopicByIdQueryHandler(AppDbContext db, IDistributedCache cache)
     {
         _db = db;
+        this.cache = cache;
     }
 
     public async Task<GetTopicByIdResult?> Handle(GetTopicByIdQuery request, CancellationToken cancellationToken = default)
     {
+        string cacheKey = $"topic-{request.TopicId}-{request.UserId}";
+        byte[]? cachedResultBytes = await cache.GetAsync(cacheKey, cancellationToken);
+        if (cachedResultBytes is not null)
+        {
+            GetTopicByIdResult? cachedResult = JsonSerializer.Deserialize<GetTopicByIdResult>(cachedResultBytes);
+            if (cachedResult is not null)
+            {
+                return cachedResult;
+            }
+        }
         GetTopicByIdResult? result = await _db.Topics
             .AsSplitQuery()
             .Where(x => x.Id == request.TopicId)
@@ -47,6 +62,13 @@ internal sealed class GetTopicByIdQueryHandler : IRequestHandler<GetTopicByIdQue
                     }).ToList()
             })
             .SingleOrDefaultAsync(cancellationToken);
+        if (result is not null)
+        {
+            await cache.SetAsync(cacheKey, JsonSerializer.SerializeToUtf8Bytes(result), new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
+            }, cancellationToken);
+        }
         return result;
     }
 }
