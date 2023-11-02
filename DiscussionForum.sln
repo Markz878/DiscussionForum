@@ -18,6 +18,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscussionForum.Tests", "Di
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateLimitTester", "RateLimitTester\RateLimitTester.csproj", "{B1160069-2F7E-48D2-B91E-BEDF639BA37A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{57464573-E036-45A0-B0D2-2B66A3AAAD42}"
+	ProjectSection(SolutionItems) = preProject
+		Infrastructure\common.bicep = Infrastructure\common.bicep
+		.github\workflows\common.yml = .github\workflows\common.yml
+		.github\workflows\migrations.yml = .github\workflows\migrations.yml
+		Infrastructure\webapp.bicep = Infrastructure\webapp.bicep
+		.github\workflows\webapp.yml = .github\workflows\webapp.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

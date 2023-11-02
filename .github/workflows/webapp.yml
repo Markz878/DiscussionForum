@@ -35,7 +35,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.x'
+          dotnet-version: '8.0.100-rc.2.23502.2'
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -61,7 +61,7 @@ jobs:
       - name: Setup Playwright
         run: |
             dotnet build DiscussionForum.TestE2E -c Release
-            pwsh DiscussionForum.TestE2E/bin/Release/net7.0/playwright.ps1 install
+            pwsh DiscussionForum.TestE2E/bin/Release/net8.0/playwright.ps1 install
 
       - name: Run E2E Tests
         continue-on-error: true

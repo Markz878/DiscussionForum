@@ -159,23 +159,23 @@ resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
         }
     }
 }
-resource defenderForStorageSettings 'Microsoft.Security/defenderForStorageSettings@2022-12-01-preview' = {
-    name: 'current'
-    scope: storageAccount
-    properties: {
-        isEnabled: true
-        malwareScanning: {
-            onUpload: {
-                isEnabled: true
-                capGBPerMonth: 5
-            }
-        }
-        sensitiveDataDiscovery: {
-            isEnabled: true
-        }
-        overrideSubscriptionLevelSettings: true
-    }
-}
+// resource defenderForStorageSettings 'Microsoft.Security/defenderForStorageSettings@2022-12-01-preview' = {
+//     name: 'current'
+//     scope: storageAccount
+//     properties: {
+//         isEnabled: true
+//         malwareScanning: {
+//             onUpload: {
+//                 isEnabled: true
+//                 capGBPerMonth: 5
+//             }
+//         }
+//         sensitiveDataDiscovery: {
+//             isEnabled: true
+//         }
+//         overrideSubscriptionLevelSettings: true
+//     }
+// }
 
 resource webappIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
     name: '${solutionName}-identity'
