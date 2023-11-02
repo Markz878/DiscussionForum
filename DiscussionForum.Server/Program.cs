@@ -49,7 +49,10 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.AddDevelopmentAuthentication();
-app.UseSerilogRequestLogging();
+if(app.Configuration.GetValue<bool>("AddLogging"))
+{
+    app.UseSerilogRequestLogging();
+}
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));
 app.UseAuthentication();
