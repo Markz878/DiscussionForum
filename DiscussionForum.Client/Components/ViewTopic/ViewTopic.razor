@@ -42,9 +42,7 @@
          <div class="mb-2" />
          @foreach (TopicMessage message in _topic.Messages)
          {
-             <TopicMessageComponent Message="@message" CurrentUserInfo="@_userInfo" EditMessageHandler="@EditMessageHandler"
-                                    DeleteMessageHandler="@ShowDeleteMessageConfirm" AddMessageLikeHandler="@AddMessageLikeHandler"
-                                    DeleteMessageLikeHandler="@DeleteMessageLikeHandler" />
+             <TopicMessageComponent Message="@message" CurrentUserInfo="@_userInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm"/>
          }
           <AuthorizeView>
               <Authorized>

@@ -156,21 +156,6 @@ public sealed partial class ViewTopic : IAsyncDisposable
         await Mediator.Send(new DeleteTopicClientCommand() { TopicId = _topic.Id });
     }
 
-    private async Task EditMessageHandler(EditMessageRequest command)
-    {
-        ArgumentNullException.ThrowIfNull(_topic);
-        if (string.IsNullOrEmpty(command.Message))
-        {
-            return;
-        }
-        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == command.MessageId);
-        if (message is not null)
-        {
-            message.Content = command.Message;
-            await Mediator.Send(new EditMessageClientCommand() { MessageId = command.MessageId, Message = command.Message });
-        }
-    }
-
     private async Task ShowDeleteMessageConfirm(long messageId)
     {
         modalHeader = "Confirm delete";
@@ -185,30 +170,6 @@ public sealed partial class ViewTopic : IAsyncDisposable
         ArgumentNullException.ThrowIfNull(_topic);
         _topic.Messages.RemoveAll(x => x.Id == messageIdToDelete);
         await Mediator.Send(new DeleteMessageClientCommand() { MessageId = messageIdToDelete });
-    }
-
-    private async Task AddMessageLikeHandler(long messageId)
-    {
-        ArgumentNullException.ThrowIfNull(_topic);
-        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == messageId);
-        if (message is not null)
-        {
-            message.HasUserUpvoted = true;
-            message.LikesCount++;
-        }
-        await Mediator.Send(new AddMessageLikeClientCommand() { MessageId = messageId });
-    }
-
-    private async Task DeleteMessageLikeHandler(long messageId)
-    {
-        ArgumentNullException.ThrowIfNull(_topic);
-        TopicMessage? message = _topic.Messages.FirstOrDefault(x => x.Id == messageId);
-        if (message is not null)
-        {
-            message.HasUserUpvoted = false;
-            message.LikesCount--;
-        }
-        await Mediator.Send(new DeleteMessageLikeClientCommand() { MessageId = messageId });
     }
 
     public async ValueTask DisposeAsync()

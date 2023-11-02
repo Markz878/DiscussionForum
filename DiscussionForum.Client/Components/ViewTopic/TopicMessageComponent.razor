@@ -44,6 +44,10 @@
                 </button>
             }
             <span>@Message.LikesCount @(Message.LikesCount == 1 ? "like" : "likes")</span>
+            @if (string.IsNullOrWhiteSpace(errorMessage) is false)
+            {
+                <p class="mx-2 text-red-500">@errorMessage</p>
+            }
         </div>
         @if (Message.AttachedFiles?.Length > 0)
         {
