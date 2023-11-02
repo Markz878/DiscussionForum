@@ -8,8 +8,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="MediatR" Version="12.1.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.11" />
-		<PackageReference Include="FluentValidation" Version="11.7.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.0-rc.2.23480.2" />
+		<PackageReference Include="FluentValidation" Version="11.8.0" />
 	</ItemGroup>
 
 	<ItemGroup>

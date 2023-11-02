@@ -16,13 +16,18 @@ global using Microsoft.AspNetCore.Components.Forms;
 global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 global using System.ComponentModel.DataAnnotations;
 global using System.Net.Http.Json;
+using Microsoft.Extensions.Http.Resilience;
+using Polly;
+using Polly.RateLimiting;
+using System.Net;
 
 WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
-builder.Services.AddHttpClient("Client", config => config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+builder.Services.AddScoped<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
+builder.Services.AddHttpClient("Client", config => config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+    .AddStandardResilienceHandler();
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<Program>());
 builder.Services.AddScoped<IDataFetchQueries, DataFetchClientServices>();
-builder.Services.AddSingleton<RenderLocation, ClientRenderLocation>();
+builder.Services.AddScoped<RenderLocation, ClientRenderLocation>();
 await builder.Build().RunAsync();

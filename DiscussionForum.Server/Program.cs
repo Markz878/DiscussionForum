@@ -58,7 +58,7 @@ app.UseAntiforgery();
 app.UseRateLimiter();
 app.UseOutputCache();
 app.MapAPIEndpoints();
-app.MapHub<TopicHub>("/topichub");
+app.MapHub<TopicHub>("/topichub", options => options.AllowStatefulReconnects = true);
 app.MapHealthChecks("/health");
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()

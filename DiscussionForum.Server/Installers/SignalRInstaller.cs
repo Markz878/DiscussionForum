@@ -11,7 +11,10 @@ public class SignalRInstaller : IInstaller
 
         if (builder.Environment.IsDevelopment())
         {
-            builder.Services.AddSignalR().AddMessagePackProtocol();
+            builder.Services.AddSignalR(o => 
+            {
+                o.EnableDetailedErrors = true; 
+            }).AddMessagePackProtocol();
         }
         else
         {

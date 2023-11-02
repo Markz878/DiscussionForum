@@ -1,0 +1,43 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply m-0 p-0;
+    }
+
+    .center-container {
+        @apply mx-auto max-w-4xl;
+    }
+
+    .action-icon {
+        @apply hover:invert-[.3] dark:invert dark:hover:invert-[0.7];
+    }
+}
+
+@layer components {
+    .btn {
+        @apply rounded border-2 inline-block border-gray-500 py-1 px-2 whitespace-nowrap font-semibold transition-colors focus:border-black focus:outline-none;
+    }
+
+    .btn-small {
+        @apply rounded border-2 inline-block border-gray-500 px-2 whitespace-nowrap transition-colors focus:border-black focus:outline-none;
+    }
+
+    .btn-primary {
+        @apply bg-green-500 border-gray-600 hover:border-black focus:border-black focus:bg-green-600 active:bg-green-700 dark:bg-green-600 dark:hover:border-white dark:focus:border-white dark:focus:bg-green-700 dark:active:bg-green-800 disabled:bg-gray-600;
+    }
+
+    .btn-secondary {
+        @apply bg-neutral-400 border-gray-600 hover:border-black focus:border-black focus:bg-neutral-500 active:bg-neutral-600 dark:bg-neutral-500 dark:hover:border-white dark:focus:border-white dark:focus:bg-neutral-500 dark:active:bg-neutral-600 disabled:bg-gray-600;
+    }
+
+    .form-input {
+        @apply box-border block h-9 w-full rounded-md border-[1px] border-gray-100 bg-clip-padding p-2 leading-6 text-gray-800 shadow transition-colors focus:border-gray-400 dark:bg-gray-900 dark:text-white;
+    }
+
+    .form-input-small {
+        @apply inline-block rounded-md border-[1px] border-gray-100 bg-clip-padding px-1 leading-5 text-gray-800 shadow transition-colors focus:box-border focus:border-gray-400 dark:bg-gray-800 dark:text-white;
+    }
+}
