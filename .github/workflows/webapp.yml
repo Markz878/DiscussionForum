@@ -44,7 +44,7 @@ jobs:
 
       - name: Minify tailwind output
         run: |
-          cd DiscussionForum.Client
+          cd DiscussionForum.Server
           npm install -D tailwindcss
           npx tailwindcss -i Styles/tailwind.css -o wwwroot/css/output.css --minify
 
