@@ -49,7 +49,8 @@ jobs:
           npx tailwindcss -i Styles/tailwind.css -o wwwroot/css/output.css --minify
 
       - name: Run SQL Server in Docker
-        run: cd DiscussionForum.Tests
+        run: |
+            cd DiscussionForum.Tests
             docker build -t discussionforum-db -f SqlServerFtsDockerfile .
             docker run -e "MSSQL_PID=Developer" -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=yourStrong(!)Password" -p 1433:1433 -d discussionforum-db
 
