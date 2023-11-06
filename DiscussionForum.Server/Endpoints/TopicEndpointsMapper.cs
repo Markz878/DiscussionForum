@@ -24,7 +24,7 @@ public static class TopicEndpointsMapper
 
     public static async Task<Results<Ok<GetTopicByIdResult>, NotFound>> GetTopicById(long topicId, ClaimsPrincipal claimsPrincipal, IDataFetchQueries dataFetch, CancellationToken cancellationToken)
     {
-        GetTopicByIdResult? result = await dataFetch.GetTopicById(topicId, claimsPrincipal.GetUserId(), cancellationToken);
+        GetTopicByIdResult? result = await dataFetch.GetTopicById(topicId, claimsPrincipal.TryGetUserId(), cancellationToken);
         return result == null ? TypedResults.NotFound() : TypedResults.Ok(result);
     }
 

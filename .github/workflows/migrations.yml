@@ -16,8 +16,7 @@ on:
   workflow_dispatch:
       
 jobs:
-  build-and-deploy:
-
+  deploy-migration:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout to the branch
@@ -26,7 +25,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.100-rc.2.23502.2'
+          dotnet-version: '8.x'
 
       - name: Azure Login
         uses: azure/login@v1

@@ -23,7 +23,7 @@ on:
   workflow_dispatch:
       
 jobs:
-  build-and-deploy:
+  test-and-publish:
     runs-on: ubuntu-latest
     env:
       AddLogging: false

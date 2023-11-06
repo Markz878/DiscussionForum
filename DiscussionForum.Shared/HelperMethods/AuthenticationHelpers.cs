@@ -7,9 +7,9 @@ namespace DiscussionForum.Shared.HelperMethods;
 
 public static class AuthenticationHelpers
 {
-    public static Guid GetUserId(this ClaimsPrincipal? user)
+    public static Guid GetUserId(this ClaimsPrincipal user)
     {
-        string? userId = user?.FindFirst(ClaimConstants.IdClaimName)?.Value;
+        string? userId = user.FindFirst(ClaimConstants.IdClaimName)?.Value;
         if (string.IsNullOrEmpty(userId))
         {
             throw new ForbiddenException();
@@ -17,15 +17,15 @@ public static class AuthenticationHelpers
         return Guid.Parse(userId);
     }
 
-    public static Guid? TryGetUserId(this ClaimsPrincipal? user)
+    public static Guid? TryGetUserId(this ClaimsPrincipal user)
     {
-        string? userId = user?.FindFirst(ClaimConstants.IdClaimName)?.Value;
+        string? userId = user.FindFirst(ClaimConstants.IdClaimName)?.Value;
         return string.IsNullOrEmpty(userId) ? null : Guid.Parse(userId);
     }
 
-    public static Role GetUserRole(this ClaimsPrincipal? user)
+    public static Role GetUserRole(this ClaimsPrincipal user)
     {
-        string? userRole = user?.FindFirst(ClaimConstants.RoleClaimName)?.Value;
+        string? userRole = user.FindFirst(ClaimConstants.RoleClaimName)?.Value;
         if (string.IsNullOrEmpty(userRole))
         {
             throw new ForbiddenException();
