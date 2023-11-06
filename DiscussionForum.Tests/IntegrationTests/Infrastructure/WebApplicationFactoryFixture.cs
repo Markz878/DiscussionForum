@@ -30,10 +30,10 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
         });
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         DataSeeder.SeedData(Services);
-        return Task.CompletedTask;
+        await Task.Delay(4000);
     }
 
     Task IAsyncLifetime.DisposeAsync()
