@@ -34,6 +34,7 @@ public class AuthorizedBaseTests : BaseTest
 
         await page.GetByRole(AriaRole.Button, new() { Name = "Send" }).ClickAsync();
 
+        await Task.Delay(2000);
         await page.GetByLabel("upvote comment").Nth(1).ClickAsync();
         await page.Locator("div").Filter(new() { HasTextRegex = new Regex("^1 like$") }).GetByAltText("upvote").WaitForAsync();
 
