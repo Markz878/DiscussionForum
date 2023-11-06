@@ -34,18 +34,22 @@ public sealed partial class ViewTopic : IAsyncDisposable
         {
             _topic = await DataFetchQueries.GetTopicById(TopicId, _userInfo.TryGetUserId());
         }
-        if (RenderLocation is ClientRenderLocation)
-        {
-            _hubConnection = BuildHubConnection(Navigation.ToAbsoluteUri("/topichub"));
-            await _hubConnection.StartAsync();
-            await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.JoinTopic), TopicId);
-        }
     }
 
     private Task PersistData()
     {
         PersistentComponentState?.PersistAsJson(nameof(_topic), _topic);
         return Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (RenderLocation is ClientRenderLocation && firstRender)
+        {
+            _hubConnection = BuildHubConnection(Navigation.ToAbsoluteUri("/topichub"));
+            await _hubConnection.StartAsync();
+            await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.JoinTopic), TopicId);
+        }
     }
 
     private HubConnection BuildHubConnection(Uri hubUri, Action<HttpConnectionOptions>? configureHttpConnection = null)
@@ -111,11 +115,6 @@ public sealed partial class ViewTopic : IAsyncDisposable
         });
 
         return hub;
-    }
-
-    private bool CanUserAddComment()
-    {
-        return string.IsNullOrEmpty(_userInfo?.GetUserName()) is false;
     }
 
     private bool CanUserEdit()
