@@ -25,8 +25,9 @@ public static class APIEndpointMapper
             string headers = string.Join("                ", request.Headers.Select(x => x.Key + ": " + x.Value));
             return TypedResults.Ok(headers);
         }).AllowAnonymous();
-        apiGroup.MapGet("claims", (ClaimsPrincipal user) =>
+        apiGroup.MapGet("claims", (ClaimsPrincipal user, ILogger<Program> logger) =>
         {
+            logger.LogWarning("REQUESTING CLAIMS");
             string claims = string.Join("                ", user.Claims.Select(x => x.Type + ": " + x.Value));
             return TypedResults.Ok(claims);
         });

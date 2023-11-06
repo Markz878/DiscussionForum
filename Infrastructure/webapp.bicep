@@ -6,7 +6,6 @@ param containerAppEnvironmentName string = 'cae-${solutionName}'
 param storageName string = 'st${solutionName}'
 param sqlServerName string = 'sql-${solutionName}'
 param databaseName string = 'sqldb-${solutionName}'
-param signalRName string = 'sigr-${solutionName}'
 param appName string = solutionName
 param imageTag string
 param oidcClientId string
@@ -33,10 +32,6 @@ resource webappIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-0
 
 resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' existing = {
     name: sqlServerName
-}
-
-resource signalR 'Microsoft.SignalRService/signalR@2022-02-01' existing = {
-    name: signalRName
 }
 
 resource webApp 'Microsoft.App/containerApps@2023-05-01' = {
