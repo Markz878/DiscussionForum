@@ -36,8 +36,7 @@ jobs:
 
       - name: Set runner IP variable
         run: |
-            ip=$(curl -s https://api.ipify.org/)
-            echo $ip
+            echo "ip=$(curl -s https://api.ipify.org/)" >> $GITHUB_ENV
 
       - name: Add firewall rule
         run: |
