@@ -7,7 +7,10 @@ public class SignalRInstaller : IInstaller
     public void Install(WebApplicationBuilder builder)
     {
         builder.Services.AddResponseCompression(opts =>
-            opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));
+        {
+            opts.EnableForHttps = true;
+            opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+        });
 
         if (builder.Environment.IsDevelopment())
         {

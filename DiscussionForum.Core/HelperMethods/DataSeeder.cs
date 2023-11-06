@@ -5,13 +5,13 @@ namespace DiscussionForum.Core.HelperMethods;
 
 public static class DataSeeder
 {
-    public static void SeedData(this IServiceProvider serviceProvider,
-                                      int topicMinCount = 80,
-                                      int topicMaxCount = 80,
-                                      int messageMinCount = 1,
-                                      int messageMaxCount = 50,
-                                      int attachedFileMinCount = 0,
-                                      int attachedFileMaxCount = 4)
+    public static void SeedData(IServiceProvider serviceProvider,
+                                int topicMinCount = 80,
+                                int topicMaxCount = 80,
+                                int messageMinCount = 1,
+                                int messageMaxCount = 50,
+                                int attachedFileMinCount = 0,
+                                int attachedFileMaxCount = 4)
     {
         IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
         if (configuration["SeedDatabase"] != "true")
@@ -20,8 +20,12 @@ public static class DataSeeder
         }
         using IServiceScope scope = serviceProvider.CreateScope();
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        if (db.Database.GetConnectionString()?.Contains("test", StringComparison.OrdinalIgnoreCase) == false)
+        {
+            return;
+        }
         db.Database.EnsureDeleted();
-        db.Database.EnsureCreated();
+        db.Database.Migrate();
         db.Users.Add(Fakers.Admin);
         db.Users.Add(Fakers.User);
         db.SaveChanges();

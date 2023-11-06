@@ -17,15 +17,17 @@ global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 global using System.ComponentModel.DataAnnotations;
 global using System.Net.Http.Json;
 using Microsoft.Extensions.Http.Resilience;
-using Polly;
-using Polly.RateLimiting;
-using System.Net;
+using System.Net.Http.Headers;
 
 WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
-builder.Services.AddHttpClient("Client", config => config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+builder.Services.AddHttpClient("Client", config =>
+    { 
+        config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress); 
+        config.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("br"));
+    })
     .AddStandardResilienceHandler();
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<Program>());
 builder.Services.AddScoped<IDataFetchQueries, DataFetchClientServices>();
