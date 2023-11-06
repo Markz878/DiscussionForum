@@ -54,7 +54,11 @@ public sealed partial class ViewTopic : IAsyncDisposable
 
     private HubConnection BuildHubConnection(Uri hubUri, Action<HttpConnectionOptions>? configureHttpConnection = null)
     {
-        HubConnection hub = new HubConnectionBuilder().WithUrl(hubUri, configureHttpConnection ?? (_ => { })).WithAutomaticReconnect().Build();
+        HubConnection hub = new HubConnectionBuilder()
+            .WithUrl(hubUri, configureHttpConnection ?? (_ => { }))
+            .AddMessagePackProtocol()
+            .WithAutomaticReconnect()
+            .Build();
 
         hub.On<string>(nameof(ITopicHubNotifications.TopicTitleEdited), (title) =>
         {
