@@ -8,16 +8,13 @@ public class SignalRInstaller : IInstaller
     {
         builder.Services.AddResponseCompression(opts =>
         {
-            opts.EnableForHttps = true;
             opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
         });
 
         if (builder.Environment.IsDevelopment())
         {
-            builder.Services.AddSignalR(o => 
-            {
-                o.EnableDetailedErrors = true; 
-            }).AddMessagePackProtocol();
+            builder.Services.AddSignalR(o => o.EnableDetailedErrors = true)
+                .AddMessagePackProtocol();
         }
         else
         {

@@ -2,32 +2,33 @@
 
 <PageTitle>Create Topic</PageTitle>
 
-<h3 class="font-bold text-2xl text-center">Create New Topic</h3>
-
-@if (AddTopicModel is not null)
-{
-    <div class="flex justify-center">
-        <EditForm Model="AddTopicModel" OnValidSubmit="SubmitAddTopic" FormName="CreateTopic" Enhance class="max-w-[30rem] w-full">
-             <DataAnnotationsValidator />
-             <ValidationSummary />
-             <p class="my-2">
-                 <label class="block text-lg" for="title">Title:</label>
-                 <InputText id="title" @bind-Value="AddTopicModel.Title" required minlength="@ValidationConstants.TopicTitleMinLength" maxlength="@ValidationConstants.TopicTitleMaxLength" class="form-input" />
-             </p>
-             <p class="my-2">
-                 <label class="block text-lg" for="first-message">Content:</label>
-                 <InputTextArea id="first-message" @bind-Value="AddTopicModel.FirstMessage" required
-                                maxlength="@ValidationConstants.MessageContentMaxLength" class="form-input h-20" />
-             </p>
-             <p>
-                 <label class="block" for="attached-files">Files:</label>
-                 <input type="file" id="attached-files" multiple class="text-white my-2 max-w-full" name="AddTopicModel.Files" />
-             </p>
-             <button type="submit" class="btn btn-primary my-2">Submit</button>
-             <a href="/" class="btn btn-secondary my-2">Back</a>
-         </EditForm>
-     </div>
-}
+<div class="flex justify-center m-4">
+    @if (AddTopicModel is not null)
+    {
+        <div class="w-full max-w-lg">
+            <h3 class="font-bold text-2xl mb-2">Create New Topic</h3>
+            <EditForm Model="AddTopicModel" OnValidSubmit="SubmitAddTopic" FormName="CreateTopic" Enhance class="w-full block">
+                 <DataAnnotationsValidator />
+                 <ValidationSummary />
+                 <p class="my-2">
+                     <label class="block text-lg" for="title">Title:</label>
+                     <InputText id="title" @bind-Value="AddTopicModel.Title" required minlength="@ValidationConstants.TopicTitleMinLength" maxlength="@ValidationConstants.TopicTitleMaxLength" class="form-input" />
+                 </p>
+                 <p class="my-2">
+                     <label class="block text-lg" for="first-message">Content:</label>
+                     <InputTextArea id="first-message" @bind-Value="AddTopicModel.FirstMessage" required
+                                    maxlength="@ValidationConstants.MessageContentMaxLength" class="form-input h-20" />
+                 </p>
+                 <p>
+                     <label class="block" for="attached-files">Files:</label>
+                     <input type="file" id="attached-files" multiple class="text-white my-2 max-w-full" name="AddTopicModel.Files" />
+                 </p>
+                 <button type="submit" class="btn btn-primary my-2">Submit</button>
+                 <a href="/" class="btn btn-secondary my-2">Back</a>
+             </EditForm>
+         </div>
+    }
+</div>
 @if (string.IsNullOrWhiteSpace(_errorMessage) is false)
 {
     <p class="text-red-400">@_errorMessage</p>
