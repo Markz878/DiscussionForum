@@ -14,10 +14,9 @@ public class ExceptionFilter : IEndpointFilter
 
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        _logger.LogWarning("GOT REQUEST in path {Path}", context.HttpContext.Request.Path);
-        Log.Information("INFO");
-        Log.Warning("WARN");
-        Log.Error("ERROR");
+        _logger.LogInformation("GOT INFO REQUEST in path {Path}", context.HttpContext.Request.Path);
+        _logger.LogWarning("GOT WARN REQUEST in path {Path}", context.HttpContext.Request.Path);
+        _logger.LogError("GOT ERROR REQUEST in path {Path}", context.HttpContext.Request.Path);
         try
         {
             return await next(context);

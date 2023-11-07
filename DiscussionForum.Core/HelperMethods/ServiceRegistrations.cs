@@ -17,10 +17,7 @@ public static class ServiceRegistrations
         services.AddDbContext<AppDbContext>(x =>
         {
             x.UseSqlServer(configuration.GetConnectionString("SqlServer"), o => o.EnableRetryOnFailure(3));
-            if (isDevelopment)
-            {
-                x.EnableSensitiveDataLogging();
-            }
+            x.EnableSensitiveDataLogging();
             x.EnableDetailedErrors();
         }, ServiceLifetime.Transient);
         if (!isDevelopment)

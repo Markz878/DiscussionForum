@@ -15,7 +15,6 @@ global using Microsoft.AspNetCore.Components.Authorization;
 global using Microsoft.AspNetCore.Http.HttpResults;
 global using Microsoft.AspNetCore.SignalR;
 global using Microsoft.OpenApi.Models;
-global using Serilog;
 global using System.Security.Claims;
 using DiscussionForum.Server.Endpoints;
 using DiscussionForum.Server.Installers;
@@ -44,13 +43,8 @@ else
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.AddDevelopmentAuthentication();
-if(app.Configuration.GetValue<bool>("AddLogging"))
-{
-    app.UseSerilogRequestLogging();
-}
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));
 app.UseAuthentication();
