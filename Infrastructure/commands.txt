@@ -6,5 +6,5 @@ ALTER ROLE db_datawriter ADD MEMBER [discussionforum-identity];
 
 az containerapp logs show -n discussionforum -g rg-DiscussionForum --follow
 
-cd DiscussionForum\DiscussionForum.TestE2E\bin\Debug\net7.0
+cd DiscussionForum\DiscussionForum.TestE2E\bin\Debug\net8.0
 pwsh playwright.ps1 codegen
