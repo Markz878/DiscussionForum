@@ -8,17 +8,17 @@ public static class APIEndpointMapper
     public static void MapAPIEndpoints(this WebApplication app)
     {
         RouteGroupBuilder apiGroup = app.MapGroup("api")
-            .RequireAuthorization()
-            .AddEndpointFilter<ExceptionFilter>()
-            .AddFluentValidation()
-            .RequireRateLimiting(RateLimitInstaller.PolicyName)
-            .CacheOutput()
+            //.RequireAuthorization()
+            //.AddEndpointFilter<ExceptionFilter>()
+            //.AddFluentValidation()
+            //.RequireRateLimiting(RateLimitInstaller.PolicyName)
+            //.CacheOutput()
             ;
 
-        apiGroup.MapMessageLikesEndpoints();
-        apiGroup.MapTopicEndpoints();
-        apiGroup.MapMessageEndpoints();
-        apiGroup.MapFileRetrievalEndpoint();
+        //apiGroup.MapMessageLikesEndpoints();
+        //apiGroup.MapTopicEndpoints();
+        //apiGroup.MapMessageEndpoints();
+        //apiGroup.MapFileRetrievalEndpoint();
 
         apiGroup.MapGet("headers", (HttpRequest request) =>
         {

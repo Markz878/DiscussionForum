@@ -22,12 +22,13 @@ using DiscussionForum.Server.Installers;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveWebAssemblyComponents();
+//builder.Services.AddRazorComponents()
+//    .AddInteractiveWebAssemblyComponents();
 
-builder.InstallAssemblyServices();
-builder.Services.AddSingleton<RenderLocation, ServerRenderLocation>();
-
+//builder.InstallAssemblyServices();
+//builder.Services.AddSingleton<RenderLocation, ServerRenderLocation>();
+builder.Services
+    .AddHealthChecks();
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -45,19 +46,16 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.AddDevelopmentAuthentication();
-app.UseSwagger();
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseAntiforgery();
-app.UseRateLimiter();
-app.UseOutputCache();
+//app.UseSwagger();
+//app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));
+//app.UseAuthentication();
+//app.UseAuthorization();
 app.MapAPIEndpoints();
-app.MapHub<TopicHub>("/topichub", options => options.AllowStatefulReconnects = true);
+//app.MapHub<TopicHub>("/topichub", options => options.AllowStatefulReconnects = true);
 app.MapHealthChecks("/health");
-app.MapRazorComponents<App>()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(DiscussionForum.Client._Imports).Assembly);
+//app.MapRazorComponents<App>()
+//    .AddInteractiveWebAssemblyRenderMode()
+//    .AddAdditionalAssemblies(typeof(DiscussionForum.Client._Imports).Assembly);
 
 app.Run();
 
