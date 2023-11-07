@@ -103,17 +103,46 @@ resource webApp 'Microsoft.App/containerApps@2023-05-01' = {
                             value: imageTag
                         }
                     ]
+                    probes: [
+                        {
+                            type: 'Liveness'
+                            initialDelaySeconds: 15
+                            failureThreshold: 3
+                            timeoutSeconds: 15
+                            httpGet: {
+                                port: 80
+                                path: '/health'
+                            }
+                        }
+                        {
+                            type: 'Startup'
+                            timeoutSeconds: 15
+                            httpGet: {
+                                port: 80
+                                path: '/health'
+                            }
+                        }
+                        {
+                            type: 'Readiness'
+                            timeoutSeconds: 15
+                            initialDelaySeconds: 15
+                            httpGet: {
+                                port: 80
+                                path: '/health'
+                            }
+                        }
+                    ]
                 }
             ]
             scale: {
                 minReplicas: 0
-                maxReplicas: 1
+                maxReplicas: 2
                 rules: [
                     {
                         name: 'http-scale-rule'
                         http: {
                             metadata: {
-                                concurrentRequests: '1'
+                                concurrentRequests: '10'
                             }
                         }
                     }
