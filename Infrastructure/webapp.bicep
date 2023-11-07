@@ -98,6 +98,10 @@ resource webApp 'Microsoft.App/containerApps@2023-05-01' = {
                             name: 'Azure__SignalR__ConnectionString'
                             value: 'Endpoint=https://sigr-discussionforum.service.signalr.net;AuthType=azure.msi;ClientId=${webappIdentity.properties.clientId};Version=1.0;'
                         }
+                        {
+                            name: 'Version'
+                            value: imageTag
+                        }
                     ]
                     probes: [
                         {

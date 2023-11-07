@@ -31,5 +31,7 @@ public static class APIEndpointMapper
             string claims = string.Join("                ", user.Claims.Select(x => x.Type + ": " + x.Value));
             return TypedResults.Ok(claims);
         });
+        apiGroup.MapGet("version", (IConfiguration configuration) => configuration["Version"])
+            .AllowAnonymous();
     }
 }
