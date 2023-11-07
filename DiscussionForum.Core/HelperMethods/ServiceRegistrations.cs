@@ -2,6 +2,7 @@
 using Azure.Storage.Blobs;
 using DiscussionForum.Core.Services;
 using DiscussionForum.Shared.Interfaces;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +30,7 @@ public static class ServiceRegistrations
         {
             services.AddSingleton(new BlobServiceClient("DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"));
         }
+        services.AddDataProtection().PersistKeysToDbContext<AppDbContext>();
         services.AddSingleton<IFileService, AzureBlobStorageService>();
         return services;
     }
