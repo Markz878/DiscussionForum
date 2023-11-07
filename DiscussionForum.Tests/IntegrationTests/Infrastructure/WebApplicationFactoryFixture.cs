@@ -33,7 +33,7 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
     public async Task InitializeAsync()
     {
         DataSeeder.SeedData(Services);
-        await Task.Delay(4000);
+        await Task.Delay(5000);
     }
 
     Task IAsyncLifetime.DisposeAsync()
