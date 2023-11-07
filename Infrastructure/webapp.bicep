@@ -103,34 +103,6 @@ resource webApp 'Microsoft.App/containerApps@2023-05-01' = {
                             value: imageTag
                         }
                     ]
-                    probes: [
-                        {
-                            type: 'Liveness'
-                            initialDelaySeconds: 15
-                            periodSeconds: 30
-                            failureThreshold: 3
-                            timeoutSeconds: 1
-                            httpGet: {
-                                port: 80
-                                path: '/health'
-                            }
-                        }
-                        {
-                            type: 'Startup'
-                            timeoutSeconds: 2
-                            httpGet: {
-                                port: 80
-                                path: '/health'
-                            }
-                        }
-                        {
-                            type: 'Readiness'
-                            httpGet: {
-                                port: 80
-                                path: '/health'
-                            }
-                        }
-                    ]
                 }
             ]
             scale: {
