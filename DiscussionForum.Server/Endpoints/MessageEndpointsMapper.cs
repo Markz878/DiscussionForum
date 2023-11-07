@@ -11,7 +11,8 @@ public static class MessageEndpointsMapper
 {
     public static void MapMessageEndpoints(this RouteGroupBuilder builder)
     {
-        RouteGroupBuilder accountGroup = builder.MapGroup("messages");
+        RouteGroupBuilder accountGroup = builder.MapGroup("messages")
+            .WithTags("Messages");
 
         accountGroup.MapPost("", AddMessage).Accepts<AddMessageBinder>("multipart/form-data");
         accountGroup.MapDelete("{messageId:long}", DeleteMessage);
@@ -58,6 +59,7 @@ public static class MessageEndpointsMapper
         }
         DeleteMessageCommand deleteMessage = new()
         {
+            TopicId = topicIdResult.TopicId,
             MessageId = messageId,
             UserId = claimsPrincipal.GetUserId(),
             UserRole = claimsPrincipal.GetUserRole(),

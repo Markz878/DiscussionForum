@@ -5,6 +5,7 @@ public partial class TopicMessageComponent
     [Inject] public required IMediator Mediator { get; set; }
     [Parameter][EditorRequired] public required TopicMessage Message { get; init; }
     [Parameter][EditorRequired] public required UserInfo CurrentUserInfo { get; init; }
+    [Parameter] public bool CanDelete { get; init; } = true;
     [Parameter][EditorRequired] public required EventCallback<long> DeleteMessageHandler { get; init; }
 
     private bool _isEditing;

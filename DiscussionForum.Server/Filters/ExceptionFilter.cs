@@ -14,11 +14,12 @@ public class ExceptionFilter : IEndpointFilter
 
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
+        _logger.LogWarning("GOT REQUEST in path {Path}", context.HttpContext.Request.Path);
         try
         {
             return await next(context);
         }
-        catch (UserNameTakenException ex)
+        catch (BusinessException ex)
         {
             return TypedResults.BadRequest(ex.Message);
         }

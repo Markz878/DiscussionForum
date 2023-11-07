@@ -1,5 +1,6 @@
 using DiscussionForum.Core.Features.Users;
 using DiscussionForum.Shared.DTO.Users;
+using EntityFramework.Exceptions.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace DiscussionForum.Server.Components.Pages;
@@ -31,7 +32,7 @@ public partial class SetUserName
                 Navigation.NavigateTo("/");
             }
         }
-        catch (UserNameTakenException)
+        catch (UniqueConstraintException)
         {
             _errorMessage = "Username is already taken, try another one.";
         }

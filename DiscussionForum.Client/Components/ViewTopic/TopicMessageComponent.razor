@@ -14,21 +14,24 @@
         {
             <div class="flex order-1 ml-auto">
                 <button type="button" class="mx-1" @onclick="StartMessageEdit"><img src="icons/edit.svg" alt="edit" width="15" class="action-icon" /></button>
-                <button type="button" class="mx-1" @onclick="ClickDelete"><img src="icons/delete.svg" alt="delete" width="14" class="action-icon" /></button>
+                @if (CanDelete)
+                {
+                    <button type="button" class="mx-1" @onclick="ClickDelete"><img src="icons/delete.svg" alt="delete" width="14" class="action-icon" /></button>
+                }
             </div>
         }
     </div>
     @if (_isEditing)
     {
         <EditForm Model="_editingMessage" OnValidSubmit="SubmitMessageEdit" FormName="EditMessage" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <InputTextArea @bind-Value=_editingMessage.Message class="bg-transparent my-2 w-full max-h-80 min-h-[2rem]" />
-            <div class="flex">
-                <button class="btn-small btn-primary mr-1" type="submit">Submit</button>
-                <button type="button" class="btn-small btn-secondary mx-1" @onclick="CancelMessageEdit">Cancel</button>
-            </div>
-        </EditForm>
+         <DataAnnotationsValidator />
+         <ValidationSummary />
+         <InputTextArea @bind-Value=_editingMessage.Message class="bg-transparent my-2 w-full max-h-80 min-h-[2rem]" />
+         <div class="flex">
+             <button class="btn-small btn-primary mr-1" type="submit">Submit</button>
+             <button type="button" class="btn-small btn-secondary mx-1" @onclick="CancelMessageEdit">Cancel</button>
+         </div>
+     </EditForm>
     }
     else
     {

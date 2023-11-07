@@ -17,7 +17,7 @@
              }
              else
              {
-                 <h1 class="font-bold text-2xl">@_topic.Title</h1>
+                <h1 class="font-bold text-lg sm:text-2xl">@_topic.Title</h1>
                  @if (CanUserEdit())
                  {
                      <div class="flex">
@@ -42,7 +42,8 @@
 
          <div class="h-[1px] w-full bg-gray-400" />
          <div class="mb-2" />
-         @foreach (TopicMessage message in _topic.Messages)
+        <TopicMessageComponent Message="@_topic.Messages[0]" CanDelete=false CurrentUserInfo="@_userInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
+         @foreach (TopicMessage message in _topic.Messages.Skip(1))
          {
              <TopicMessageComponent Message="@message" CurrentUserInfo="@_userInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm"/>
          }

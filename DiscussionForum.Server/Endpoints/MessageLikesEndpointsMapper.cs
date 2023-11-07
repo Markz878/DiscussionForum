@@ -7,7 +7,8 @@ public static class MessageLikesEndpointsMapper
 {
     public static void MapMessageLikesEndpoints(this RouteGroupBuilder builder)
     {
-        RouteGroupBuilder accountGroup = builder.MapGroup("messagelikes");
+        RouteGroupBuilder accountGroup = builder.MapGroup("messagelikes")
+            .WithTags("Message likes");
 
         accountGroup.MapPost("{messageid:long}", AddMessageLike);
         accountGroup.MapDelete("{messageid:long}", DeleteMessageLike);

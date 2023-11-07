@@ -8,7 +8,8 @@ public static class TopicEndpointsMapper
 {
     public static void MapTopicEndpoints(this RouteGroupBuilder routeBuilder)
     {
-        RouteGroupBuilder topicGroup = routeBuilder.MapGroup("topics");
+        RouteGroupBuilder topicGroup = routeBuilder.MapGroup("topics")
+            .WithTags("Topics");
 
         topicGroup.MapGet("latest/{page:int}", ListLatestTopics).AllowAnonymous();
         topicGroup.MapGet("{topicId:long}", GetTopicById).AllowAnonymous();

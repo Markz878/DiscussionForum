@@ -6,7 +6,9 @@ public static class FileEndpointsMapper
 {
     public static void MapFileRetrievalEndpoint(this RouteGroupBuilder builder)
     {
-        RouteGroupBuilder accountGroup = builder.MapGroup("download").AllowAnonymous();
+        RouteGroupBuilder accountGroup = builder.MapGroup("download")
+            .WithTags("File retrieval")
+            .AllowAnonymous();
 
         accountGroup.MapGet("{id:guid}", Download);
     }

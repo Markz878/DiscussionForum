@@ -1,16 +1,16 @@
 ﻿namespace DiscussionForum.Core.Features.Messages;
 
-public record class GetFileNameByIdQuery : IRequest<GetFileNameByIdResult>
+public sealed record GetFileNameByIdQuery : IRequest<GetFileNameByIdResult>
 {
     public required Guid Id { get; init; }
 }
 
-public record class GetFileNameByIdResult
+public sealed record GetFileNameByIdResult
 {
     public required string FileName { get; init; }
 }
 
-internal class GetFileNameByIdQueryHandler : IRequestHandler<GetFileNameByIdQuery, GetFileNameByIdResult?>
+internal sealed class GetFileNameByIdQueryHandler : IRequestHandler<GetFileNameByIdQuery, GetFileNameByIdResult?>
 {
     private readonly AppDbContext db;
 

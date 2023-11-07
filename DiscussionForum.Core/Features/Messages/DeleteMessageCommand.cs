@@ -4,6 +4,7 @@ namespace DiscussionForum.Core.Features.Messages;
 
 public sealed record DeleteMessageCommand : IRequest
 {
+    public required long TopicId { get; init; }
     public required long MessageId { get; init; }
     public Guid UserId { get; set; }
     public Role UserRole { get; set; }
@@ -31,8 +32,21 @@ internal class DeleteMessageHandler : IRequestHandler<DeleteMessageCommand>
         {
             throw new ForbiddenException();
         }
+        if (await CheckIfFirstMessage(request.TopicId, request.MessageId))
+        {
+            throw new BusinessException("Can't delete topic's first message.");
+        }
         await DeleteMessageFiles(request, cancellationToken);
         await DeleteMessage(request, cancellationToken);
+    }
+
+    private async Task<bool> CheckIfFirstMessage(long topicId, long messageId)
+    {
+        long x = await _db.Topics
+            .Where(x => x.Id == topicId)
+            .Select(x => x.Messages.OrderBy(x => x.CreatedAt).First().Id)
+            .SingleAsync();
+        return x == messageId;
     }
 
     private async Task DeleteMessageFiles(DeleteMessageCommand request, CancellationToken cancellationToken)
@@ -46,6 +60,6 @@ internal class DeleteMessageHandler : IRequestHandler<DeleteMessageCommand>
 
     private async Task DeleteMessage(DeleteMessageCommand request, CancellationToken cancellationToken)
     {
-        await _db.Messages.Where(x => x.Id == request.MessageId && x.UserId == request.UserId).ExecuteDeleteAsync(cancellationToken);
+        await _db.Messages.Where(x => x.Id == request.MessageId).ExecuteDeleteAsync(cancellationToken);
     }
 }

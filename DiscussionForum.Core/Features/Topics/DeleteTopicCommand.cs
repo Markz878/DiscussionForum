@@ -2,7 +2,7 @@
 
 namespace DiscussionForum.Core.Features.Topics;
 
-public class DeleteTopicCommand : IRequest
+public sealed record DeleteTopicCommand : IRequest
 {
     public long TopicId { get; init; }
     public Guid UserId { get; init; }

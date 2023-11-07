@@ -56,7 +56,7 @@ public class AuthorizedBaseTests : BaseTest
         await page.GetByRole(AriaRole.Button, new() { Name = "Cancel" }).ClickAsync();
         await page.GetByText("Let me edit more content").WaitForAsync();
 
-        await page.GetByRole(AriaRole.Button, new() { Name = "delete" }).Nth(1).ClickAsync();
+        await page.GetByRole(AriaRole.Button, new() { Name = "delete" }).Nth(0).ClickAsync();
 
         await page.GetByRole(AriaRole.Button, new() { Name = "Confirm" }).ClickAsync();
 
