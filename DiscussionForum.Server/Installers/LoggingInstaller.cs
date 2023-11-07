@@ -7,11 +7,8 @@ public class LoggingInstaller : IInstaller
         builder.Logging.ClearProviders();
         if (builder.Configuration.GetValue<bool>("AddLogging"))
         {
-            if (builder.Environment.IsProduction())
-            {
-                builder.Services.AddApplicationInsightsTelemetry();
-                builder.Logging.AddApplicationInsights();
-            }
+            builder.Services.AddApplicationInsightsTelemetry();
+            builder.Logging.AddApplicationInsights();
             builder.Logging.AddConsole();
         }
     }

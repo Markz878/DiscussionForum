@@ -48,26 +48,26 @@ jobs:
           npm install -D tailwindcss
           npx tailwindcss -i Styles/tailwind.css -o wwwroot/css/output.css --minify
 
-      # - name: Run SQL Server in Docker
-      #   run: |
-      #       cd DiscussionForum.Tests
-      #       docker build -t discussionforum-db -f SqlServerFtsDockerfile .
-      #       docker run -e "MSSQL_PID=Developer" -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=yourStrong(!)Password" -p 1433:1433 -d discussionforum-db
+      - name: Run SQL Server in Docker
+        run: |
+            cd DiscussionForum.Tests
+            docker build -t discussionforum-db -f SqlServerFtsDockerfile .
+            docker run -e "MSSQL_PID=Developer" -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=yourStrong(!)Password" -p 1433:1433 -d discussionforum-db
 
-      # - name: Run Azurite in Docker
-      #   run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
+      - name: Run Azurite in Docker
+        run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
 
-      # - name: Run Tests
-      #   run: dotnet test DiscussionForum.Tests -c Release
+      - name: Run Tests
+        run: dotnet test DiscussionForum.Tests -c Release
 
-      # - name: Setup Playwright
-      #   run: |
-      #       dotnet build DiscussionForum.TestE2E -c Release
-      #       pwsh DiscussionForum.TestE2E/bin/Release/net8.0/playwright.ps1 install
+      - name: Setup Playwright
+        run: |
+            dotnet build DiscussionForum.TestE2E -c Release
+            pwsh DiscussionForum.TestE2E/bin/Release/net8.0/playwright.ps1 install
 
-      # - name: Run E2E Tests
-      #   continue-on-error: true
-      #   run: dotnet test DiscussionForum.TestE2E -c Release
+      - name: Run E2E Tests
+        continue-on-error: true
+        run: dotnet test DiscussionForum.TestE2E -c Release
 
       - name: Azure Login
         uses: azure/login@v1
