@@ -21,15 +21,15 @@ public static class ServiceRegistrations
             x.EnableSensitiveDataLogging();
             x.EnableDetailedErrors();
         }, ServiceLifetime.Transient);
-        if (!isDevelopment)
-        {
-            ManagedIdentityCredential credential = new(configuration["ManagedIdentityId"]);
-            services.AddSingleton(new BlobServiceClient(new Uri(configuration["FileStorageSettings:StorageUri"] ?? throw new ArgumentNullException("StorageUri configuration value")), credential));
-        }
-        else
-        {
+        //if (!isDevelopment)
+        //{
+        //    ManagedIdentityCredential credential = new(configuration["ManagedIdentityId"]);
+        //    services.AddSingleton(new BlobServiceClient(new Uri(configuration["FileStorageSettings:StorageUri"] ?? throw new ArgumentNullException("StorageUri configuration value")), credential));
+        //}
+        //else
+        //{
             services.AddSingleton(new BlobServiceClient("DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"));
-        }
+        //}
         services.AddDataProtection().PersistKeysToDbContext<AppDbContext>();
         services.AddSingleton<IFileService, AzureBlobStorageService>();
         return services;
