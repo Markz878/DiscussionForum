@@ -5,7 +5,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
-
+builder.Services.AddHealthChecks();
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,5 +28,5 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(DiscussionForum.Client._Imports).Assembly);
-
+app.MapHealthChecks("/health");
 app.Run();
