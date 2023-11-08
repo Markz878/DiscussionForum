@@ -11,16 +11,14 @@ public static class ServiceRegistrations
 {
     public static IServiceCollection RegisterCoreServices(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {
-        services.AddValidatorsFromAssemblyContaining<SharedAssemblyMarker>(ServiceLifetime.Singleton);
-        services.AddValidatorsFromAssemblyContaining<AppDbContext>(ServiceLifetime.Singleton);
-        services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<AppDbContext>());
-        services.AddScoped<IDataFetchQueries, DataFetchServices>();
+        //services.AddValidatorsFromAssemblyContaining<SharedAssemblyMarker>(ServiceLifetime.Singleton);
+        //services.AddValidatorsFromAssemblyContaining<AppDbContext>(ServiceLifetime.Singleton);
+        //services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<AppDbContext>());
+        //services.AddScoped<IDataFetchQueries, DataFetchServices>();
         services.AddDbContext<AppDbContext>(x =>
         {
-            x.UseSqlServer(configuration.GetConnectionString("SqlServer"), o => o.EnableRetryOnFailure(3));
-            x.EnableSensitiveDataLogging();
-            x.EnableDetailedErrors();
-        }, ServiceLifetime.Transient);
+            x.UseSqlServer(configuration.GetConnectionString("SqlServer"));
+        });
         //if (!isDevelopment)
         //{
         //    ManagedIdentityCredential credential = new(configuration["ManagedIdentityId"]);
@@ -28,10 +26,10 @@ public static class ServiceRegistrations
         //}
         //else
         //{
-            services.AddSingleton(new BlobServiceClient("DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"));
+            //services.AddSingleton(new BlobServiceClient("DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"));
         //}
         services.AddDataProtection().PersistKeysToDbContext<AppDbContext>();
-        services.AddSingleton<IFileService, AzureBlobStorageService>();
+        //services.AddSingleton<IFileService, AzureBlobStorageService>();
         return services;
     }
 }

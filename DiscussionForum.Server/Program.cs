@@ -1,4 +1,8 @@
 using DiscussionForum.Server.Components;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Configuration;
+using System;
+using DiscussionForum.Core.HelperMethods;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +10,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddHealthChecks();
+builder.Services.RegisterCoreServices(builder.Configuration, builder.Environment.IsDevelopment());
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -19,8 +25,6 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
