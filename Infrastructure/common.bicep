@@ -139,7 +139,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
         accessTier: 'Cool'
     }
 }
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01' = {
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
     parent: storageAccount
     name: 'default'
     properties: {
@@ -149,7 +149,7 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01'
         isVersioningEnabled: false
     }
 }
-resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-05-01' = {
+resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
     parent: blobService
     name: 'files'
     properties: {

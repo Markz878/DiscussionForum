@@ -27,8 +27,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 //builder.InstallAssemblyServices();
 //builder.Services.AddSingleton<RenderLocation, ServerRenderLocation>();
-builder.Services
-    .AddHealthChecks();
+builder.Services.AddHealthChecks();
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,7 +42,7 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.AddDevelopmentAuthentication();
 //app.UseSwagger();
