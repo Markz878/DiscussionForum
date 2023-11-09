@@ -1,0 +1,3 @@
+﻿#profile-btn:checked ~ #profile-menu {
+    display: block; /* Show the div when the checkbox is checked */
+}

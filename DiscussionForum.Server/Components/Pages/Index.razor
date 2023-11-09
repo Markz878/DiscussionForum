@@ -1,0 +1,44 @@
+﻿@page "/{pagenumber:int?}"
+
+<PageTitle>Discussion Forum</PageTitle>
+
+<div class="p-4 center-container">
+    <div class="sm:grid grid-cols-2 grid-rows mb-4">
+        <h1 class="font-bold text-2xl mb-2 sm:mb-0 text-center justify-self-end">Topics</h1>
+        <AuthorizeView>
+            <Authorized>
+                <a href="/createtopic" class="btn btn-primary block mx-auto sm:mx-0 justify-self-end text-center">
+                    Create new topic
+                </a>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+    @if (SearchText is not null)
+    {
+        <EditForm class="flex" Model="@SearchText" OnSubmit="@SearchTopics" FormName="SearchTopics" Enhance>
+           <label for="search" class="sr-only">Search</label>
+           <InputText type="text" id="search" placeholder="Search" class="form-input" @bind-Value="SearchText.Text" />
+           <button type="submit" class="btn btn-primary ml-1">Search</button>
+        </EditForm>
+    }
+
+    @if (_topicsResult is not null)
+    {
+        <TopicsListing Topics="_topicsResult.Topics" />
+
+        <div class="flex justify-around items-center">
+            <a href="@GetUrl(0)" class="p-2 @(CanShowPreviousPageLink() ? "" : "collapse")">
+                <img src="icons/first.svg" alt="First page" class="h-6 dark:invert" />
+            </a>
+            <a href="@GetUrl(_pageNumber-1)" class="p-2 @(CanShowPreviousPageLink() ? "" : "collapse")">
+                <img src="icons/previous.svg" alt="Previous page" class="h-5 dark:invert" />
+            </a>
+            <a href="@GetUrl(_pageNumber+1)" class="p-2 @(CanShowNextPageLink() ? "" : "collapse")">
+                <img src="icons/next.svg" alt="Next page" class="h-5 dark:invert" />
+            </a>
+            <a href="@GetUrl(_topicsResult?.PageCount ?? 0)" class="p-2 @(CanShowNextPageLink() ? "" : "collapse")">
+                <img src="icons/last.svg" alt="Last page" class="h-6 dark:invert" />
+            </a>
+        </div>
+    }
+</div>

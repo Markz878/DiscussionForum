@@ -10,6 +10,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DiscussionForum.Server/DiscussionForum.Server.csproj", "DiscussionForum.Server/"]
+COPY ["DiscussionForum.Core/DiscussionForum.Core.csproj", "DiscussionForum.Core/"]
+COPY ["DiscussionForum.Shared/DiscussionForum.Shared.csproj", "DiscussionForum.Shared/"]
+COPY ["DiscussionForum.Client/DiscussionForum.Client.csproj", "DiscussionForum.Client/"]
 RUN dotnet restore "./DiscussionForum.Server/./DiscussionForum.Server.csproj"
 COPY . .
 WORKDIR "/src/DiscussionForum.Server"
