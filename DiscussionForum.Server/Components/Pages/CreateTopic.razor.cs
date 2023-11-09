@@ -22,7 +22,7 @@ public sealed partial class CreateTopic
         _userInfo = await AuthenticationStateTask.GetUserInfo();
         if (string.IsNullOrWhiteSpace(_userInfo?.GetUserName()))
         {
-            Navigation.NavigateTo("/setusername");
+            Navigation.NavigateToSecure("/setusername");
         }
     }
 
@@ -40,7 +40,7 @@ public sealed partial class CreateTopic
                 AttachedFiles = AddTopicModel?.Files?.Select(x =>
                     new AttachedFileInfo() { Name = x.FileName, FileStream = x.OpenReadStream() }).ToArray()
             });
-            Navigation.NavigateTo($"/topic/{response.Id}");
+            Navigation.NavigateToSecure($"/topic/{response.Id}");
         }
         catch (Exception ex) when (ex is not NavigationException)
         {

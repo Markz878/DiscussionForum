@@ -24,7 +24,7 @@ public partial class Index
         _userInfo = await AuthenticationStateTask.GetUserInfo();
         if (_userInfo.IsAuthenticated && string.IsNullOrEmpty(_userInfo.GetUserName()))
         {
-            Navigation.NavigateTo("/setusername");
+            Navigation.NavigateToSecure("/setusername");
         }
         if (SearchText.IsManuallySet)
         {
@@ -36,7 +36,7 @@ public partial class Index
     {
         ArgumentNullException.ThrowIfNull(SearchText);
         string url = string.IsNullOrWhiteSpace(SearchText.Text) ? string.Empty : $"/0?search={SearchText.Text}";
-        Navigation.NavigateTo(url);
+        Navigation.NavigateToSecure(url);
     }
 
     private string GetUrl(int page)

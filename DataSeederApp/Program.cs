@@ -22,14 +22,22 @@ if (!string.IsNullOrEmpty(tenantId))
         sqlConnection.AccessToken = token.Token;
         sqlConnection.Open();
         AppDbContext db = new(new DbContextOptionsBuilder<AppDbContext>()
-        .UseSqlServer(sqlConnection)
-        .LogTo(Console.WriteLine, LogLevel.Warning).Options);
+            .UseSqlServer(sqlConnection)
+            .LogTo(Console.WriteLine, LogLevel.Warning).Options);
         List<Topic> topics = Fakers.GetTopics(10000, 10000);
+        db.Users.ExecuteDelete();
         db.Users.Add(Fakers.Admin);
         db.Users.Add(Fakers.User);
         db.SaveChanges();
-        db.Topics.AddRange(topics);
-        db.SaveChanges();
+
+        Console.WriteLine("Adding topics");
+        foreach (Topic[] batch in topics.Chunk(topics.Count / 10))
+        {
+            db.Topics.AddRange(batch);
+            db.SaveChanges();
+            Console.WriteLine($"Added {batch.Length} topics..");
+        }
+        Console.WriteLine("Done!");
     }
 }
 else
