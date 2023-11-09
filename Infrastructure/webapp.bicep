@@ -50,7 +50,7 @@ resource webApp 'Microsoft.App/containerApps@2023-05-01' = {
             maxInactiveRevisions: 10
             ingress: {
                 external: true
-                targetPort: 80
+                targetPort: 8080
                 transport: 'Auto'
                 allowInsecure: false
                 traffic: [
