@@ -4,12 +4,6 @@ VisualStudioVersion = 17.8.34212.112
 MinimumVisualStudioVersion = 16.0.0.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscussionForum.Server", "DiscussionForum.Server\DiscussionForum.Server.csproj", "{D2AFA40C-E1E7-4F78-839F-3328410616CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscussionForum.Client", "DiscussionForum.Client\DiscussionForum.Client.csproj", "{08D522F5-A872-4047-B50C-6586807DB2E5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSeederApp", "DataSeederApp\DataSeederApp.csproj", "{CA6740F6-5962-4E1A-A6FC-F76987549D31}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateLimitTester", "RateLimitTester\RateLimitTester.csproj", "{B1160069-2F7E-48D2-B91E-BEDF639BA37A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{57464573-E036-45A0-B0D2-2B66A3AAAD42}"
 	ProjectSection(SolutionItems) = preProject
 		Infrastructure\common.bicep = Infrastructure\common.bicep
@@ -18,14 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Infrastructure\webapp.bicep = Infrastructure\webapp.bicep
 		.github\workflows\webapp.yml = .github\workflows\webapp.yml
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscussionForum.Core", "DiscussionForum.Core\DiscussionForum.Core.csproj", "{C1D48D27-6C16-46BB-89AA-6C0F4F1533F4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscussionForum.Shared", "DiscussionForum.Shared\DiscussionForum.Shared.csproj", "{DD199F8B-4E00-407A-A6C3-2742C4E04937}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscussionForum.Tests", "DiscussionForum.Tests\DiscussionForum.Tests.csproj", "{19A396BF-64CA-4455-8861-EC6ECDDEEAEA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscussionForum.TestE2E", "DiscussionForum.TestE2E\DiscussionForum.TestE2E.csproj", "{CD954E95-966B-419D-A96A-9173B0ED17E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
