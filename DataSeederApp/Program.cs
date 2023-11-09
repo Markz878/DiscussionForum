@@ -11,15 +11,8 @@ IConfiguration configuration = new ConfigurationBuilder().AddUserSecrets<Program
 AppDbContext db = new(new DbContextOptionsBuilder<AppDbContext>()
     .UseSqlServer(configuration.GetConnectionString("SqlServer"))
     .LogTo(Console.WriteLine, LogLevel.Warning).Options);
-Console.WriteLine("Delete and create database (y)?");
-string? response = Console.ReadLine();
-if (response?.StartsWith('y') == true)
-{
-    db.Database.EnsureDeleted();
-    db.Database.Migrate();
-    db.Users.Add(Fakers.Admin);
-    db.Users.Add(Fakers.User);
-    db.SaveChanges();
-}
+db.Users.Add(Fakers.Admin);
+db.Users.Add(Fakers.User);
+db.SaveChanges();
 db.Topics.AddRange(topics);
 db.SaveChanges();
