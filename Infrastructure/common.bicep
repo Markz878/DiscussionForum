@@ -5,10 +5,10 @@ param loganalyticsName string = 'log-${solutionName}'
 param appinsightsName string = 'ai-${solutionName}'
 param vnetName string = 'vnet-${solutionName}'
 param containerAppEnvironmentName string = 'cae-${solutionName}'
-param storageName string = 'st${solutionName}'
-param sqlServerName string = 'sql-${solutionName}'
-param databaseName string = 'sqldb-${solutionName}'
-param signalRName string = 'sigr-${solutionName}'
+// param storageName string = 'st${solutionName}'
+// param sqlServerName string = 'sql-${solutionName}'
+// param databaseName string = 'sqldb-${solutionName}'
+// param signalRName string = 'sigr-${solutionName}'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
     name: containerRegistryName
@@ -113,52 +113,52 @@ resource containerappEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-p
     }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-    name: storageName
-    location: location
-    kind: 'StorageV2'
-    sku: {
-        name: 'Standard_ZRS'
-    }
-    properties: {
-        allowSharedKeyAccess: true
-        networkAcls: {
-            bypass: 'None'
-            defaultAction: 'Allow'
-            virtualNetworkRules: [
-                {
-                    id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'default')
-                    action: 'Allow'
-                }
-            ]
-            ipRules: []
-        }
-        supportsHttpsTrafficOnly: true
-        minimumTlsVersion: 'TLS1_2'
-        defaultToOAuthAuthentication: true
-        accessTier: 'Cool'
-    }
-}
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
-    parent: storageAccount
-    name: 'default'
-    properties: {
-        changeFeed: {
-            enabled: false
-        }
-        isVersioningEnabled: false
-    }
-}
-resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
-    parent: blobService
-    name: 'files'
-    properties: {
-        publicAccess: 'Blob'
-        metadata: {
-            cachecontrol: 'public, max-age=31536000'
-        }
-    }
-}
+// resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+//     name: storageName
+//     location: location
+//     kind: 'StorageV2'
+//     sku: {
+//         name: 'Standard_ZRS'
+//     }
+//     properties: {
+//         allowSharedKeyAccess: true
+//         networkAcls: {
+//             bypass: 'None'
+//             defaultAction: 'Allow'
+//             virtualNetworkRules: [
+//                 {
+//                     id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'default')
+//                     action: 'Allow'
+//                 }
+//             ]
+//             ipRules: []
+//         }
+//         supportsHttpsTrafficOnly: true
+//         minimumTlsVersion: 'TLS1_2'
+//         defaultToOAuthAuthentication: true
+//         accessTier: 'Cool'
+//     }
+// }
+// resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
+//     parent: storageAccount
+//     name: 'default'
+//     properties: {
+//         changeFeed: {
+//             enabled: false
+//         }
+//         isVersioningEnabled: false
+//     }
+// }
+// resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
+//     parent: blobService
+//     name: 'files'
+//     properties: {
+//         publicAccess: 'Blob'
+//         metadata: {
+//             cachecontrol: 'public, max-age=31536000'
+//         }
+//     }
+// }
 // resource defenderForStorageSettings 'Microsoft.Security/defenderForStorageSettings@2022-12-01-preview' = {
 //     name: 'current'
 //     scope: storageAccount
@@ -195,123 +195,123 @@ resource webappAcrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@20
     }
 }
 
-resource storageBlobContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-    scope: storageAccount
-    name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
-}
-resource webappStorageRoleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-    name: guid(resourceGroup().id, webappIdentity.id, storageBlobContributor.id)
-    scope: storageAccount
-    properties: {
-        roleDefinitionId: storageBlobContributor.id
-        principalId: webappIdentity.properties.principalId
-        principalType: 'ServicePrincipal'
-    }
-}
+// resource storageBlobContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+//     scope: storageAccount
+//     name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+// }
+// resource webappStorageRoleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//     name: guid(resourceGroup().id, webappIdentity.id, storageBlobContributor.id)
+//     scope: storageAccount
+//     properties: {
+//         roleDefinitionId: storageBlobContributor.id
+//         principalId: webappIdentity.properties.principalId
+//         principalType: 'ServicePrincipal'
+//     }
+// }
 
-resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
-    name: sqlServerName
-    location: location
-    properties: {
-        minimalTlsVersion: '1.2'
-        publicNetworkAccess: 'Enabled'
-        restrictOutboundNetworkAccess: 'Enabled'
-        administrators: {
-            administratorType: 'ActiveDirectory'
-            principalType: 'Group'
-            login: 'DiscussionForumSQLAdmins'
-            sid: '71cd5d5a-94e5-4464-9944-86efd18c1c45'
-            tenantId: '0424f4a0-f409-4185-9d9d-76ce62c20e4d'
-            azureADOnlyAuthentication: true
-        }
-    }
-}
-resource sqlServerVnetRule 'Microsoft.Sql/servers/virtualNetworkRules@2022-11-01-preview' = {
-    parent: sqlServer
-    name: 'vnet-rule'
-    properties: {
-        virtualNetworkSubnetId: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'default')
-        ignoreMissingVnetServiceEndpoint: false
-    }
-}
+// resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
+//     name: sqlServerName
+//     location: location
+//     properties: {
+//         minimalTlsVersion: '1.2'
+//         publicNetworkAccess: 'Enabled'
+//         restrictOutboundNetworkAccess: 'Enabled'
+//         administrators: {
+//             administratorType: 'ActiveDirectory'
+//             principalType: 'Group'
+//             login: 'DiscussionForumSQLAdmins'
+//             sid: '71cd5d5a-94e5-4464-9944-86efd18c1c45'
+//             tenantId: '0424f4a0-f409-4185-9d9d-76ce62c20e4d'
+//             azureADOnlyAuthentication: true
+//         }
+//     }
+// }
+// resource sqlServerVnetRule 'Microsoft.Sql/servers/virtualNetworkRules@2022-11-01-preview' = {
+//     parent: sqlServer
+//     name: 'vnet-rule'
+//     properties: {
+//         virtualNetworkSubnetId: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'default')
+//         ignoreMissingVnetServiceEndpoint: false
+//     }
+// }
 
-resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2022-08-01-preview' = {
-    parent: sqlServer
-    name: databaseName
-    location: location
-    sku: {
-        name: 'Basic'
-        tier: 'Basic'
-        capacity: 5
-    }
-    properties: {
-        collation: 'SQL_Latin1_General_CP1_CI_AS'
-        maxSizeBytes: 104857600
-    }
-}
+// resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2022-08-01-preview' = {
+//     parent: sqlServer
+//     name: databaseName
+//     location: location
+//     sku: {
+//         name: 'Basic'
+//         tier: 'Basic'
+//         capacity: 5
+//     }
+//     properties: {
+//         collation: 'SQL_Latin1_General_CP1_CI_AS'
+//         maxSizeBytes: 104857600
+//     }
+// }
 
-resource signalR 'Microsoft.SignalRService/signalR@2022-02-01' = {
-    name: signalRName
-    location: location
-    sku: {
-        capacity: 1
-        name: 'Free_F1'
-    }
-    kind: 'SignalR'
-    identity: {
-        type: 'None'
-    }
-    properties: {
-        tls: {
-            clientCertEnabled: false
-        }
-        disableLocalAuth: true
-        features: [
-            {
-                flag: 'ServiceMode'
-                value: 'Default'
-            }
-            {
-                flag: 'EnableConnectivityLogs'
-                value: 'True'
-            }
-            {
-                flag: 'EnableMessagingLogs'
-                value: 'False'
-            }
-            {
-                flag: 'EnableLiveTrace'
-                value: 'False'
-            }
-        ]
-        cors: {
-            allowedOrigins: [
-                '*'
-            ]
-        }
-        networkACLs: {
-            defaultAction: 'Deny'
-            publicNetwork: {
-                allow: [
-                    'ClientConnection'
-                    'ServerConnection'
-                    'RESTAPI'
-                    'Trace'
-                ]
-            }
-        }
-    }
-}
-resource signalRAppServerRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-    scope: signalR
-    name: '420fcaa2-552c-430f-98ca-3264be4806c7'
-}
-resource webappSignalRRoleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-    name: guid(resourceGroup().id, webappIdentity.id, signalRAppServerRole.id)
-    scope: signalR
-    properties: {
-        roleDefinitionId: signalRAppServerRole.id
-        principalId: webappIdentity.properties.principalId
-        principalType: 'ServicePrincipal'
-    }
-}
+// resource signalR 'Microsoft.SignalRService/signalR@2022-02-01' = {
+//     name: signalRName
+//     location: location
+//     sku: {
+//         capacity: 1
+//         name: 'Free_F1'
+//     }
+//     kind: 'SignalR'
+//     identity: {
+//         type: 'None'
+//     }
+//     properties: {
+//         tls: {
+//             clientCertEnabled: false
+//         }
+//         disableLocalAuth: true
+//         features: [
+//             {
+//                 flag: 'ServiceMode'
+//                 value: 'Default'
+//             }
+//             {
+//                 flag: 'EnableConnectivityLogs'
+//                 value: 'True'
+//             }
+//             {
+//                 flag: 'EnableMessagingLogs'
+//                 value: 'False'
+//             }
+//             {
+//                 flag: 'EnableLiveTrace'
+//                 value: 'False'
+//             }
+//         ]
+//         cors: {
+//             allowedOrigins: [
+//                 '*'
+//             ]
+//         }
+//         networkACLs: {
+//             defaultAction: 'Deny'
+//             publicNetwork: {
+//                 allow: [
+//                     'ClientConnection'
+//                     'ServerConnection'
+//                     'RESTAPI'
+//                     'Trace'
+//                 ]
+//             }
+//         }
+//     }
+// }
+// resource signalRAppServerRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+//     scope: signalR
+//     name: '420fcaa2-552c-430f-98ca-3264be4806c7'
+// }
+// resource webappSignalRRoleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//     name: guid(resourceGroup().id, webappIdentity.id, signalRAppServerRole.id)
+//     scope: signalR
+//     properties: {
+//         roleDefinitionId: signalRAppServerRole.id
+//         principalId: webappIdentity.properties.principalId
+//         principalType: 'ServicePrincipal'
+//     }
+// }
