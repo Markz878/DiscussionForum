@@ -6,7 +6,7 @@ public static class NavigationHelpers
     {
         string url = navigationManager.BaseUri;
         url = url.Replace("http://", "https://");
-        string finalUrl = url + path[1..];
+        string finalUrl = string.IsNullOrEmpty(path) ? url : url + path[1..];
         navigationManager.NavigateTo(finalUrl);
     }
 }
