@@ -9,7 +9,7 @@
                 <ProfileButton />
             </Authorized>
             <NotAuthorized>
-                <a class="mx-6" href="/.auth/login/aad?post_login_redirect_uri=@navigation.Uri" data-enhance-nav="false">Log in</a>
+                <a class="mx-6" href="/.auth/login/aad?post_login_redirect_uri=@navigation.Uri.Replace("http:", "https:")" data-enhance-nav="false">Log in</a>
             </NotAuthorized>
         </AuthorizeView>
     </div>

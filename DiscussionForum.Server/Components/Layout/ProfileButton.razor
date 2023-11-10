@@ -19,7 +19,7 @@
             </p>
         }
         <a class="block font-bold hover:text-gray-500 dark:hover:text-gray-300" href="/setusername">Change Username</a>
-        <a class="block font-bold hover:text-gray-500 dark:hover:text-gray-300" href="/.auth/logout?post_logout_redirect_uri=@navigation.Uri" data-enhance-nav="false">Log Out</a>
+        <a class="block font-bold hover:text-gray-500 dark:hover:text-gray-300" href="/.auth/logout?post_logout_redirect_uri=@navigation.Uri.Replace("http:", "https:")" data-enhance-nav="false">Log Out</a>
     </div>
 </div>
 
