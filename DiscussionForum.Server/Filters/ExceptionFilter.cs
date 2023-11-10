@@ -16,6 +16,8 @@ public class ExceptionFilter : IEndpointFilter
     {
         try
         {
+            _logger.LogInformation("GOT INFO CALL ON {path}", context.HttpContext.Request.Path);
+            _logger.LogWarning("GOT WARN CALL ON {path}", context.HttpContext.Request.Path);
             return await next(context);
         }
         catch (BusinessException ex)

@@ -18,7 +18,7 @@ public class AuthorizedBaseTests : BaseTest
     [Fact]
     public async Task WhenCreateNewTopic_RedirectedToTheTopic_AndCanInteractAndDeleteTopic()
     {
-        await page.GetByRole(AriaRole.Link, new() { Name = "Create new topic" }).ClickAsync();
+        await page.GetByRole(AriaRole.Link, new() { Name = "New topic" }).ClickAsync();
 
         await page.GetByLabel("Title:").FillAsync("Test");
 
