@@ -7,9 +7,9 @@ public sealed class HealthChecksInstaller : IInstaller
     public void Install(WebApplicationBuilder builder)
     {
         builder.Services
-            .AddHealthChecks();
-            //.AddSqlServer(builder.Configuration.GetConnectionString("SqlServer") ?? throw new ArgumentNullException("SqlServer connection string"))
-            //.AddCheck<FileStorageHealthCheck>("FileStorageHealthCheck", HealthStatus.Degraded);
+            .AddHealthChecks()
+            .AddSqlServer(builder.Configuration.GetConnectionString("SqlServer") ?? throw new ArgumentNullException("SqlServer connection string"))
+            .AddCheck<FileStorageHealthCheck>("FileStorageHealthCheck", HealthStatus.Degraded);
     }
 }
 
