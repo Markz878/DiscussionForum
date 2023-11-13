@@ -20,13 +20,11 @@ using DiscussionForum.Server.Endpoints;
 using DiscussionForum.Server.Installers;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.InstallAssemblyServices();
 builder.Services.AddSingleton<RenderLocation, ServerRenderLocation>();
-
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -40,6 +38,8 @@ else
     app.UseHsts();
 }
 
+app.UseHttpLogging();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseStaticFiles();
 app.AddDevelopmentAuthentication();
 app.UseSwagger();

@@ -1,6 +1,7 @@
 ﻿using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.HttpLogging;
 
 namespace DiscussionForum.Server.Installers;
 
@@ -11,10 +12,19 @@ public class LoggingInstaller : IInstaller
         builder.Logging.ClearProviders();
         if (builder.Configuration.GetValue<bool>("AddLogging"))
         {
-            builder.Logging.AddConsole();
+            builder.Logging.AddSimpleConsole(x =>
+            {
+                x.UseUtcTimestamp = true;
+                x.TimestampFormat = "dd/MM/yy HH:mm:ss ";
+            });
             builder.Services.AddApplicationInsightsTelemetry();
             builder.Logging.AddApplicationInsights();
             builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
+            builder.Services.AddHttpLogging(logging =>
+            {
+                logging.CombineLogs = true;
+                logging.LoggingFields = HttpLoggingFields.Duration | HttpLoggingFields.RequestProperties | HttpLoggingFields.ResponsePropertiesAndHeaders;
+            });
         }
     }
 }
@@ -42,7 +52,7 @@ public class IgnoreRequestPathsTelemetryProcessor : ITelemetryProcessor
     }
 
     private static readonly string[] _ignorePaths = ["/health", "/favicon.ico", "/topichub/negotiate"];
-    private static readonly string[] _fileEndings = [".br", ".js", ".svg", ".png", ".css"];
+    private static readonly string[] _fileEndings = [".br", ".js", ".svg", ".png", ".css", ".json"];
     private static bool SkipTelemetry(string path)
     {
         if (_ignorePaths.Contains(path))
