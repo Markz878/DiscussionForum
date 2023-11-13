@@ -38,13 +38,13 @@ public sealed class SecurityHeadersMiddleware(IWebHostEnvironment hostingEnviron
             "usb=(), " +
             "xr-spatial-tracking=()"
             ));
-        context.Response.Headers.Append(hostingEnvironment.IsProduction() ? "Content-Security-Policy" : "Content-Security-Policy-Report-Only", new StringValues(
+        context.Response.Headers.Append("Content-Security-Policy-Report-Only", new StringValues(
+            "default-src self;" +
             "base-uri 'self';" +
-            "default-src 'self';" +
-            "connect-src 'self';" +
+            "connect-src *;" +
             "object-src 'none';" +
             "script-src 'self' 'wasm-unsafe-eval';" +
-            "style-src 'self';" +
+            "style-src 'self' 'unsafe-inline';" +
             "img-src 'self';" +
             "upgrade-insecure-requests;"
             ));
