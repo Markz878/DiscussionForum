@@ -11,6 +11,14 @@ public sealed record EditMessageCommand : IRequest<EditMessageResult>
     public Role UserRole { get; set; }
 }
 
+public sealed class EditMessageCommandValidator : AbstractValidator<EditMessageCommand>
+{
+    public EditMessageCommandValidator()
+    {
+        RuleFor(x => x.Message).MinimumLength(1).MaximumLength(ValidationConstants.MessageContentMaxLength);
+    }
+}
+
 internal sealed class EditMessageHandler : IRequestHandler<EditMessageCommand, EditMessageResult>
 {
     private readonly AppDbContext _db;

@@ -189,7 +189,7 @@ public sealed partial class ViewTopic : IAsyncDisposable
 public class EditTitleModel
 {
     [Required]
-    [MinLength(1)]
+    [MinLength(ValidationConstants.TopicTitleMinLength)]
     [MaxLength(ValidationConstants.TopicTitleMaxLength)]
     public string Title { get; set; } = "";
 }

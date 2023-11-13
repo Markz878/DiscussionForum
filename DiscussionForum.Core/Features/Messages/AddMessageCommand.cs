@@ -10,9 +10,9 @@ public sealed record AddMessageCommand : IRequest<AddMessageResponse>
     public AttachedFileInfo[]? AttachedFiles { get; init; }
 }
 
-public sealed class AddMessageValidator : AbstractValidator<AddMessageCommand>
+public sealed class AddMessageCommandValidator : AbstractValidator<AddMessageCommand>
 {
-    public AddMessageValidator()
+    public AddMessageCommandValidator()
     {
         RuleFor(x => x.Message).MinimumLength(1).MaximumLength(ValidationConstants.MessageContentMaxLength);
         RuleFor(x => x.AttachedFiles).Must(x => x is null or { Length: <= ValidationConstants.MessageMaxFiles }).WithMessage("Message can contain maximum of 4 attached files.");
@@ -23,17 +23,14 @@ internal sealed class AddMessageHandler : IRequestHandler<AddMessageCommand, Add
 {
     private readonly AppDbContext db;
     private readonly IFileService fileService;
-    private readonly IValidator<AddMessageCommand> validator;
 
-    public AddMessageHandler(AppDbContext db, IFileService fileService, IValidator<AddMessageCommand> validator)
+    public AddMessageHandler(AppDbContext db, IFileService fileService)
     {
         this.db = db;
         this.fileService = fileService;
-        this.validator = validator;
     }
     public async Task<AddMessageResponse> Handle(AddMessageCommand request, CancellationToken cancellationToken = default)
     {
-        validator.ValidateAndThrow(request);
         Topic parentTopic = await db.Topics.FirstOrDefaultAsync(x => x.Id == request.TopicId, cancellationToken)
             ?? throw NotFoundException.SetMessageFromType<Topic>();
         DateTimeOffset timeStamp = DateTimeOffset.UtcNow;

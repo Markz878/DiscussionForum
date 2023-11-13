@@ -1093,10 +1093,6 @@ body {
        column-gap: 1.5rem;
 }
 
-.justify-self-end {
-  justify-self: end;
-}
-
 .overflow-x-clip {
   overflow-x: clip;
 }
@@ -1418,21 +1414,8 @@ body {
     order: 1;
   }
 
-  .sm\:mx-0 {
-    margin-left: 0px;
-    margin-right: 0px;
-  }
-
-  .sm\:mb-0 {
-    margin-bottom: 0px;
-  }
-
   .sm\:flex {
     display: flex;
-  }
-
-  .sm\:grid {
-    display: grid;
   }
 
   .sm\:w-auto {

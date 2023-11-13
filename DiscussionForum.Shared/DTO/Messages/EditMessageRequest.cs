@@ -6,14 +6,6 @@ public sealed record EditMessageRequest
     public required string Message { get; set; }
 }
 
-public sealed class EditMessageValidator : AbstractValidator<EditMessageRequest>
-{
-    public EditMessageValidator()
-    {
-        RuleFor(x => x.Message).NotEmpty().MinimumLength(1).MaximumLength(ValidationConstants.MessageContentMaxLength);
-    }
-}
-
 public sealed record EditMessageResult
 {
     public required DateTimeOffset EditedAt { get; init; }

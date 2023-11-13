@@ -10,6 +10,11 @@ public class LoggingInstaller : IInstaller
     public void Install(WebApplicationBuilder builder)
     {
         builder.Logging.ClearProviders();
+        builder.Services.AddHttpLogging(logging =>
+        {
+            logging.CombineLogs = true;
+            logging.LoggingFields = HttpLoggingFields.Duration | HttpLoggingFields.RequestProperties | HttpLoggingFields.ResponsePropertiesAndHeaders;
+        });
         if (builder.Configuration.GetValue<bool>("AddLogging"))
         {
             builder.Logging.AddSimpleConsole(x =>
@@ -20,11 +25,7 @@ public class LoggingInstaller : IInstaller
             builder.Services.AddApplicationInsightsTelemetry();
             builder.Logging.AddApplicationInsights();
             builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
-            builder.Services.AddHttpLogging(logging =>
-            {
-                logging.CombineLogs = true;
-                logging.LoggingFields = HttpLoggingFields.Duration | HttpLoggingFields.RequestProperties | HttpLoggingFields.ResponsePropertiesAndHeaders;
-            });
+
         }
     }
 }

@@ -31,4 +31,8 @@
 		<ProjectReference Include="..\DiscussionForum.Server\DiscussionForum.Server.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="ClientTests\bUnit\" />
+	</ItemGroup>
+
 </Project>

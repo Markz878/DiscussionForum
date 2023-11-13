@@ -1,19 +1,9 @@
-﻿using FluentValidation;
-
-namespace DiscussionForum.Client.Handlers.Topics;
+﻿namespace DiscussionForum.Client.Handlers.Topics;
 
 internal sealed record EditTopicTitleClientCommand : IRequest
 {
     public required long TopicId { get; init; }
     public required string NewTitle { get; init; }
-}
-
-internal sealed class EditTopicTitleValidator : AbstractValidator<EditTopicTitleClientCommand>
-{
-    public EditTopicTitleValidator()
-    {
-        RuleFor(x => x.NewTitle).NotEmpty().MinimumLength(ValidationConstants.TopicTitleMinLength).MaximumLength(ValidationConstants.TopicTitleMaxLength);
-    }
 }
 
 internal class EditTopicTitleClientCommandHandler : IRequestHandler<EditTopicTitleClientCommand>

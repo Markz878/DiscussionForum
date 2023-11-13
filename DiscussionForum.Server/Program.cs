@@ -38,9 +38,10 @@ else
     app.UseHsts();
 }
 
+app.UseHttpsRedirection();
 app.UseHttpLogging();
-app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseStaticFiles();
+ app.UseMiddleware<SecurityHeadersMiddleware>();
 app.AddDevelopmentAuthentication();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));

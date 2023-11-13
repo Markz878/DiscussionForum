@@ -52,6 +52,9 @@ public partial class AddTopicMessageComponent
 
 public sealed class AddMessageModel
 {
+    [MinLength(1)]
+    [MaxLength(ValidationConstants.MessageContentMaxLength)]
     public string Message { get; set; } = string.Empty;
+    [MaxLength(ValidationConstants.MessageMaxFiles)]
     public IList<IBrowserFile>? Files { get; set; }
 }

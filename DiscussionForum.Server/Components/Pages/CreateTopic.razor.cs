@@ -55,6 +55,10 @@ public class AddTopicModel
     [MinLength(ValidationConstants.TopicTitleMinLength)]
     [MaxLength(ValidationConstants.TopicTitleMaxLength)]
     public string Title { get; set; } = "";
+    [Required]
+    [MinLength(1)]
+    [MaxLength(ValidationConstants.MessageContentMaxLength)]
     public string FirstMessage { get; set; } = "";
+    [MaxLength(ValidationConstants.MessageMaxFiles, ErrorMessage = "Maximum upload of 4 files per message")]
     public IFormFileCollection? Files { get; set; }
 }

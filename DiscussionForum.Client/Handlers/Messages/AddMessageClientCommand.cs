@@ -1,21 +1,10 @@
-﻿using FluentValidation;
-
-namespace DiscussionForum.Client.Handlers.Messages;
+﻿namespace DiscussionForum.Client.Handlers.Messages;
 
 internal sealed record AddMessageClientCommand : IRequest<AddMessageResponse>
 {
     public required long TopicId { get; init; }
     public required string Message { get; init; }
     public AttachedFileInfo[]? AttachedFiles { get; init; }
-}
-
-internal sealed class AddMessageValidator : AbstractValidator<AddMessageClientCommand>
-{
-    public AddMessageValidator()
-    {
-        RuleFor(x => x.Message).MinimumLength(1).MaximumLength(ValidationConstants.MessageContentMaxLength);
-        RuleFor(x => x.AttachedFiles).Must(x => x is null or { Length: <= ValidationConstants.MessageMaxFiles }).WithMessage("Message can contain maximum of 4 attached files.");
-    }
 }
 
 internal class AddMessageClientCommandHandler : IRequestHandler<AddMessageClientCommand, AddMessageResponse>

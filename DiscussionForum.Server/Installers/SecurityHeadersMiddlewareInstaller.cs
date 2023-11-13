@@ -45,11 +45,9 @@ public sealed class SecurityHeadersMiddleware(IWebHostEnvironment hostingEnviron
             "object-src 'none';" +
             "script-src 'self' 'wasm-unsafe-eval';" +
             "style-src 'self';" +
-            "img-src data: https:;" +
+            "img-src 'self';" +
             "upgrade-insecure-requests;"
             ));
-
-
         return next(context);
     }
 }

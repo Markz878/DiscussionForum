@@ -10,6 +10,7 @@
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.18.0" />
 		<PackageReference Include="Bogus" Version="34.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.0-rc.2.23480.2" />
+		<PackageReference Include="FluentValidation" Version="11.8.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
 		<PackageReference Include="EntityFrameworkCore.Exceptions.SqlServer" Version="6.0.3.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0-rc.2.23480.1">
