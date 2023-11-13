@@ -41,7 +41,6 @@ else
 app.UseHttpsRedirection();
 app.UseHttpLogging();
 app.UseStaticFiles();
- app.UseMiddleware<SecurityHeadersMiddleware>();
 app.AddDevelopmentAuthentication();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));
@@ -53,6 +52,7 @@ app.UseOutputCache();
 app.MapAPIEndpoints();
 app.MapHub<TopicHub>("/topichub", options => options.AllowStatefulReconnects = true);
 app.MapHealthChecks("/health");
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(DiscussionForum.Client._Imports).Assembly);
