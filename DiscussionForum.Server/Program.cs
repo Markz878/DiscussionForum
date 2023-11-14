@@ -38,20 +38,20 @@ else
     app.UseHsts();
 }
 
-app.UseHttpLogging();
 app.UseStaticFiles();
+app.UseHttpLogging();
 app.AddDevelopmentAuthentication();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-app.UseRateLimiter();
 app.UseOutputCache();
+app.UseRateLimiter();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.MapAPIEndpoints();
 app.MapHub<TopicHub>("/topichub", options => options.AllowStatefulReconnects = true);
 app.MapHealthChecks("/health");
-app.UseMiddleware<SecurityHeadersMiddleware>();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(DiscussionForum.Client._Imports).Assembly);
