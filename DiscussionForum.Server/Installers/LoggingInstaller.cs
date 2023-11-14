@@ -22,7 +22,10 @@ public class LoggingInstaller : IInstaller
                 x.UseUtcTimestamp = true;
                 x.TimestampFormat = "dd/MM/yy HH:mm:ss ";
             });
-            builder.Services.AddApplicationInsightsTelemetry();
+            builder.Services.AddApplicationInsightsTelemetry(x =>
+            {
+                x.EnableDependencyTrackingTelemetryModule = false;
+            });
             builder.Logging.AddApplicationInsights();
             builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
 
@@ -52,7 +55,7 @@ public class IgnoreRequestPathsTelemetryProcessor : ITelemetryProcessor
         _next.Process(telemetry);
     }
 
-    private static readonly string[] _ignorePaths = ["/health", "/favicon.ico", "/topichub/negotiate"];
+    private static readonly string[] _ignorePaths = ["/health", "/favicon.ico", "/topichub/negotiate", "_framework/opaque-redirect"];
     private static readonly string[] _fileEndings = [".br", ".js", ".svg", ".png", ".css", ".json"];
     private static bool SkipTelemetry(string path)
     {
