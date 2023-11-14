@@ -11,7 +11,7 @@ public sealed class SecurityHeadersMiddlewareInstaller : IInstaller
     }
 }
 
-public sealed class SecurityHeadersMiddleware(IWebHostEnvironment hostingEnvironment) : IMiddleware
+public sealed class SecurityHeadersMiddleware : IMiddleware
 {
     public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -38,8 +38,8 @@ public sealed class SecurityHeadersMiddleware(IWebHostEnvironment hostingEnviron
             "usb=(), " +
             "xr-spatial-tracking=()"
             ));
-        context.Response.Headers.Append("Content-Security-Policy-Report-Only", new StringValues(
-            "default-src 'self' 'data:'; " +
+        context.Response.Headers.Append("Content-Security-Policy", new StringValues(
+            "default-src 'self'; " +
             "base-uri 'self'; " +
             "connect-src *; " +
             "object-src 'none'; " +
