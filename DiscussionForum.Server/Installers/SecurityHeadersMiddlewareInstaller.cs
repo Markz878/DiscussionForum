@@ -19,7 +19,7 @@ public sealed class SecurityHeadersMiddleware(IWebHostEnvironment hostingEnviron
         context.Response.Headers.Append("X-Frame-Options", new StringValues("DENY"));
         context.Response.Headers.Append("Referrer-Policy", new StringValues("strict-origin-when-cross-origin"));
         context.Response.Headers.Append("X-XSS-Protection", new StringValues("1; mode=block"));
-        //context.Response.Headers.Append("Cross-Origin-Opener-Policy", new StringValues("same-origin"));
+        context.Response.Headers.Append("Cross-Origin-Opener-Policy", new StringValues("same-origin"));
         //context.Response.Headers.Append("Permissions-Policy", new StringValues(
         //    "accelerometer=(), " +
         //    "autoplay=(), " +
