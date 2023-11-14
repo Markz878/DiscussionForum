@@ -38,7 +38,7 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseHttpLogging();
 app.UseStaticFiles();
 app.AddDevelopmentAuthentication();
@@ -52,7 +52,7 @@ app.UseOutputCache();
 app.MapAPIEndpoints();
 app.MapHub<TopicHub>("/topichub", options => options.AllowStatefulReconnects = true);
 app.MapHealthChecks("/health");
-app.UseMiddleware<SecurityHeadersMiddleware>();
+//app.UseMiddleware<SecurityHeadersMiddleware>();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(DiscussionForum.Client._Imports).Assembly);
