@@ -48,7 +48,7 @@ app.UseAuthorization();
 app.UseAntiforgery();
 app.UseOutputCache();
 app.UseRateLimiter();
-//app.UseMiddleware<SecurityHeadersMiddleware>();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.MapAPIEndpoints();
 app.MapHub<TopicHub>("/topichub", options => options.AllowStatefulReconnects = true);
 app.MapHealthChecks("/health");
