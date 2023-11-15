@@ -17,15 +17,15 @@ public static class TopicEndpointsMapper
         topicGroup.MapPatch("", EditTopicTitle);
     }
 
-    public static async Task<Ok<ListLatestTopicsResult>> ListLatestTopics(int page, string? search, ClaimsPrincipal claimsPrincipal, IDataFetchQueries dataFetch, CancellationToken cancellationToken)
+    public static async Task<Ok<ListLatestTopicsResult>> ListLatestTopics(int page, string? search, ClaimsPrincipal claimsPrincipal, IMediator mediator, CancellationToken cancellationToken)
     {
-        ListLatestTopicsResult result = await dataFetch.ListLatestTopics(new ListLatestTopicsRequest() { PageNumber = page, TopicsCount = 10, SearchText = search }, cancellationToken);
+        ListLatestTopicsResult result = await mediator.Send(new ListLatestTopicsQuery() { PageNumber = page, TopicsCount = 10, SearchText = search }, cancellationToken);
         return TypedResults.Ok(result);
     }
 
-    public static async Task<Results<Ok<GetTopicByIdResult>, NotFound>> GetTopicById(long topicId, ClaimsPrincipal claimsPrincipal, IDataFetchQueries dataFetch, CancellationToken cancellationToken)
+    public static async Task<Results<Ok<GetTopicByIdResult>, NotFound>> GetTopicById(long topicId, ClaimsPrincipal claimsPrincipal, IMediator mediator, CancellationToken cancellationToken)
     {
-        GetTopicByIdResult? result = await dataFetch.GetTopicById(topicId, claimsPrincipal.TryGetUserId(), cancellationToken);
+        GetTopicByIdResult? result = await mediator.Send(new GetTopicByIdQuery() { TopicId = topicId, UserId = claimsPrincipal.TryGetUserId() }, cancellationToken);
         return result == null ? TypedResults.NotFound() : TypedResults.Ok(result);
     }
 

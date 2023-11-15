@@ -1,0 +1,6 @@
+﻿@page "/topic/{topicid:long}"
+
+@if (_topic is not null)
+{
+    <DiscussionForum.Client.Components.ViewTopic.ViewTopicComponent Topic="_topic" @rendermode="RenderMode.InteractiveWebAssembly"/>
+}

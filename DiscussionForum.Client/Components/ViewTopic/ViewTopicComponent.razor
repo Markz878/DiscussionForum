@@ -1,0 +1,38 @@
+﻿<div class="center-container p-2 scroll-smooth">
+    <TopicHeader Topic="Topic" UserInfo="_userInfo" InvokeDeleteConfirm="ShowDeleteTopicConfirm" />
+
+    <div class="bg-gray-400 h-[1px] w-full mb-2" />
+
+    <TopicMessageComponent Message="@Topic.Messages[0]" CanDelete=false CurrentUserInfo="@_userInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
+    @foreach (TopicMessage message in Topic.Messages.Skip(1))
+    {
+        <TopicMessageComponent Message="@message" CurrentUserInfo="@_userInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
+    }
+    <AuthorizeView>
+        <Authorized>
+            <div class="bg-gray-400 h-[1px] w-full my-2 mb-4" />
+            <AddTopicMessageComponent TopicId="@Topic.Id" AdditionalClasses="mx-auto mb-2 w-full" />
+        </Authorized>
+        <NotAuthorized>
+            <p>Log in to comment...</p>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+<Modal @ref=modal Header="@modalHeader">
+    @modalContent
+</Modal>
+
+@code {
+    private RenderFragment ModalMessage() =>
+    @<p class="p-4 font-bold text-gray-800 bg-[#FEF9F3] dark:text-gray-200 dark:bg-gray-700">@modalMessage</p>;
+
+    private RenderFragment ModalConfirm(Func<Task> action) =>
+    @<div class="text-gray-800 bg-[#FEF9F3] dark:text-gray-200 dark:bg-gray-700">
+        <p class="p-4 font-bold">@modalMessage</p>
+        <form method="dialog" class="pl-4 pb-4">
+            <button type="submit" class="btn btn-primary" @onclick=action>Confirm</button>
+        </form>
+    </div>;
+}
+

@@ -1,8 +1,6 @@
 ﻿using Azure.Identity;
 using Azure.Storage.Blobs;
 using DiscussionForum.Core.Behaviors;
-using DiscussionForum.Core.Services;
-using DiscussionForum.Shared.Interfaces;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +12,6 @@ public static class ServiceRegistrations
     {
         services.AddValidatorsFromAssemblyContaining<AppDbContext>(ServiceLifetime.Singleton);
         services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<AppDbContext>().AddOpenRequestPreProcessor(typeof(ValidationBehavior<>)));
-        services.AddScoped<IDataFetchQueries, DataFetchServices>();
         services.AddDbContext<AppDbContext>(x =>
         {
             x.UseSqlServer(configuration.GetConnectionString("SqlServer"), o => o.EnableRetryOnFailure(3));

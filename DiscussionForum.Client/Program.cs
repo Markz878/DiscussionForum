@@ -2,7 +2,6 @@ global using DiscussionForum.Client.Authentication;
 global using DiscussionForum.Client.Handlers.MessageLikes;
 global using DiscussionForum.Client.Handlers.Messages;
 global using DiscussionForum.Client.Handlers.Topics;
-global using DiscussionForum.Client.Services;
 global using DiscussionForum.Shared;
 global using DiscussionForum.Shared.DTO.Messages;
 global using DiscussionForum.Shared.DTO.Topics;
@@ -30,6 +29,5 @@ builder.Services.AddHttpClient("Client", config =>
     })
     .AddStandardResilienceHandler();
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<Program>());
-builder.Services.AddScoped<IDataFetchQueries, DataFetchClientServices>();
 builder.Services.AddScoped<RenderLocation, ClientRenderLocation>();
 await builder.Build().RunAsync();
