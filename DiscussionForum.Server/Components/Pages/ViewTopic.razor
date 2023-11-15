@@ -1,5 +1,7 @@
 ﻿@page "/topic/{topicid:long}"
 
+<PageTitle>@(_topic?.Title[..40] ?? "Discussion Forum")</PageTitle>
+
 @if (_topic is not null)
 {
     <DiscussionForum.Client.Components.ViewTopic.ViewTopicComponent Topic="_topic" UserInfo="_userInfo" @rendermode="RenderMode.InteractiveWebAssembly"/>
