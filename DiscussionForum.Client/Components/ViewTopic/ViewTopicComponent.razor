@@ -1,12 +1,12 @@
 ﻿<div class="center-container p-2 scroll-smooth">
-    <TopicHeader Topic="Topic" UserInfo="_userInfo" InvokeDeleteConfirm="ShowDeleteTopicConfirm" />
+    <TopicHeader Topic="Topic" UserInfo="UserInfo" InvokeDeleteConfirm="ShowDeleteTopicConfirm" />
 
     <div class="bg-gray-400 h-[1px] w-full mb-2" />
 
-    <TopicMessageComponent Message="@Topic.Messages[0]" CanDelete=false CurrentUserInfo="@_userInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
+    <TopicMessageComponent Message="@Topic.Messages[0]" CanDelete=false CurrentUserInfo="@UserInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
     @foreach (TopicMessage message in Topic.Messages.Skip(1))
     {
-        <TopicMessageComponent Message="@message" CurrentUserInfo="@_userInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
+        <TopicMessageComponent Message="@message" CurrentUserInfo="@UserInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
     }
     <AuthorizeView>
         <Authorized>

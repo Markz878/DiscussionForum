@@ -2,5 +2,5 @@
 
 @if (_topic is not null)
 {
-    <DiscussionForum.Client.Components.ViewTopic.ViewTopicComponent Topic="_topic" @rendermode="RenderMode.InteractiveWebAssembly"/>
+    <DiscussionForum.Client.Components.ViewTopic.ViewTopicComponent Topic="_topic" UserInfo="_userInfo" @rendermode="RenderMode.InteractiveWebAssembly"/>
 }

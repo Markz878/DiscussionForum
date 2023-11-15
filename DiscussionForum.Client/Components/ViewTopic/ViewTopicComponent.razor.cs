@@ -8,22 +8,15 @@ public sealed partial class ViewTopicComponent : IAsyncDisposable
 {
     [Inject] public required IMediator Mediator { get; set; }
     [Inject] public required NavigationManager Navigation { get; init; }
-    [CascadingParameter] public required Task<AuthenticationState> AuthenticationStateTask { get; init; }
     [Inject] public required RenderLocation RenderLocation { get; init; }
     [Parameter][EditorRequired] public required GetTopicByIdResult Topic { get; init; }
+    [Parameter][EditorRequired] public required UserInfo UserInfo { get; init; }
 
     private HubConnection? _hubConnection;
-
-    private UserInfo? _userInfo;
     private Modal? modal;
     private string modalHeader = "";
     private string modalMessage = "";
     private RenderFragment? modalContent;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _userInfo = await AuthenticationStateTask.GetUserInfo();
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -93,7 +86,7 @@ public sealed partial class ViewTopicComponent : IAsyncDisposable
             if (messageToEdit is not null)
             {
                 messageToEdit.LikesCount = likesCount;
-                if (_userInfo?.TryGetUserId() == userId)
+                if (UserInfo?.TryGetUserId() == userId)
                 {
                     messageToEdit.HasUserUpvoted = likeAdded;
                 }
