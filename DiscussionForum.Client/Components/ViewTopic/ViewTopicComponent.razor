@@ -8,15 +8,10 @@
     {
         <TopicMessageComponent Message="@message" CurrentUserInfo="@UserInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
     }
-    <AuthorizeView>
-        <Authorized>
-            <div class="bg-gray-400 h-[1px] w-full my-2 mb-4" />
-            <AddTopicMessageComponent TopicId="@Topic.Id" AdditionalClasses="mx-auto mb-2 w-full" />
-        </Authorized>
-        <NotAuthorized>
-            <p>Log in to comment...</p>
-        </NotAuthorized>
-    </AuthorizeView>
+
+    <div class="bg-gray-400 h-[1px] w-full my-2 mb-4" />
+
+    <AddTopicMessageComponent TopicId="@Topic.Id" AdditionalClasses="mx-auto mb-2 w-full" />
 </div>
 
 <Modal @ref=modal Header="@modalHeader">
