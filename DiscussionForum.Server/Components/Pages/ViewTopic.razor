@@ -1,6 +1,6 @@
 ﻿@page "/topic/{topicid:long}"
 
-<PageTitle>@(_topic?.Title[..40] ?? "Discussion Forum")</PageTitle>
+<PageTitle>@(_topic?.Title ?? "Discussion Forum")</PageTitle>
 
 @if (_topic is not null)
 {
