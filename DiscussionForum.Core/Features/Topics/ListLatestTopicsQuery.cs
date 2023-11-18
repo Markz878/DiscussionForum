@@ -41,7 +41,7 @@ internal sealed class ListLatestTopicsQueryHandler : IRequestHandler<ListLatestT
         IQueryable<Topic> query = _db.Topics;
         if (string.IsNullOrWhiteSpace(request.SearchText) is false)
         {
-            query = query.Where(x => x.Title.ToLower().Contains((request.SearchText ?? string.Empty).ToLower()));
+            query = query.Where(x => EF.Functions.Contains(x.Title, request.SearchText));
         }
         List<TopicResult> topics = await GetTopics(query, request.PageNumber, request.TopicsCount, cancellationToken);
         int topicsCount = await query.CountAsync(cancellationToken);
