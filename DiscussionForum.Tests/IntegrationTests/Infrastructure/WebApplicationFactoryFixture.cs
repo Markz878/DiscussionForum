@@ -21,7 +21,7 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.AddDbContext<AppDbContext>(options =>
             {
-                string connectionString = "Data Source=127.0.0.1,1433;Initial Catalog=DiscussionForumIntegrationTests;User ID=sa;Password=yourStrong(!)Password;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;";
+                string connectionString = "Data Source=127.0.0.1,5000;Initial Catalog=DiscussionForumIntegrationTests;User ID=sa;Password=yourStrong(!)Password;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;";
                 options.UseSqlServer(connectionString, options => options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();

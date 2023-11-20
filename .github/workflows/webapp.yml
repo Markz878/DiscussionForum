@@ -51,7 +51,7 @@ jobs:
         run: |
             cd DiscussionForum.Tests
             docker build -t discussionforum-db -f SqlServerFtsDockerfile .
-            docker run -e "MSSQL_PID=Developer" -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=yourStrong(!)Password" -p 1433:1433 -d discussionforum-db
+            docker run -e "MSSQL_PID=Developer" -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=yourStrong(!)Password" -p 5000:1433 -d discussionforum-db
 
       - name: Run Azurite in Docker
         run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
