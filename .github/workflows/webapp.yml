@@ -36,35 +36,29 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 18.x
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
 
-      # - name: Minify tailwind output
-      #   run: |
-      #     cd DiscussionForum.Server
-      #     npm install -D tailwindcss
-      #     npx tailwindcss -i Styles/tailwind.css -o wwwroot/css/output.css --minify
+      - name: Minify tailwind output
+        run: |
+          cd DiscussionForum.Server
+          npm install -D tailwindcss
+          npx tailwindcss -i Styles/tailwind.css -o wwwroot/css/output.css --minify
+          
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          
+      - name: Log in to container registry
+        run: az acr login -n ${{ vars.CONTAINER_REGISTRY_NAME }}
 
       - name: Run SQL Server in Docker
-        run: |
-            cd DiscussionForum.Tests
-            docker build -t discussionforum-db -f SqlServerFtsDockerfile .
-            docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d discussionforum-db
-
-      - name: Ping sql server
-        shell: pwsh
-        run: |
-            echo ((new-object Net.Sockets.TcpClient).Connect('127.0.0.1','1433'))
-
-      # - name: Connect sql server
-      #   shell: pwsh
-      #   run: |
-      #       $connectionString = "Server=127.0.0.1,1433;Database=DiscussionForum;User Id=sa;Password=yourStrong(!)Password;"
-      #       $connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
-      #       $connection.Open()
-      #       $connection.Close()
+        run: docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d  ${{ vars.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum-db:latest
 
       - name: Run Azurite in Docker
         run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
@@ -81,19 +75,10 @@ jobs:
         continue-on-error: true
         run: dotnet test DiscussionForum.TestE2E -c Release
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
       - name: Set Current Datetime As TAG
         run: |
           echo "TAG=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
-      - name: Log in to container registry
-        run: az acr login -n ${{ vars.CONTAINER_REGISTRY_NAME }}
 
       - name: Publish App To Container Registry
         run: |

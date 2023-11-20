@@ -3,7 +3,7 @@
 
 # Base OS layer: Latest Ubuntu LTS
 FROM --platform=linux/amd64 ubuntu:focal
-
+USER root
 # Install prerequistes since it is needed to get repo config for SQL server
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -23,5 +23,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     rm -rf /var/lib/apt/lists
 
 EXPOSE 1433
+USER mssql
 # Run SQL Server process
 CMD /opt/mssql/bin/sqlservr
