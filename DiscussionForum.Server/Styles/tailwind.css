@@ -18,19 +18,19 @@
 
 @layer components {
     .btn {
-        @apply rounded border-2 inline-block border-gray-500 py-1 px-2 whitespace-nowrap font-semibold transition-colors focus:border-black focus:outline-none;
+        @apply rounded border-2 inline-block py-1 px-2 whitespace-nowrap font-semibold transition-colors focus:border-black focus:outline-none;
     }
 
     .btn-small {
-        @apply rounded border-2 inline-block border-gray-500 px-2 whitespace-nowrap transition-colors focus:border-black focus:outline-none;
+        @apply rounded border-2 inline-block px-2 whitespace-nowrap transition-colors focus:border-black focus:outline-none;
     }
 
     .btn-primary {
-        @apply bg-green-500 border-gray-600 hover:border-black focus:border-black focus:bg-green-600 active:bg-green-700 dark:bg-green-600 dark:hover:border-white dark:focus:border-white dark:focus:bg-green-700 dark:active:bg-green-800 disabled:bg-gray-600;
+        @apply bg-green-500 border-green-700 hover:border-black focus:border-black focus:bg-green-600 active:bg-green-700 dark:bg-green-600 dark:hover:border-white dark:focus:border-white dark:focus:bg-green-700 dark:active:bg-green-800 disabled:bg-gray-600;
     }
 
     .btn-secondary {
-        @apply bg-neutral-400 border-gray-600 hover:border-black focus:border-black focus:bg-neutral-500 active:bg-neutral-600 dark:bg-neutral-500 dark:hover:border-white dark:focus:border-white dark:focus:bg-neutral-500 dark:active:bg-neutral-600 disabled:bg-gray-600;
+        @apply bg-neutral-400 border-neutral-700 hover:border-black focus:border-black focus:bg-neutral-500 active:bg-neutral-600 dark:bg-neutral-500 dark:hover:border-white dark:focus:border-white dark:focus:bg-neutral-500 dark:active:bg-neutral-600 disabled:bg-gray-600;
     }
 
     .form-input {

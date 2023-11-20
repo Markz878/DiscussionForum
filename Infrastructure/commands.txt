@@ -9,4 +9,12 @@ az containerapp logs show -n discussionforum -g rg-DiscussionForum --follow
 cd DiscussionForum\DiscussionForum.TestE2E\bin\Debug\net8.0
 pwsh playwright.ps1 codegen
 
-docker run -e ConnectionStrings__SqlServer="Data Source=host.docker.internal,1433;Initial Catalog=DiscussionForum;User ID=sa;Password=yourStrong(!)Password;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;" -e FileStorageSettings__StorageUri="http://host.docker.internal:10000/devstoreaccount1' -e ASPNETCORE_ENVIRONMENT='Development' -p 8080:8080 -d ${{ vars.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum-db:latest
+docker run -e ConnectionStrings__SqlServer="Data Source=host.docker.internal,1433;Initial Catalog=DiscussionForum;User ID=sa;Password=yourStrong(!)Password;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;" -e FileStorageSettings__StorageUri="http://host.docker.internal:10000/devstoreaccount1" -e ASPNETCORE_ENVIRONMENT="Development" -p 8080:8080 -d forumtest-alpine
+
+echo ((new-object Net.Sockets.TcpClient).Connect('127.0.0.1','1433'))
+
+$connectionString = "Server=127.0.0.1,1433;Database=DiscussionForum;User Id=sa;Password=yourStrong(!)Password;" ´
+$connection = New-Object System.Data.SqlClient.SqlConnection($connectionString) ´
+$connection.Open() ´
+$connection.Close() ´
+

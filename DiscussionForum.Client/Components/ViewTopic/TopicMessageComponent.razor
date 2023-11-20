@@ -26,7 +26,7 @@
         <EditForm Model="_editingMessage" OnValidSubmit="SubmitMessageEdit" FormName="EditMessage" Enhance>
          <DataAnnotationsValidator />
          <ValidationSummary />
-         <InputTextArea @bind-Value=_editingMessage.Message class="bg-transparent my-2 w-full max-h-80 min-h-[2rem]" />
+         <InputTextArea @bind-Value=_editingMessage.Message class="bg-transparent my-2 w-full max-h-80 min-h-[2rem] w-full rounded-md border-[1px] border-gray-100 bg-clip-padding p-2 leading-6 text-gray-800 shadow transition-colors focus:border-gray-400 dark:bg-gray-900 dark:text-white" />
          <div class="flex">
              <button class="btn-small btn-primary mr-1" type="submit">Submit</button>
              <button type="button" class="btn-small btn-secondary mx-1" @onclick="CancelMessageEdit">Cancel</button>

@@ -1,6 +1,6 @@
 function adjustTextareaHeight(textarea) {
     textarea.style.height = 'auto';  // Reset height to auto to correctly calculate scrollHeight
-    textarea.style.height = `${textarea.scrollHeight}px`;  // Set height to scrollHeight
+    textarea.style.height = `${textarea.scrollHeight + 2}px`;  // Set height to scrollHeight
 }
 
 const observer = new MutationObserver((mutationsList, _) => {
