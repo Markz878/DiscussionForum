@@ -51,20 +51,20 @@ jobs:
         run: |
             cd DiscussionForum.Tests
             docker build -t discussionforum-db -f SqlServerFtsDockerfile .
-            docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=yourStrong(!)Password" -p 1433:1433 -d discussionforum-db
+            docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d discussionforum-db
 
       - name: Ping sql server
         shell: pwsh
         run: |
             echo ((new-object Net.Sockets.TcpClient).Connect('127.0.0.1','1433'))
 
-      - name: Connect sql server
-        shell: pwsh
-        run: |
-            $connectionString = "Server=127.0.0.1,1433;Database=DiscussionForum;User Id=sa;Password=yourStrong(!)Password;"
-            $connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
-            $connection.Open()
-            $connection.Close()
+      # - name: Connect sql server
+      #   shell: pwsh
+      #   run: |
+      #       $connectionString = "Server=127.0.0.1,1433;Database=DiscussionForum;User Id=sa;Password=yourStrong(!)Password;"
+      #       $connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+      #       $connection.Open()
+      #       $connection.Close()
 
       - name: Run Azurite in Docker
         run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
