@@ -6,12 +6,16 @@
 {
     <div class="center-container p-4">
         <EditForm Model="CreateUserModel" OnValidSubmit="SubmitUserName" FormName="SetUserName" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <label class="text-lg" for="user-name">Set your username:</label>
-            <InputText id="user-name" class="form-input" @bind-Value="CreateUserModel.UserName" />
-            <button type="submit" class="btn btn-primary my-2">Submit</button>
-            <a href="/" class="btn btn-secondary my-2 mx-2">Back</a>
-        </EditForm>
+             <DataAnnotationsValidator />
+             <ValidationSummary />
+             <label class="text-lg" for="user-name">Set your username:</label>
+             <InputText id="user-name" class="form-input" @bind-Value="CreateUserModel.UserName" />
+             <button type="submit" class="btn btn-primary my-2">Submit</button>
+             <a href="/" class="btn btn-secondary my-2 mx-2">Back</a>
+         </EditForm>
+        @if (string.IsNullOrWhiteSpace(_errorMessage) is false)
+        {
+            <p class="text-red-500">@_errorMessage</p>
+        }
     </div>
 }

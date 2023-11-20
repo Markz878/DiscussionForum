@@ -26,6 +26,7 @@ public partial class SetUserName
     {
         try
         {
+            _errorMessage = "";
             if (_userInfo?.IsAuthenticated == true && string.IsNullOrEmpty(CreateUserModel?.UserName) is false)
             {
                 await Mediator.Send(new UpsertUserCommand() { UserId = _userInfo.GetUserId(), Email = _userInfo.GetUserEmail(), UserName = CreateUserModel.UserName });
