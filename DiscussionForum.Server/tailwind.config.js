@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        './Components/**/*.razor',
+        './Pages/**/*.razor',
         '../DiscussionForum.Client/Components/**/*.razor'
     ],
     theme: {
