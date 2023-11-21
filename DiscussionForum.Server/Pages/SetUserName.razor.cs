@@ -3,7 +3,7 @@ using DiscussionForum.Shared.DTO.Users;
 using EntityFramework.Exceptions.Common;
 using System.ComponentModel.DataAnnotations;
 
-namespace DiscussionForum.Server.Components.Pages;
+namespace DiscussionForum.Server.Pages;
 
 [Authorize]
 public partial class SetUserName
@@ -13,7 +13,7 @@ public partial class SetUserName
     [CascadingParameter] public required Task<AuthenticationState> AuthenticationStateTask { get; init; }
     [SupplyParameterFromForm] public CreateUserModel? CreateUserModel { get; set; }
 
-    protected string? _errorMessage;
+    private string? _errorMessage;
     private UserInfo? _userInfo;
 
     protected override void OnInitialized()

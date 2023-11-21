@@ -2,7 +2,7 @@ using DiscussionForum.Core.Features.Topics;
 using DiscussionForum.Shared.DTO.Topics;
 using DiscussionForum.Shared.DTO.Users;
 
-namespace DiscussionForum.Server.Components.Pages;
+namespace DiscussionForum.Server.Pages;
 
 public sealed partial class ViewTopic
 {

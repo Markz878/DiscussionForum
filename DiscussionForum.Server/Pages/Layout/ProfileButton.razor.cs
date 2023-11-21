@@ -1,6 +1,6 @@
 using DiscussionForum.Shared.DTO.Users;
 
-namespace DiscussionForum.Server.Components.Layout;
+namespace DiscussionForum.Server.Pages.Layout;
 
 [Authorize]
 public sealed partial class ProfileButton

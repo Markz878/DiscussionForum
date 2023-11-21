@@ -1,6 +1,5 @@
 global using DiscussionForum.Core.FileService;
 global using DiscussionForum.Core.HelperMethods;
-global using DiscussionForum.Server.Components;
 global using DiscussionForum.Server.HelperMethods;
 global using DiscussionForum.Server.Hubs;
 global using DiscussionForum.Shared;
@@ -18,6 +17,7 @@ global using Microsoft.OpenApi.Models;
 global using System.Security.Claims;
 using DiscussionForum.Server.Endpoints;
 using DiscussionForum.Server.Installers;
+using DiscussionForum.Server.Pages;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.

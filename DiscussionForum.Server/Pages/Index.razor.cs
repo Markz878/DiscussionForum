@@ -1,9 +1,11 @@
 ﻿using DiscussionForum.Core.Features.Topics;
 using DiscussionForum.Shared.DTO.Topics;
 using DiscussionForum.Shared.DTO.Users;
+using Microsoft.AspNetCore.OutputCaching;
 
-namespace DiscussionForum.Server.Components.Pages;
+namespace DiscussionForum.Server.Pages;
 
+[OutputCache(Duration = 10)]
 public partial class Index
 {
     [Parameter] public int? PageNumber { get; set; }

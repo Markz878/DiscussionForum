@@ -23,14 +23,12 @@ internal sealed class UpsertUserCommandHandler : IRequestHandler<UpsertUserComma
 {
     private readonly AppDbContext db;
     private readonly ILogger<UpsertUserCommand> logger;
-    private readonly IValidator<UpsertUserCommand> validator;
     private readonly IDistributedCache cache;
 
-    public UpsertUserCommandHandler(AppDbContext db, ILogger<UpsertUserCommand> logger, IValidator<UpsertUserCommand> validator, IDistributedCache cache)
+    public UpsertUserCommandHandler(AppDbContext db, ILogger<UpsertUserCommand> logger, IDistributedCache cache)
     {
         this.db = db;
         this.logger = logger;
-        this.validator = validator;
         this.cache = cache;
     }
 
@@ -42,7 +40,6 @@ internal sealed class UpsertUserCommandHandler : IRequestHandler<UpsertUserComma
     /// <returns></returns>
     public async Task Handle(UpsertUserCommand request, CancellationToken cancellationToken = default)
     {
-        validator.ValidateAndThrow(request);
         User? user = await db.Users.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken);
         if (user == null)
         {

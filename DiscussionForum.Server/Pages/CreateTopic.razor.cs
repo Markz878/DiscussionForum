@@ -3,7 +3,7 @@ using DiscussionForum.Shared.DTO.Messages;
 using DiscussionForum.Shared.DTO.Users;
 using System.ComponentModel.DataAnnotations;
 
-namespace DiscussionForum.Server.Components.Pages;
+namespace DiscussionForum.Server.Pages;
 
 [Authorize(Policy = "HasUserName")]
 public sealed partial class CreateTopic
