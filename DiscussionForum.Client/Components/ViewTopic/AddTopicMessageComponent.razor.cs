@@ -7,7 +7,6 @@ public partial class AddTopicMessageComponent
     [Parameter] public string? AdditionalClasses { get; init; }
 
     private bool isBusy;
-    private readonly long fileMaxSize = 5_000_000;
     private string? errorMessage;
     private AddMessageModel newMessage = new();
 
@@ -17,9 +16,9 @@ public partial class AddTopicMessageComponent
         newMessage.Files = e.GetMultipleFiles().ToList();
         foreach (IBrowserFile file in newMessage.Files)
         {
-            if (file.Size > fileMaxSize)
+            if (file.Size > ValidationConstants.FileMaxSize)
             {
-                errorMessage = $"File {file.Name} had size of {file.Size}, maximum size is {fileMaxSize}.";
+                errorMessage = $"File {file.Name} had size of {file.Size}, maximum size is {ValidationConstants.FileMaxSize}.";
                 newMessage.Files.Clear();
                 return;
             }
@@ -35,7 +34,7 @@ public partial class AddTopicMessageComponent
             {
                 Message = newMessage.Message,
                 TopicId = TopicId,
-                AttachedFiles = newMessage?.Files?.Select(x => new AttachedFileInfo() { Name = x.Name, FileStream = x.OpenReadStream(fileMaxSize) }).ToArray()
+                AttachedFiles = newMessage?.Files?.Select(x => new AttachedFileInfo() { Name = x.Name, FileStream = x.OpenReadStream(ValidationConstants.FileMaxSize) }).ToArray()
             });
             newMessage = new();
         }

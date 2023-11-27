@@ -49,7 +49,7 @@ public sealed partial class CreateTopic
     }
 }
 
-public class AddTopicModel
+public class AddTopicModel : IValidatableObject
 {
     [Required]
     [MinLength(ValidationConstants.TopicTitleMinLength)]
@@ -61,4 +61,18 @@ public class AddTopicModel
     public string FirstMessage { get; set; } = "";
     [MaxLength(ValidationConstants.MessageMaxFiles, ErrorMessage = "Maximum upload of 4 files per message")]
     public IFormFileCollection? Files { get; set; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (validationContext.ObjectInstance is AddTopicModel model && model.Files is not null)
+        {
+            foreach (IFormFile file in model.Files)
+            {
+                if (file.Length > ValidationConstants.FileMaxSize)
+                {
+                    yield return new ValidationResult($"File with name {file.FileName} is too large, maximum size is {ValidationConstants.FileMaxSize / 1e6} Mb.");
+                }
+            }
+        }
+    }
 }

@@ -8,4 +8,5 @@ public static class ValidationConstants
     public const int UserEmailMaxLength = 250;
     public const int AttachmentNameMaxLength = 150;
     public const int MessageMaxFiles = 4;
+    public const int FileMaxSize = 5_000_000;
 }

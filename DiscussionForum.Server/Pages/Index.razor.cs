@@ -43,7 +43,7 @@ public partial class Index
 
     private string GetUrl(int page)
     {
-        return string.IsNullOrWhiteSpace(Search) ? $"/{page}" : $"/{page}?search={Search}";
+        return string.IsNullOrWhiteSpace(Search) ? $"/{page}#title" : $"/{page}?search={Search}#title";
     }
 
     private bool CanShowPreviousPageLink()
