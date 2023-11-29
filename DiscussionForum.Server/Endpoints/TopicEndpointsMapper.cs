@@ -1,6 +1,5 @@
 ﻿using DiscussionForum.Core.Features.Topics;
 using DiscussionForum.Shared.DTO.Topics;
-using System.Reflection;
 
 namespace DiscussionForum.Server.Endpoints;
 
@@ -11,22 +10,8 @@ public static class TopicEndpointsMapper
         RouteGroupBuilder topicGroup = routeBuilder.MapGroup("topics")
             .WithTags("Topics");
 
-        topicGroup.MapGet("latest/{page:int}", ListLatestTopics).AllowAnonymous();
-        topicGroup.MapGet("{topicId:long}", GetTopicById).AllowAnonymous();
         topicGroup.MapDelete("{topicId:long}", DeleteTopic);
         topicGroup.MapPatch("", EditTopicTitle);
-    }
-
-    public static async Task<Ok<ListLatestTopicsResult>> ListLatestTopics(int page, string? search, ClaimsPrincipal claimsPrincipal, IMediator mediator, CancellationToken cancellationToken)
-    {
-        ListLatestTopicsResult result = await mediator.Send(new ListLatestTopicsQuery() { PageNumber = page, TopicsCount = 10, SearchText = search }, cancellationToken);
-        return TypedResults.Ok(result);
-    }
-
-    public static async Task<Results<Ok<GetTopicByIdResult>, NotFound>> GetTopicById(long topicId, ClaimsPrincipal claimsPrincipal, IMediator mediator, CancellationToken cancellationToken)
-    {
-        GetTopicByIdResult? result = await mediator.Send(new GetTopicByIdQuery() { TopicId = topicId, UserId = claimsPrincipal.TryGetUserId() }, cancellationToken);
-        return result == null ? TypedResults.NotFound() : TypedResults.Ok(result);
     }
 
     public static async Task<NoContent> DeleteTopic(long topicId, ClaimsPrincipal claimsPrincipal, IMediator mediator, IHubContext<TopicHub> hub, CancellationToken cancellationToken)
@@ -43,25 +28,3 @@ public static class TopicEndpointsMapper
         return TypedResults.NoContent();
     }
 }
-
-public class AddTopicBinder
-{
-    public required string Title { get; init; }
-    public required string FirstMessage { get; init; }
-    public IFormFileCollection? AttachedFiles { get; set; }
-
-    public static async ValueTask<AddTopicBinder> BindAsync(HttpContext httpContext, ParameterInfo _)
-    {
-        IFormCollection form = await httpContext.Request.ReadFormAsync();
-        AddTopicBinder binder = new()
-        {
-            Title = form["title"][0] ?? "",
-            FirstMessage = form["firstMessage"][0] ?? "",
-            AttachedFiles = form.Files
-        };
-        return binder;
-    }
-}
-
-
-

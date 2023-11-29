@@ -15,7 +15,6 @@ global using Microsoft.AspNetCore.Components.Forms;
 global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 global using System.ComponentModel.DataAnnotations;
 global using System.Net.Http.Json;
-using Microsoft.Extensions.Http.Resilience;
 using System.Net.Http.Headers;
 
 WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -23,8 +22,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 builder.Services.AddHttpClient("Client", config =>
-    { 
-        config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress); 
+    {
+        config.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
         config.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("br"));
     })
     .AddStandardResilienceHandler();

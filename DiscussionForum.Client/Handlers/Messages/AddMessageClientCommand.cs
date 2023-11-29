@@ -1,4 +1,6 @@
-﻿namespace DiscussionForum.Client.Handlers.Messages;
+﻿using DiscussionForum.Shared.DTO;
+
+namespace DiscussionForum.Client.Handlers.Messages;
 
 internal sealed record AddMessageClientCommand : IRequest<AddMessageResponse>
 {
@@ -7,19 +9,10 @@ internal sealed record AddMessageClientCommand : IRequest<AddMessageResponse>
     public AttachedFileInfo[]? AttachedFiles { get; init; }
 }
 
-internal class AddMessageClientCommandHandler : IRequestHandler<AddMessageClientCommand, AddMessageResponse>
+internal class AddMessageClientCommandHandler(IHttpClientFactory httpClientFactory) : IRequestHandler<AddMessageClientCommand, AddMessageResponse>
 {
-    private const string path = "api/messages";
-    private readonly IHttpClientFactory httpClientFactory;
-
-    public AddMessageClientCommandHandler(IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
-
     public async Task<AddMessageResponse> Handle(AddMessageClientCommand message, CancellationToken cancellationToken)
     {
-        HttpClient httpClient = httpClientFactory.CreateClient("Client");
         MultipartFormDataContent formData = new()
         {
             { new StringContent(message.TopicId.ToString()), "topicid" },
@@ -32,8 +25,9 @@ internal class AddMessageClientCommandHandler : IRequestHandler<AddMessageClient
                 formData.Add(new StreamContent(item.FileStream), item.Name, item.Name);
             }
         }
-        HttpResponseMessage response = await httpClient.PostAsync(path, formData, cancellationToken);
-        AddMessageResponse? result = await response.Content.ReadFromJsonAsync<AddMessageResponse>(cancellationToken: cancellationToken);
+        HttpResponseMessage response = await httpClientFactory.CreateClient("Client")
+            .PostAsync("api/messages", formData, cancellationToken);
+        AddMessageResponse? result = await response.Content.ReadFromJsonAsync(JsonContext.Default.AddMessageResponse, cancellationToken);
         ArgumentNullException.ThrowIfNull(result);
         return result;
     }

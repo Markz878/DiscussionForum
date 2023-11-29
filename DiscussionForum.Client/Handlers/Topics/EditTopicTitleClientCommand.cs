@@ -1,4 +1,6 @@
-﻿namespace DiscussionForum.Client.Handlers.Topics;
+﻿using DiscussionForum.Shared.DTO;
+
+namespace DiscussionForum.Client.Handlers.Topics;
 
 internal sealed record EditTopicTitleClientCommand : IRequest
 {
@@ -6,18 +8,16 @@ internal sealed record EditTopicTitleClientCommand : IRequest
     public required string NewTitle { get; init; }
 }
 
-internal class EditTopicTitleClientCommandHandler : IRequestHandler<EditTopicTitleClientCommand>
+internal class EditTopicTitleClientCommandHandler(IHttpClientFactory httpClientFactory) : IRequestHandler<EditTopicTitleClientCommand>
 {
-    private const string path = "api/topics";
-    private readonly IHttpClientFactory httpClientFactory;
-
-    public EditTopicTitleClientCommandHandler(IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
-
     public async Task Handle(EditTopicTitleClientCommand request, CancellationToken cancellationToken)
     {
-        await httpClientFactory.CreateClient("Client").PatchAsJsonAsync(path, request, cancellationToken);
+        EditTopicTitleRequest editTopicTitleRequest = new()
+        {
+            TopicId = request.TopicId,
+            NewTitle = request.NewTitle
+        };
+        await httpClientFactory.CreateClient("Client")
+            .PatchAsJsonAsync("api/topics", editTopicTitleRequest, JsonContext.Default.EditTopicTitleRequest, cancellationToken);
     }
 }

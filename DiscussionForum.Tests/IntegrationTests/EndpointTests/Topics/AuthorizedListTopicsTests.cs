@@ -11,43 +11,6 @@ public class AuthorizedListTopicsTests : AuthorizedBaseTest
     }
 
     [Fact]
-    public async Task ListLatestTopics()
-    {
-        ListLatestTopicsResult? response = await client.GetFromJsonAsync<ListLatestTopicsResult>(uri + "/latest/0");
-        ArgumentNullException.ThrowIfNull(response);
-        response.Topics.Should().NotBeEmpty().And.HaveCount(10);
-        response.PageCount.Should().BeCloseTo(8, 2);
-    }
-
-    [Fact]
-    public async Task ListLatestTopicsWithSearch()
-    {
-        ListLatestTopicsResult? response = await client.GetFromJsonAsync<ListLatestTopicsResult>(uri + "/latest/0?search=product");
-        ArgumentNullException.ThrowIfNull(response);
-        response.Topics.Should().AllSatisfy(topic => topic.Title.ToLower().Should().Contain("product"));
-        response.PageCount.Should().BeLessThan(7);
-    }
-
-    [Fact]
-    public async Task GetTopic()
-    {
-        GetTopicByIdResult? response = await client.GetFromJsonAsync<GetTopicByIdResult>(uri + "/1");
-        ArgumentNullException.ThrowIfNull(response);
-        response.CreatedAt.Should().BeAfter(DateTimeOffset.UtcNow.AddYears(-1));
-        response.Title.Should().NotBeNullOrWhiteSpace();
-        response.UserName.Should().NotBeNullOrWhiteSpace();
-        response.CreatedAt.Should().BeAfter(DateTimeOffset.UtcNow.AddYears(-1));
-        response.Messages.Should().NotBeEmpty();
-        response.Messages.Should().AllSatisfy(message =>
-        {
-            message.Content.Should().NotBeNullOrWhiteSpace();
-            message.CreatedAt.Should().BeAfter(DateTimeOffset.UtcNow.AddYears(-1));
-            message.UserName.Should().NotBeNullOrWhiteSpace();
-            message.LikesCount.Should().BeGreaterOrEqualTo(0);
-        });
-    }
-
-    [Fact]
     public async Task DeleteTopic()
     {
         HttpResponseMessage response = await client.DeleteAsync(uri + "/" + 50);

@@ -5,20 +5,12 @@ internal class DeleteMessageClientCommand : IRequest
     public long MessageId { get; set; }
 }
 
-internal class DeleteMessageClientRequestHandler : IRequestHandler<DeleteMessageClientCommand>
+internal class DeleteMessageClientRequestHandler(IHttpClientFactory httpClientFactory) : IRequestHandler<DeleteMessageClientCommand>
 {
-    private const string path = "api/messages/";
-    private readonly IHttpClientFactory httpClientFactory;
-
-    public DeleteMessageClientRequestHandler(IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
-
     public async Task Handle(DeleteMessageClientCommand message, CancellationToken cancellationToken)
     {
-        HttpClient httpClient = httpClientFactory.CreateClient("Client");
-        HttpResponseMessage response = await httpClient.DeleteAsync(path + message.MessageId, cancellationToken);
+        HttpResponseMessage response = await httpClientFactory.CreateClient("Client")
+            .DeleteAsync("api/messages/" + message.MessageId, cancellationToken);
         response.EnsureSuccessStatusCode();
     }
 }
