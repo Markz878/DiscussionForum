@@ -26,17 +26,8 @@ public sealed record AddTopicResult
 }
 
 
-internal sealed class AddTopicCommandHandler : IRequestHandler<AddTopicCommand, AddTopicResult>
+internal sealed class AddTopicCommandHandler(AppDbContext db, IFileService fileService) : IRequestHandler<AddTopicCommand, AddTopicResult>
 {
-    private readonly AppDbContext _db;
-    private readonly IFileService _fileService;
-
-    public AddTopicCommandHandler(AppDbContext db, IFileService fileService)
-    {
-        _db = db;
-        _fileService = fileService;
-    }
-
     public async Task<AddTopicResult> Handle(AddTopicCommand request, CancellationToken cancellationToken = default)
     {
         DateTimeOffset timeStamp = DateTimeOffset.UtcNow;
@@ -60,16 +51,16 @@ internal sealed class AddTopicCommandHandler : IRequestHandler<AddTopicCommand, 
                 }
             ]
         };
-        _db.Topics.Add(newTopic);
+        db.Topics.Add(newTopic);
         try
         {
-            await _db.SaveChangesAsync(cancellationToken);
+            await db.SaveChangesAsync(cancellationToken);
             if (request.AttachedFiles?.Length > 0)
             {
                 foreach (AttachedFileInfo file in request.AttachedFiles)
                 {
                     Guid id = newTopic.Messages.First().AttachedFiles.First(x => x.Name == file.Name).Id;
-                    string? url = await _fileService.Upload(file.FileStream, id + file.Name, cancellationToken);
+                    string? url = await fileService.Upload(file.FileStream, id + file.Name, cancellationToken);
                 }
             }
             return new AddTopicResult { Id = newTopic.Id };

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.OutputCaching;
 
 namespace DiscussionForum.Server.Pages;
 
-[OutputCache(Duration = 10)]
+[OutputCache]
 public partial class Index
 {
     [Parameter] public int? PageNumber { get; set; }

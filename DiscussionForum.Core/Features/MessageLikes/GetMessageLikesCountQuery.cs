@@ -9,18 +9,13 @@ public sealed record GetMessageLikesCountResult
     public required int Count { get; init; }
 }
 
-internal class GetMessageLikesCountQueryHandler : IRequestHandler<GetMessageLikesCountQuery, GetMessageLikesCountResult>
+internal class GetMessageLikesCountQueryHandler(AppDbContext db) : IRequestHandler<GetMessageLikesCountQuery, GetMessageLikesCountResult>
 {
-    private readonly AppDbContext _db;
-
-    public GetMessageLikesCountQueryHandler(AppDbContext db)
-    {
-        _db = db;
-    }
-
     public async Task<GetMessageLikesCountResult> Handle(GetMessageLikesCountQuery message, CancellationToken cancellationToken = default)
     {
-        int count = await _db.MessageLikes.Where(x => x.MessageId == message.MessageId).CountAsync(cancellationToken);
+        int count = await db.MessageLikes
+            .Where(x => x.MessageId == message.MessageId)
+            .CountAsync(cancellationToken);
         return new GetMessageLikesCountResult() { Count = count };
     }
 }

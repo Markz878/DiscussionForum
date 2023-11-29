@@ -10,18 +10,14 @@ public sealed record GetMessageTopicIdResult()
     public required long TopicId { get; init; }
 }
 
-internal sealed class GetMessageTopicIdQueryHandler : IRequestHandler<GetMessageTopicIdQuery, GetMessageTopicIdResult?>
+internal sealed class GetMessageTopicIdQueryHandler(AppDbContext db) : IRequestHandler<GetMessageTopicIdQuery, GetMessageTopicIdResult?>
 {
-    private readonly AppDbContext _db;
-
-    public GetMessageTopicIdQueryHandler(AppDbContext db)
-    {
-        _db = db;
-    }
-
     public async Task<GetMessageTopicIdResult?> Handle(GetMessageTopicIdQuery request, CancellationToken cancellationToken)
     {
-        long topicId = await _db.Messages.Where(x => x.Id == request.MessageId).Select(x => x.TopicId).SingleOrDefaultAsync(cancellationToken);
+        long topicId = await db.Messages
+            .Where(x => x.Id == request.MessageId)
+            .Select(x => x.TopicId)
+            .SingleOrDefaultAsync(cancellationToken);
         if (topicId == 0)
         {
             return null;

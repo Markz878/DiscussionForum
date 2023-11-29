@@ -2,12 +2,8 @@
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 
 namespace DiscussionForum.Core.DataAccess;
-internal sealed class AppDbContext : DbContext, IDataProtectionKeyContext
+internal sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IDataProtectionKeyContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<User> Users { get; set; }

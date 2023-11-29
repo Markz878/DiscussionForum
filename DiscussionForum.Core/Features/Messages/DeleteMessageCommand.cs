@@ -10,20 +10,11 @@ public sealed record DeleteMessageCommand : IRequest
     public Role UserRole { get; set; }
 }
 
-internal class DeleteMessageHandler : IRequestHandler<DeleteMessageCommand>
+internal class DeleteMessageHandler(AppDbContext db, IFileService fileService) : IRequestHandler<DeleteMessageCommand>
 {
-    private readonly AppDbContext _db;
-    private readonly IFileService fileService;
-
-    public DeleteMessageHandler(AppDbContext db, IFileService fileService)
-    {
-        _db = db;
-        this.fileService = fileService;
-    }
-
     public async Task Handle(DeleteMessageCommand request, CancellationToken cancellationToken = default)
     {
-        Guid messageUsedId = await _db.Messages.Where(x => x.Id == request.MessageId).Select(x => x.UserId).SingleOrDefaultAsync(cancellationToken);
+        Guid messageUsedId = await db.Messages.Where(x => x.Id == request.MessageId).Select(x => x.UserId).SingleOrDefaultAsync(cancellationToken);
         if (messageUsedId == Guid.Empty)
         {
             throw NotFoundException.SetMessageFromType<Message>();
@@ -42,7 +33,7 @@ internal class DeleteMessageHandler : IRequestHandler<DeleteMessageCommand>
 
     private async Task<bool> CheckIfFirstMessage(long topicId, long messageId)
     {
-        long x = await _db.Topics
+        long x = await db.Topics
             .Where(x => x.Id == topicId)
             .Select(x => x.Messages.OrderBy(x => x.CreatedAt).First().Id)
             .SingleAsync();
@@ -51,7 +42,7 @@ internal class DeleteMessageHandler : IRequestHandler<DeleteMessageCommand>
 
     private async Task DeleteMessageFiles(DeleteMessageCommand request, CancellationToken cancellationToken)
     {
-        string[] files = await _db.MessageAttachedFiles
+        string[] files = await db.MessageAttachedFiles
             .Where(x => x.MessageId == request.MessageId)
             .Select(x => x.Id.ToString().ToLowerInvariant() + x.Name) // Blob storage uses lower case guids
             .ToArrayAsync(cancellationToken);
@@ -60,6 +51,6 @@ internal class DeleteMessageHandler : IRequestHandler<DeleteMessageCommand>
 
     private async Task DeleteMessage(DeleteMessageCommand request, CancellationToken cancellationToken)
     {
-        await _db.Messages.Where(x => x.Id == request.MessageId).ExecuteDeleteAsync(cancellationToken);
+        await db.Messages.Where(x => x.Id == request.MessageId).ExecuteDeleteAsync(cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
-﻿using DiscussionForum.Shared.DTO.Messages;
+﻿using DiscussionForum.Shared.DTO;
+using DiscussionForum.Shared.DTO.Messages;
 using DiscussionForum.Shared.DTO.Topics;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
@@ -11,30 +12,21 @@ public sealed record GetTopicByIdQuery : IRequest<GetTopicByIdResult>
     public Guid? UserId { get; set; }
 }
 
-internal sealed class GetTopicByIdQueryHandler : IRequestHandler<GetTopicByIdQuery, GetTopicByIdResult?>
+internal sealed class GetTopicByIdQueryHandler(AppDbContext db, IDistributedCache cache) : IRequestHandler<GetTopicByIdQuery, GetTopicByIdResult?>
 {
-    private readonly AppDbContext _db;
-    private readonly IDistributedCache cache;
-
-    public GetTopicByIdQueryHandler(AppDbContext db, IDistributedCache cache)
-    {
-        _db = db;
-        this.cache = cache;
-    }
-
     public async Task<GetTopicByIdResult?> Handle(GetTopicByIdQuery request, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"topic-{request.TopicId}-{request.UserId}";
         byte[]? cachedResultBytes = await cache.GetAsync(cacheKey, cancellationToken);
         if (cachedResultBytes is not null)
         {
-            GetTopicByIdResult? cachedResult = JsonSerializer.Deserialize<GetTopicByIdResult>(cachedResultBytes);
+            GetTopicByIdResult? cachedResult = JsonSerializer.Deserialize(cachedResultBytes, JsonContext.Default.GetTopicByIdResult);
             if (cachedResult is not null)
             {
                 return cachedResult;
             }
         }
-        GetTopicByIdResult? result = await _db.Topics
+        GetTopicByIdResult? result = await db.Topics
             .AsSplitQuery()
             .Where(x => x.Id == request.TopicId)
             .Select(x => new GetTopicByIdResult()
@@ -64,7 +56,7 @@ internal sealed class GetTopicByIdQueryHandler : IRequestHandler<GetTopicByIdQue
             .SingleOrDefaultAsync(cancellationToken);
         if (result is not null)
         {
-            await cache.SetAsync(cacheKey, JsonSerializer.SerializeToUtf8Bytes(result), new DistributedCacheEntryOptions()
+            await cache.SetAsync(cacheKey, JsonSerializer.SerializeToUtf8Bytes(result, JsonContext.Default.GetTopicByIdResult), new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
             }, cancellationToken);

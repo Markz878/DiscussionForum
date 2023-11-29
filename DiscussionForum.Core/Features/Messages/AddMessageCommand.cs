@@ -1,4 +1,5 @@
 ﻿using DiscussionForum.Shared.DTO.Messages;
+using System.Collections.Concurrent;
 
 namespace DiscussionForum.Core.Features.Messages;
 
@@ -19,16 +20,8 @@ public sealed class AddMessageCommandValidator : AbstractValidator<AddMessageCom
     }
 }
 
-internal sealed class AddMessageHandler : IRequestHandler<AddMessageCommand, AddMessageResponse>
+internal sealed class AddMessageHandler(AppDbContext db, IFileService fileService) : IRequestHandler<AddMessageCommand, AddMessageResponse>
 {
-    private readonly AppDbContext db;
-    private readonly IFileService fileService;
-
-    public AddMessageHandler(AppDbContext db, IFileService fileService)
-    {
-        this.db = db;
-        this.fileService = fileService;
-    }
     public async Task<AddMessageResponse> Handle(AddMessageCommand request, CancellationToken cancellationToken = default)
     {
         Topic parentTopic = await db.Topics.FirstOrDefaultAsync(x => x.Id == request.TopicId, cancellationToken)
@@ -52,15 +45,14 @@ internal sealed class AddMessageHandler : IRequestHandler<AddMessageCommand, Add
             if (request.AttachedFiles?.Length > 0)
             {
                 fileInfos = new(request.AttachedFiles.Length);
+                ConcurrentBag<Task<string?>> uploadTasks = [];
                 foreach (AttachedFileInfo file in request.AttachedFiles)
                 {
                     Guid id = message.AttachedFiles.First(x => x.Name == file.Name).Id;
-                    string? url = await fileService.Upload(file.FileStream, id + file.Name, cancellationToken);
-                    if (url != null)
-                    {
-                        fileInfos.Add(new AttachedFileResponse() { Name = file.Name, Id = id });
-                    }
+                    uploadTasks.Add(fileService.Upload(file.FileStream, id + file.Name, cancellationToken));
+                    fileInfos.Add(new AttachedFileResponse() { Name = file.Name, Id = id });
                 }
+                await Task.WhenAll(uploadTasks);
             }
             return new AddMessageResponse()
             {

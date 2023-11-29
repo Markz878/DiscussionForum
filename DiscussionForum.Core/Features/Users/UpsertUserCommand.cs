@@ -19,18 +19,8 @@ public sealed class UpsertUserValidator : AbstractValidator<UpsertUserCommand>
     }
 }
 
-internal sealed class UpsertUserCommandHandler : IRequestHandler<UpsertUserCommand>
+internal sealed class UpsertUserCommandHandler(AppDbContext db, ILogger<UpsertUserCommand> logger, IDistributedCache cache) : IRequestHandler<UpsertUserCommand>
 {
-    private readonly AppDbContext db;
-    private readonly ILogger<UpsertUserCommand> logger;
-    private readonly IDistributedCache cache;
-
-    public UpsertUserCommandHandler(AppDbContext db, ILogger<UpsertUserCommand> logger, IDistributedCache cache)
-    {
-        this.db = db;
-        this.logger = logger;
-        this.cache = cache;
-    }
 
     /// <summary>
     /// Creates a new user or updates an existing user UserName property

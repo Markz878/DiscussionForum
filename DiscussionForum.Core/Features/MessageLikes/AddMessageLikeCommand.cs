@@ -6,15 +6,8 @@ public sealed record AddMessageLikeCommand : IRequest
     public required long MessageId { get; init; }
 }
 
-internal sealed class AddMessageLikeCommandHandler : IRequestHandler<AddMessageLikeCommand>
+internal sealed class AddMessageLikeCommandHandler(AppDbContext db) : IRequestHandler<AddMessageLikeCommand>
 {
-    private readonly AppDbContext _db;
-
-    public AddMessageLikeCommandHandler(AppDbContext db)
-    {
-        _db = db;
-    }
-
     public async Task Handle(AddMessageLikeCommand request, CancellationToken cancellationToken = default)
     {
         try
@@ -24,8 +17,8 @@ internal sealed class AddMessageLikeCommandHandler : IRequestHandler<AddMessageL
                 MessageId = request.MessageId,
                 UserId = request.UserId,
             };
-            _db.MessageLikes.Add(messageLike);
-            await _db.SaveChangesAsync(cancellationToken);
+            db.MessageLikes.Add(messageLike);
+            await db.SaveChangesAsync(cancellationToken);
         }
         catch (UniqueConstraintException)
         {

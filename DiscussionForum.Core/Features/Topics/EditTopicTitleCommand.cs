@@ -14,22 +14,18 @@ public sealed class EditTopicTitleCommandHandlerValidator : AbstractValidator<Ed
 {
     public EditTopicTitleCommandHandlerValidator()
     {
-        RuleFor(x => x.NewTitle).NotEmpty().MinimumLength(ValidationConstants.TopicTitleMinLength).MaximumLength(ValidationConstants.TopicTitleMaxLength);
+        RuleFor(x => x.NewTitle)
+            .NotEmpty()
+            .MinimumLength(ValidationConstants.TopicTitleMinLength)
+            .MaximumLength(ValidationConstants.TopicTitleMaxLength);
     }
 }
 
-internal sealed class EditTopicTitleCommandHandler : IRequestHandler<EditTopicTitleCommand>
+internal sealed class EditTopicTitleCommandHandler(AppDbContext db) : IRequestHandler<EditTopicTitleCommand>
 {
-    private readonly AppDbContext _db;
-
-    public EditTopicTitleCommandHandler(AppDbContext db)
-    {
-        _db = db;
-    }
-
     public async Task Handle(EditTopicTitleCommand request, CancellationToken cancellationToken = default)
     {
-        Guid topicUserId = await _db.GetTopicUserId(request.TopicId, cancellationToken);
+        Guid topicUserId = await db.GetTopicUserId(request.TopicId, cancellationToken);
 
         if (topicUserId == Guid.Empty)
         {
@@ -39,7 +35,7 @@ internal sealed class EditTopicTitleCommandHandler : IRequestHandler<EditTopicTi
         {
             throw new ForbiddenException();
         }
-        int rows = await _db.Topics
+        int rows = await db.Topics
             .Where(x => x.Id == request.TopicId)
             .ExecuteUpdateAsync(x => x.SetProperty(x => x.Title, request.NewTitle), cancellationToken);
         if (rows == 0)

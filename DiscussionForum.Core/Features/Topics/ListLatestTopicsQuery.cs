@@ -12,17 +12,8 @@ public sealed record ListLatestTopicsQuery : IRequest<ListLatestTopicsResult>
     public int TopicsCount { get; init; } = 10;
 }
 
-internal sealed class ListLatestTopicsQueryHandler : IRequestHandler<ListLatestTopicsQuery, ListLatestTopicsResult>
+internal sealed class ListLatestTopicsQueryHandler(AppDbContext db, IDistributedCache cache) : IRequestHandler<ListLatestTopicsQuery, ListLatestTopicsResult>
 {
-    private readonly AppDbContext _db;
-    private readonly IDistributedCache cache;
-
-    public ListLatestTopicsQueryHandler(AppDbContext db, IDistributedCache cache)
-    {
-        _db = db;
-        this.cache = cache;
-    }
-
     public async Task<ListLatestTopicsResult> Handle(ListLatestTopicsQuery request, CancellationToken cancellationToken = default)
     {
         if (request.TopicsCount <= 0)
@@ -39,7 +30,7 @@ internal sealed class ListLatestTopicsQueryHandler : IRequestHandler<ListLatestT
                 return cachedResult;
             }
         }
-        IQueryable<Topic> query = _db.Topics;
+        IQueryable<Topic> query = db.Topics;
         if (string.IsNullOrWhiteSpace(request.SearchText) is false)
         {
             query = query.Where(x => EF.Functions.Contains(x.Title, request.SearchText));

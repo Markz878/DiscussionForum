@@ -19,18 +19,11 @@ public sealed class EditMessageCommandValidator : AbstractValidator<EditMessageC
     }
 }
 
-internal sealed class EditMessageHandler : IRequestHandler<EditMessageCommand, EditMessageResult>
+internal sealed class EditMessageHandler(AppDbContext db) : IRequestHandler<EditMessageCommand, EditMessageResult>
 {
-    private readonly AppDbContext _db;
-
-    public EditMessageHandler(AppDbContext db)
-    {
-        _db = db;
-    }
-
     public async Task<EditMessageResult> Handle(EditMessageCommand request, CancellationToken cancellationToken = default)
     {
-        Guid messageUserId = await _db.Messages
+        Guid messageUserId = await db.Messages
             .Where(x => x.Id == request.MessageId)
             .Select(x => x.UserId)
             .SingleOrDefaultAsync(cancellationToken);
@@ -44,7 +37,7 @@ internal sealed class EditMessageHandler : IRequestHandler<EditMessageCommand, E
             throw new ForbiddenException();
         }
         DateTimeOffset timeStamp = DateTimeOffset.UtcNow;
-        await _db.Messages
+        await db.Messages
             .Where(x => x.Id == request.MessageId)
             .ExecuteUpdateAsync(x => x
                 .SetProperty(x => x.Content, request.Message)

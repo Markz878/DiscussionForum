@@ -9,18 +9,11 @@ public sealed record GetUserInfoQuery : IRequest<GetUserInfoResult?>
 public sealed record GetUserInfoResult(Guid Id, string UserName, string Email, DateTimeOffset JoinedAt, Role Role);
 
 
-internal sealed class GetUserInfoQueryHandler : IRequestHandler<GetUserInfoQuery, GetUserInfoResult?>
+internal sealed class GetUserInfoQueryHandler(AppDbContext db) : IRequestHandler<GetUserInfoQuery, GetUserInfoResult?>
 {
-    private readonly AppDbContext _db;
-
-    public GetUserInfoQueryHandler(AppDbContext db)
-    {
-        _db = db;
-    }
-
     public async Task<GetUserInfoResult?> Handle(GetUserInfoQuery message, CancellationToken cancellationToken = default)
     {
-        User? user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == message.Id, cancellationToken);
+        User? user = await db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == message.Id, cancellationToken);
         if (user == null)
         {
             return null;

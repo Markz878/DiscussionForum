@@ -6,10 +6,12 @@ using Microsoft.Extensions.Options;
 
 namespace DiscussionForum.Core.FileService;
 
-internal sealed class AzureBlobStorageService : IFileService
+internal sealed class AzureBlobStorageService(
+    BlobServiceClient blobService, 
+    IOptions<FileStorageSettings> storageSettings, 
+    ILogger<AzureBlobStorageService> logger) : IFileService
 {
-    private readonly BlobContainerClient _blobContainerClient;
-    private readonly ILogger<AzureBlobStorageService> _logger;
+    private readonly BlobContainerClient _blobContainerClient = blobService.GetBlobContainerClient(storageSettings.Value.ContainerName);
     private static readonly BlobUploadOptions _blobOptions = new()
     {
         HttpHeaders = new BlobHttpHeaders()
@@ -18,24 +20,18 @@ internal sealed class AzureBlobStorageService : IFileService
         }
     };
 
-    public AzureBlobStorageService(BlobServiceClient blobService, IOptions<FileStorageSettings> storageSettings, ILogger<AzureBlobStorageService> logger)
-    {
-        _blobContainerClient = blobService.GetBlobContainerClient(storageSettings.Value.ContainerName);
-        _logger = logger;
-    }
-
     public async Task<string?> Upload(Stream fileStream, string fileName, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Uploading file with name {fileName} to storage", fileName);
+            logger.LogInformation("Uploading file with name {fileName} to storage", fileName);
             BlockBlobClient blob = _blobContainerClient.GetBlockBlobClient(fileName);
             Response<BlobContentInfo> blobResponse = await blob.UploadAsync(fileStream, _blobOptions, cancellationToken);
             return _blobContainerClient.Uri + "/" + fileName;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not upload file with name {fileName}.", fileName);
+            logger.LogError(ex, "Could not upload file with name {fileName}.", fileName);
             return null;
         }
     }
@@ -64,7 +60,7 @@ internal sealed class AzureBlobStorageService : IFileService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not delete file with name {fileName}", fileName);
+            logger.LogError(ex, "Could not delete file with name {fileName}", fileName);
             return false;
         }
     }

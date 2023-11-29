@@ -9,16 +9,8 @@ public sealed record DeleteTopicCommand : IRequest
     public Role UserRole { get; init; }
 }
 
-internal sealed class DeleteTopicHandler : IRequestHandler<DeleteTopicCommand>
+internal sealed class DeleteTopicHandler(AppDbContext db, IFileService fileService) : IRequestHandler<DeleteTopicCommand>
 {
-    private readonly AppDbContext _db;
-    private readonly IFileService fileService;
-
-    public DeleteTopicHandler(AppDbContext db, IFileService fileService)
-    {
-        _db = db;
-        this.fileService = fileService;
-    }
 
     /// <summary>
     /// Deletes a topic and all related messages
@@ -30,7 +22,7 @@ internal sealed class DeleteTopicHandler : IRequestHandler<DeleteTopicCommand>
     /// <exception cref="ForbiddenException"></exception>
     public async Task Handle(DeleteTopicCommand request, CancellationToken cancellationToken = default)
     {
-        Guid topicUserId = await _db.GetTopicUserId(request.TopicId, cancellationToken);
+        Guid topicUserId = await db.GetTopicUserId(request.TopicId, cancellationToken);
 
         if (topicUserId == Guid.Empty)
         {
@@ -46,7 +38,7 @@ internal sealed class DeleteTopicHandler : IRequestHandler<DeleteTopicCommand>
 
     private async Task DeleteTopicMessageFiles(DeleteTopicCommand request, CancellationToken cancellationToken)
     {
-        string[] files = await _db.MessageAttachedFiles
+        string[] files = await db.MessageAttachedFiles
             .Where(x => x.Message!.TopicId == request.TopicId)
             .Select(x => x.Id.ToString().ToLowerInvariant() + x.Name)
             .ToArrayAsync(cancellationToken);
@@ -55,7 +47,7 @@ internal sealed class DeleteTopicHandler : IRequestHandler<DeleteTopicCommand>
 
     private async Task DeleteTopic(DeleteTopicCommand request, CancellationToken cancellationToken)
     {
-        int rows = await _db.Topics
+        int rows = await db.Topics
                     .Where(x => x.Id == request.TopicId)
                     .ExecuteDeleteAsync(cancellationToken);
     }

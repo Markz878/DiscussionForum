@@ -6,5 +6,8 @@ public class CacheInstaller : IInstaller
     {
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddMemoryCache();
+        builder.Services.AddOutputCache(options =>
+            options.AddBasePolicy(builder =>
+                builder.Cache().Expire(TimeSpan.FromSeconds(10))));
     }
 }
