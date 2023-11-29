@@ -30,14 +30,9 @@ public class LoggingInstaller : IInstaller
     }
 }
 
-public class IgnoreRequestPathsTelemetryProcessor : ITelemetryProcessor
+public class IgnoreRequestPathsTelemetryProcessor(ITelemetryProcessor next) : ITelemetryProcessor
 {
-    private readonly ITelemetryProcessor _next;
-
-    public IgnoreRequestPathsTelemetryProcessor(ITelemetryProcessor next)
-    {
-        _next = next;
-    }
+    private readonly ITelemetryProcessor _next = next;
 
     public void Process(ITelemetry telemetry)
     {

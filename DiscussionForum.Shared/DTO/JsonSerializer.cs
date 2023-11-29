@@ -9,6 +9,7 @@ namespace DiscussionForum.Shared.DTO;
 [JsonSerializable(typeof(EditMessageRequest))]
 [JsonSerializable(typeof(EditMessageResult))]
 [JsonSerializable(typeof(EditTopicTitleRequest))]
+[JsonSerializable(typeof(ListLatestTopicsResult))]
 public partial class JsonContext : JsonSerializerContext
 {
 }

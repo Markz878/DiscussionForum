@@ -12,6 +12,7 @@ public static class ValidatorFactory
         return builder.WithParameterValidation();
     }
 
+    private static readonly string[] ContentTypes = ["application/problem+json"];
     private static TBuilder WithParameterValidation<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
     {
         builder.Add(eb =>
@@ -25,7 +26,7 @@ public static class ValidatorFactory
                 IValidator? validator = eb.ApplicationServices.GetService(validatorType) as IValidator;
                 if (validator is not null)
                 {
-                    eb.Metadata.Add(new ProducesResponseTypeMetadata(typeof(HttpValidationProblemDetails), 400, new[] { "application/problem+json" }));
+                    eb.Metadata.Add(new ProducesResponseTypeMetadata(typeof(HttpValidationProblemDetails), 400, ContentTypes));
                     eb.FilterFactories.Add((_, next) =>
                     {
                         ValidationDescriptor validationDescriptor = new(i, parameters[i].ParameterType, validator);

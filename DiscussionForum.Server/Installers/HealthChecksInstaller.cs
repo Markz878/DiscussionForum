@@ -13,20 +13,13 @@ public sealed class HealthChecksInstaller : IInstaller
     }
 }
 
-public sealed class FileStorageHealthCheck : IHealthCheck
+public sealed class FileStorageHealthCheck(IFileService fileService) : IHealthCheck
 {
-    private readonly IFileService _fileService;
-
-    public FileStorageHealthCheck(IFileService fileService)
-    {
-        _fileService = fileService;
-    }
-
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         try
         {
-            bool healthy = await _fileService.CheckHealth(cancellationToken);
+            bool healthy = await fileService.CheckHealth(cancellationToken);
             if (healthy)
             {
                 return HealthCheckResult.Healthy();

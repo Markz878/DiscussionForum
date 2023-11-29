@@ -1,4 +1,5 @@
-﻿using DiscussionForum.Shared.DTO.Topics;
+﻿using DiscussionForum.Shared.DTO;
+using DiscussionForum.Shared.DTO.Topics;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 
@@ -32,7 +33,7 @@ internal sealed class ListLatestTopicsQueryHandler : IRequestHandler<ListLatestT
         byte[]? cachedResultBytes = await cache.GetAsync(cacheKey, cancellationToken);
         if (cachedResultBytes is not null)
         {
-            ListLatestTopicsResult? cachedResult = JsonSerializer.Deserialize<ListLatestTopicsResult>(cachedResultBytes);
+            ListLatestTopicsResult? cachedResult = JsonSerializer.Deserialize(cachedResultBytes, JsonContext.Default.ListLatestTopicsResult);
             if (cachedResult is not null)
             {
                 return cachedResult;
@@ -50,7 +51,7 @@ internal sealed class ListLatestTopicsQueryHandler : IRequestHandler<ListLatestT
             Topics = topics,
             PageCount = Math.Max((topicsCount - 1) / request.TopicsCount, 0)
         };
-        await cache.SetAsync(cacheKey, JsonSerializer.SerializeToUtf8Bytes(result), new DistributedCacheEntryOptions
+        await cache.SetAsync(cacheKey, JsonSerializer.SerializeToUtf8Bytes(result, JsonContext.Default.ListLatestTopicsResult), new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
         }, cancellationToken);

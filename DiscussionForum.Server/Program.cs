@@ -18,6 +18,8 @@ global using System.Security.Claims;
 using DiscussionForum.Server.Endpoints;
 using DiscussionForum.Server.Installers;
 using DiscussionForum.Server.Pages;
+using DiscussionForum.Shared.DTO;
+using Microsoft.AspNetCore.Http.Json;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -25,6 +27,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.InstallAssemblyServices();
 builder.Services.AddSingleton<RenderLocation, ServerRenderLocation>();
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Add(new JsonContext());
+    options.SerializerOptions.TypeInfoResolverChain.Add(new HttpJsonContext());
+});
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
