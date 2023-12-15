@@ -1,0 +1,10 @@
+@MaliciousServer_HostAddress = https://localhost:5081
+
+POST {{MaliciousServer_HostAddress}}/api/data/
+Accept: application/json
+Content-Type: application/json
+
+{
+    "data": "values"
+}
+###
