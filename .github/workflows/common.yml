@@ -43,7 +43,12 @@ jobs:
       - name: Log in to container registry
         run: az acr login -n $CONTAINER_REGISTRY_NAME
 
+      - name: Check if the image exists
+        id: check_image
+        run: az acr repository show --name $CONTAINER_REGISTRY_NAME --image discussionforumdb:latest
+
       - name: Publish Custom SQL Server Image To Container Registry
+        if: steps.check_image.outcome == 'failure'
         run: |
           cd DiscussionForum.Tests
           docker build -t $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforumdb:latest -f SqlServer2019FtsDockerfile .
