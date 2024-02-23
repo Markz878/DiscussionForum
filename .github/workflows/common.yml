@@ -17,6 +17,8 @@ on:
 jobs:
   deploy-common-infra:
     runs-on: ubuntu-latest
+    env:
+      SQL_SERVER_NAME: sql-discussionforum
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v3
@@ -31,3 +33,17 @@ jobs:
       - name: Deploy Common Infra
         run: > 
           az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/common.bicep
+
+      - uses: azure/sql-action@v2.2.1
+        with:
+          connection-string: ${{ secrets.SQL_CONNECTIONSTRING }}
+          path: Infrastructure/createuser.sql
+
+      - name: Log in to container registry
+        run: az acr login -n ${{ env.CONTAINER_REGISTRY_NAME }}
+
+      - name: Publish Custom SQL Server Image To Container Registry
+        run: |
+          cd DiscussionForum.Tests
+          docker build -t ${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforumdb:latest -f SqlServer2019FtsDockerfile .
+          docker push ${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforumdb:latest

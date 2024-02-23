@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AddLogging: false
+      CONTAINER_REGISTRY_NAME: acrdiscussionforum
 
     steps:
       - name: Checkout to the branch
@@ -55,10 +56,10 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           
       - name: Log in to container registry
-        run: az acr login -n ${{ vars.CONTAINER_REGISTRY_NAME }}
+        run: az acr login -n ${{ env.CONTAINER_REGISTRY_NAME }}
 
       - name: Run SQL Server in Docker
-        run: docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d  ${{ vars.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum-db:latest
+        run: docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d  ${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum-db:latest
 
       - name: Run Azurite in Docker
         run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
@@ -79,11 +80,10 @@ jobs:
         run: |
           echo "TAG=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
-
       - name: Publish App To Container Registry
         run: |
-          docker build -t ${{ vars.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum:$TAG -f DiscussionForum.Server/Dockerfile .
-          docker push ${{ vars.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum:$TAG
+          docker build -t ${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum:$TAG -f DiscussionForum.Server/Dockerfile .
+          docker push ${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforum:$TAG
 
       - name: Deploy Webapp Infra
         run: > 

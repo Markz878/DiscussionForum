@@ -10,6 +10,9 @@ public partial class Initial : Migration
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+        migrationBuilder.Sql("CREATE USER [discussionforum-identity] FROM EXTERNAL PROVIDER;");
+        migrationBuilder.Sql("ALTER ROLE db_datareader ADD MEMBER [discussionforum-identity];");
+        migrationBuilder.Sql("ALTER ROLE db_datawriter ADD MEMBER [discussionforum-identity];");
         migrationBuilder.CreateTable(
             name: "Users",
             columns: table => new
