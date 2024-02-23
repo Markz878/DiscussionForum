@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SQL_SERVER_NAME: sql-discussionforum
+      CONTAINER_REGISTRY_NAME: acrdiscussionforum
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v3
@@ -40,10 +41,10 @@ jobs:
           path: Infrastructure/createuser.sql
 
       - name: Log in to container registry
-        run: az acr login -n ${{ env.CONTAINER_REGISTRY_NAME }}
+        run: az acr login -n $CONTAINER_REGISTRY_NAME
 
       - name: Publish Custom SQL Server Image To Container Registry
         run: |
           cd DiscussionForum.Tests
-          docker build -t ${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforumdb:latest -f SqlServer2019FtsDockerfile .
-          docker push ${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/discussionforumdb:latest
+          docker build -t $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforumdb:latest -f SqlServer2019FtsDockerfile .
+          docker push $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforumdb:latest
