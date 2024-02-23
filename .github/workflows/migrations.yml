@@ -52,8 +52,7 @@ jobs:
 
       - name: Remove firewall rule
         if: always()
-        run: |
-            az sql server firewall-rule delete -n allow-github-migrate -g ${{ secrets.AZURE_RG }} -s $SQL_SERVER_NAME
+        run: az sql server firewall-rule delete -n allow-github-migrate -g ${{ secrets.AZURE_RG }} -s $SQL_SERVER_NAME
 
 
 

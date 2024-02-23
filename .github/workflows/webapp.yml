@@ -9,12 +9,7 @@ on:
     paths: 
       - '.github/workflows/webapp.yml'
       - 'Infrastructure/webapp.bicep'
-      - 'DiscussionForum.Client/**'
-      - 'DiscussionForum.Server/**'
-      - 'DiscussionForum.Shared/**'
-      - 'DiscussionForum.Core/**'
-      - 'DiscussionForum.Tests/**'
-      - 'DiscussionForum.TestE2E/**'
+      - 'DiscussionForum.*/**'
       - '!DiscussionForum.Core/Migrations/**'
     branches: 
       [ main ]
@@ -59,7 +54,7 @@ jobs:
         run: az acr login -n $CONTAINER_REGISTRY_NAME
 
       - name: Run SQL Server in Docker
-        run: docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d  $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforum-db:latest
+        run: docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d  $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforumdb:latest
 
       - name: Run Azurite in Docker
         run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
