@@ -36,7 +36,7 @@ jobs:
 
       - uses: azure/sql-action@v2.2.1
         with:
-          connection-string: ${{ secrets.SQL_CONNECTIONSTRING }}
+          connection-string: "${{ secrets.SQL_CONNECTIONSTRING }}"
           path: Infrastructure/createuser.sql
 
       - name: Log in to container registry
