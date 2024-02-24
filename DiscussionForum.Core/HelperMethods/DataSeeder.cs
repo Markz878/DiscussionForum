@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DiscussionForum.Core.HelperMethods;
@@ -15,8 +14,8 @@ public static class DataSeeder
     {
         using IServiceScope scope = serviceProvider.CreateScope();
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.EnsureDeleted();
         db.Database.Migrate();
-        db.Users.ExecuteDelete();
         db.Users.Add(Fakers.Admin);
         db.Users.Add(Fakers.User);
         db.SaveChanges();

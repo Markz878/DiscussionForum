@@ -6,6 +6,7 @@ using DiscussionForum.Core.HelperMethods;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 IConfiguration configuration = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
@@ -23,7 +24,7 @@ if (!string.IsNullOrEmpty(tenantId))
         sqlConnection.Open();
         AppDbContext db = new(new DbContextOptionsBuilder<AppDbContext>()
             .UseSqlServer(sqlConnection)
-            .LogTo(Console.WriteLine, LogLevel.Warning).Options);
+            .LogTo(Console.WriteLine, LogLevel.Information).Options);
         List<Topic> topics = Fakers.GetTopics(10000, 10000);
         db.Users.ExecuteDelete();
         db.Users.Add(Fakers.Admin);
@@ -42,22 +43,24 @@ if (!string.IsNullOrEmpty(tenantId))
 }
 else
 {
-    Console.WriteLine("Delete and rebuild database?");
+    Console.WriteLine("Delete and rebuild database (y)?");
     string? response = Console.ReadLine();
-    AppDbContext db = new(new DbContextOptionsBuilder<AppDbContext>()
-        .UseSqlServer(configuration.GetConnectionString("SqlServer"))
-        .LogTo(Console.WriteLine, LogLevel.Warning).Options);
-    if (response is not null and "y")
+    if (response is "y")
     {
-        db.Database.EnsureDeleted();
-        db.Database.Migrate();
-        db.Users.Add(Fakers.Admin);
-        db.Users.Add(Fakers.User);
-        db.SaveChanges();
+        Console.WriteLine("Deleting and rebuilding database..");
+        IServiceProvider serviceProvider = new ServiceCollection()
+            .AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("SqlServer"));
+                options.EnableSensitiveDataLogging();
+                options.EnableDetailedErrors();
+                options.EnableThreadSafetyChecks(false);
+            })
+            .BuildServiceProvider();
+        DataSeeder.SeedData(serviceProvider);
+        Console.WriteLine("Database seeded.");
     }
-    List<Topic> topics = Fakers.GetTopics(10000, 10000);
-    db.Topics.AddRange(topics);
-    db.SaveChanges();
+
 }
 
 
