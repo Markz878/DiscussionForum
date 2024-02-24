@@ -209,6 +209,9 @@ resource webappStorageRoleassignment 'Microsoft.Authorization/roleAssignments@20
 resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
   name: sqlServerName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
