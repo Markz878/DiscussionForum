@@ -20,20 +20,12 @@ internal sealed class AzureBlobStorageService(
         }
     };
 
-    public async Task<string?> Upload(Stream fileStream, string fileName, CancellationToken cancellationToken = default)
+    public async Task<string> Upload(Stream fileStream, string fileName, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            logger.LogInformation("Uploading file with name {fileName} to storage", fileName);
-            BlockBlobClient blob = _blobContainerClient.GetBlockBlobClient(fileName);
-            Response<BlobContentInfo> blobResponse = await blob.UploadAsync(fileStream, _blobOptions, cancellationToken);
-            return _blobContainerClient.Uri + "/" + fileName;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Could not upload file with name {fileName}.", fileName);
-            return null;
-        }
+        logger.LogInformation("Uploading file with name {fileName} to storage", fileName);
+        BlockBlobClient blob = _blobContainerClient.GetBlockBlobClient(fileName);
+        await blob.UploadAsync(fileStream, _blobOptions, cancellationToken);
+        return _blobContainerClient.Uri + "/" + fileName;
     }
 
     public async Task<Stream> Download(string fileName, CancellationToken cancellationToken = default)

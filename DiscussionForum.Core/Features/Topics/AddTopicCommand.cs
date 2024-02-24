@@ -51,23 +51,25 @@ internal sealed class AddTopicCommandHandler(AppDbContext db, IFileService fileS
                 }
             ]
         };
-        db.Topics.Add(newTopic);
         try
         {
+            db.Topics.Add(newTopic);
             await db.SaveChangesAsync(cancellationToken);
-            if (request.AttachedFiles?.Length > 0)
-            {
-                foreach (AttachedFileInfo file in request.AttachedFiles)
-                {
-                    Guid id = newTopic.Messages.First().AttachedFiles.First(x => x.Name == file.Name).Id;
-                    string? url = await fileService.Upload(file.FileStream, id + file.Name, cancellationToken);
-                }
-            }
-            return new AddTopicResult { Id = newTopic.Id };
         }
         catch (ReferenceConstraintException)
         {
             throw NotFoundException.SetMessageFromType<User>();
         }
+        if (request.AttachedFiles?.Length > 0)
+        {
+            List<Task<string>> uploadTasks = new(request.AttachedFiles.Length);
+            foreach (AttachedFileInfo file in request.AttachedFiles)
+            {
+                Guid id = newTopic.Messages[0].AttachedFiles.First(x => x.Name == file.Name).Id;
+                uploadTasks.Add(fileService.Upload(file.FileStream, id + file.Name, cancellationToken));
+            }
+            await Task.WhenAll(uploadTasks);
+        }
+        return new AddTopicResult { Id = newTopic.Id };
     }
 }

@@ -14,8 +14,6 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
             logging.AddProvider(new XUnitLoggingProvider(TestOutputHelper));
         });
 
-        builder.ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string?>() { { "SeedDatabase", "true" } }));
-
         builder.ConfigureServices((context, services) =>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();

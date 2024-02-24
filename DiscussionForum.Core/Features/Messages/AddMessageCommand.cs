@@ -36,35 +36,34 @@ internal sealed class AddMessageHandler(AppDbContext db, IFileService fileServic
             UserId = request.UserId,
             AttachedFiles = request.AttachedFiles?.Select(x => new MessageAttachedFile() { Name = x.Name }).ToList() ?? []
         };
-        parentTopic.Messages.Add(message);
-
         try
         {
+            parentTopic.Messages.Add(message);
             await db.SaveChangesAsync(cancellationToken);
-            List<AttachedFileResponse>? fileInfos = null;
-            if (request.AttachedFiles?.Length > 0)
-            {
-                fileInfos = new(request.AttachedFiles.Length);
-                ConcurrentBag<Task<string?>> uploadTasks = [];
-                foreach (AttachedFileInfo file in request.AttachedFiles)
-                {
-                    Guid id = message.AttachedFiles.First(x => x.Name == file.Name).Id;
-                    uploadTasks.Add(fileService.Upload(file.FileStream, id + file.Name, cancellationToken));
-                    fileInfos.Add(new AttachedFileResponse() { Name = file.Name, Id = id });
-                }
-                await Task.WhenAll(uploadTasks);
-            }
-            return new AddMessageResponse()
-            {
-                Id = message.Id,
-                CreatedAt = timeStamp,
-                AttachedFiles = fileInfos?.ToArray()
-            };
         }
         catch (ReferenceConstraintException)
         {
             // Only user reference can be invalid since we checked the topic reference before
             throw NotFoundException.SetMessageFromType<User>();
         }
+        List<AttachedFileResponse>? fileInfos = null;
+        if (request.AttachedFiles?.Length > 0)
+        {
+            fileInfos = new(request.AttachedFiles.Length);
+            List<Task<string>> uploadTasks = new(request.AttachedFiles.Length);
+            foreach (AttachedFileInfo file in request.AttachedFiles)
+            {
+                Guid id = message.AttachedFiles.First(x => x.Name == file.Name).Id;
+                uploadTasks.Add(fileService.Upload(file.FileStream, id + file.Name, cancellationToken));
+                fileInfos.Add(new AttachedFileResponse() { Name = file.Name, Id = id });
+            }
+            await Task.WhenAll(uploadTasks);
+        }
+        return new AddMessageResponse()
+        {
+            Id = message.Id,
+            CreatedAt = timeStamp,
+            AttachedFiles = fileInfos?.ToArray()
+        };
     }
 }

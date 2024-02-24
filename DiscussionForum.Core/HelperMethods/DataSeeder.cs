@@ -13,19 +13,10 @@ public static class DataSeeder
                                 int attachedFileMinCount = 0,
                                 int attachedFileMaxCount = 4)
     {
-        IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
-        if (configuration["SeedDatabase"] != "true")
-        {
-            return;
-        }
         using IServiceScope scope = serviceProvider.CreateScope();
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        if (db.Database.GetConnectionString()?.Contains("test", StringComparison.OrdinalIgnoreCase) == false)
-        {
-            return;
-        }
-        db.Database.EnsureDeleted();
         db.Database.Migrate();
+        db.Users.ExecuteDelete();
         db.Users.Add(Fakers.Admin);
         db.Users.Add(Fakers.User);
         db.SaveChanges();
