@@ -22,14 +22,12 @@ public class AuthorizedMessageTests : AuthorizedBaseTest
             { new StreamContent(new MemoryStream(Convert.FromBase64String("VGVzdCB0ZXh0"))), "file.txt", "file.txt" }
         };
         HttpResponseMessage response = await client.PostAsync(uri, formData);
+        string? body = await response.Content.ReadAsStringAsync();
+        _testOutputHelper.WriteLine(body);
+        ArgumentNullException.ThrowIfNull(body);
+        AppDbContext db = GetDbContext();
         AddMessageResponse? result = await response.Content.ReadFromJsonAsync<AddMessageResponse>();
         ArgumentNullException.ThrowIfNull(result);
-        _testOutputHelper.WriteLine($"ATTACHED FILES IS NULL: {result.AttachedFiles == null}");
-        _testOutputHelper.WriteLine($"ATTACHED FILES: {result.AttachedFiles?.Length}");
-        //result.AttachedFiles.Should().NotBeEmpty();
-        //result.AttachedFiles!.First().Name.Should().Be("file.txt");
-        //result.AttachedFiles!.First().Id.Should().NotBeEmpty();
-        AppDbContext db = GetDbContext();
         Message? message = await db.Messages.Include(x => x.Topic).FirstOrDefaultAsync(x => x.Id == result.Id);
         ArgumentNullException.ThrowIfNull(message);
         message.CreatedAt.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-1));
