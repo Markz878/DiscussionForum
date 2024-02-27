@@ -20,6 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateLimitTester", "RateLimi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{57464573-E036-45A0-B0D2-2B66A3AAAD42}"
 	ProjectSection(SolutionItems) = preProject
+		Infrastructure\commands.txt = Infrastructure\commands.txt
 		Infrastructure\common.bicep = Infrastructure\common.bicep
 		.github\workflows\common.yml = .github\workflows\common.yml
 		.github\workflows\migrations.yml = .github\workflows\migrations.yml
@@ -27,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\webapp.yml = .github\workflows\webapp.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaliciousServer", "MaliciousServer\MaliciousServer.csproj", "{B2FD2340-4F7B-4B86-8B51-A55AD882B2F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaliciousServer", "MaliciousServer\MaliciousServer.csproj", "{B2FD2340-4F7B-4B86-8B51-A55AD882B2F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

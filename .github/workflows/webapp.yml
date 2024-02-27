@@ -83,5 +83,6 @@ jobs:
       - name: Deploy Webapp Infra
         run: > 
           az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/webapp.bicep --parameters
+          solutionName=discussionforum
           imageTag=$TAG
           oidcClientId=${{ secrets.AZURE_CLIENT_ID }}

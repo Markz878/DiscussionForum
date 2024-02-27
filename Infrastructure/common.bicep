@@ -1,5 +1,5 @@
 param location string = resourceGroup().location
-param solutionName string = 'discussionforum'
+param solutionName string
 param containerRegistryName string = 'acr${solutionName}'
 param loganalyticsName string = 'log-${solutionName}'
 param appinsightsName string = 'ai-${solutionName}'
@@ -21,12 +21,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
   }
   properties: {
     adminUserEnabled: false
-    policies: {
-      exportPolicy: {
-        status: 'enabled'
-      }
-    }
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
     networkRuleBypassOptions: 'AzureServices'
   }
 }
@@ -43,6 +38,7 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
     }
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
+    retentionInDays: 30
   }
 }
 
@@ -53,6 +49,8 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   properties: {
     Application_Type: 'web'
     WorkspaceResourceId: logAnalytics.id
+    DisableLocalAuth: true
+    RetentionInDays: 30
   }
 }
 
@@ -174,37 +172,6 @@ resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
 //     }
 // }
 
-resource webappIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: '${solutionName}-identity'
-  location: location
-}
-resource acrPullRoleDef 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: containerRegistry
-  name: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-}
-resource webappAcrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, webappIdentity.id, acrPullRoleDef.id)
-  scope: containerRegistry
-  properties: {
-    roleDefinitionId: acrPullRoleDef.id
-    principalId: webappIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-resource storageBlobContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: storageAccount
-  name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
-}
-resource webappStorageRoleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, webappIdentity.id, storageBlobContributor.id)
-  scope: storageAccount
-  properties: {
-    roleDefinitionId: storageBlobContributor.id
-    principalId: webappIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
 
 resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
   name: sqlServerName
@@ -298,18 +265,5 @@ resource signalR 'Microsoft.SignalRService/signalR@2023-08-01-preview' = {
         ]
       }
     }
-  }
-}
-resource signalRAppServerRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: signalR
-  name: '420fcaa2-552c-430f-98ca-3264be4806c7'
-}
-resource webappSignalRRoleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, webappIdentity.id, signalRAppServerRole.id)
-  scope: signalR
-  properties: {
-    roleDefinitionId: signalRAppServerRole.id
-    principalId: webappIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
   }
 }

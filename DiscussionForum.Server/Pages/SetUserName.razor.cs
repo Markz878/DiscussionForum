@@ -16,9 +16,9 @@ public partial class SetUserName
     private string? _errorMessage;
     private UserInfo? _userInfo;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        _userInfo = AuthenticationStateTask.GetUserInfo().Result;
+        _userInfo = await AuthenticationStateTask.GetUserInfo();
         CreateUserModel ??= new() { UserName = _userInfo.GetUserName() ?? "" };
     }
 
