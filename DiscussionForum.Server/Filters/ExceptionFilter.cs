@@ -5,13 +5,6 @@ namespace DiscussionForum.Server.Filters;
 
 public class ExceptionFilter : IEndpointFilter
 {
-    private readonly ILogger<ExceptionFilter> _logger;
-
-    public ExceptionFilter(ILogger<ExceptionFilter> logger)
-    {
-        _logger = logger;
-    }
-
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         try
@@ -37,11 +30,6 @@ public class ExceptionFilter : IEndpointFilter
         catch (ValidationException ex)
         {
             return TypedResults.ValidationProblem(new ValidationResult(ex.Errors).ToDictionary());
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return TypedResults.Problem();
         }
     }
 }

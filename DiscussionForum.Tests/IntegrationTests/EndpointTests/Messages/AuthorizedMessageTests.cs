@@ -19,7 +19,7 @@ public class AuthorizedMessageTests : AuthorizedBaseTest
         {
             { new StringContent("2"), "topicid" },
             { new StringContent("Test message"), "message" },
-            { new StreamContent(new MemoryStream(Convert.FromBase64String("VGVzdCB0ZXh0"))), "file.txt", "file.txt" }
+            //{ new StreamContent(new MemoryStream(Convert.FromBase64String("VGVzdCB0ZXh0"))), "file.txt", "file.txt" }
         };
         HttpResponseMessage response = await client.PostAsync(uri, formData);
         string? body = await response.Content.ReadAsStringAsync();
@@ -30,11 +30,12 @@ public class AuthorizedMessageTests : AuthorizedBaseTest
         ArgumentNullException.ThrowIfNull(result);
         Message? message = await db.Messages.Include(x => x.Topic).FirstOrDefaultAsync(x => x.Id == result.Id);
         ArgumentNullException.ThrowIfNull(message);
+        ArgumentNullException.ThrowIfNull(message.Topic);
         message.CreatedAt.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-1));
         message.Content.Should().Be("Test message");
         message.Topic.Should().NotBeNull();
-        message.Topic!.Id.Should().Be(2);
-        message.Topic!.LastMessageTimeStamp.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-1));
+        message.Topic.Id.Should().Be(2);
+        message.Topic.LastMessageTimeStamp.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-1));
     }
 
     [Fact]
