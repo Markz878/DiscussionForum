@@ -1,4 +1,5 @@
-﻿using Microsoft.ApplicationInsights.Channel;
+﻿using Azure.Identity;
+using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.HttpLogging;
@@ -25,7 +26,7 @@ public class LoggingInstaller : IInstaller
             builder.Services.AddApplicationInsightsTelemetry(x => x.EnableDependencyTrackingTelemetryModule = false);
             builder.Logging.AddApplicationInsights();
             builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
-
+            builder.Services.Configure<TelemetryConfiguration>(c => c.SetAzureTokenCredential(new ManagedIdentityCredential()));
         }
     }
 }
