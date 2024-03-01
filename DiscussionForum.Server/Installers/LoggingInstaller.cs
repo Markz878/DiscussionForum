@@ -26,7 +26,7 @@ public class LoggingInstaller : IInstaller
             builder.Services.AddApplicationInsightsTelemetry(x => x.EnableDependencyTrackingTelemetryModule = false);
             builder.Logging.AddApplicationInsights();
             builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
-            builder.Services.Configure<TelemetryConfiguration>(c => c.SetAzureTokenCredential(new ManagedIdentityCredential()));
+            builder.Services.Configure<TelemetryConfiguration>(c => c.SetAzureTokenCredential(new ManagedIdentityCredential(builder.Configuration["ManagedIdentityId"])));
         }
     }
 }
@@ -39,7 +39,6 @@ public class IgnoreRequestPathsTelemetryProcessor(ITelemetryProcessor next) : IT
     {
         if (telemetry is RequestTelemetry requestTelemetry)
         {
-            // Check if the request path is "/health"
             if (SkipTelemetry(requestTelemetry.Url.AbsolutePath))
             {
                 return;
