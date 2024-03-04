@@ -82,7 +82,14 @@ jobs:
 
       - name: Deploy Webapp Infra
         run: > 
-          az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/webapp.bicep --parameters
+          webappUrl=$(az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/webapp.bicep --parameters
           solutionName=discussionforum
           imageTag=$TAG
-          oidcClientId=${{ secrets.AZURE_CLIENT_ID }}
+          oidcClientId=${{ secrets.AZURE_CLIENT_ID }}  
+          --output json)
+
+      - name: Set Webapp URL as output
+        id: webapp_url
+        run: |
+            website_url=$(echo $deployment_output | jq -r '.properties.outputs.webappUrl.value')"
+            echo "Deployed Website URL: $website_url"
