@@ -92,4 +92,4 @@ jobs:
         run: |
             website_url=$(az containerapp show -n discussionforum -g ${{ secrets.AZURE_RG }} --query properties.configuration.ingress.fqdn -o tsv)
             echo "Deployed Website URL: $website_url"
-            az ad app update --id '${{ secrets.AZURE_CLIENT_ID }}' --web-redirect-uris $website_url
+            az ad app update --id '${{ secrets.AZURE_CLIENT_ID }}' --web-redirect-uris "https://${{ website_url }}"
