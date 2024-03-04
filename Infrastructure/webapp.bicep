@@ -222,5 +222,3 @@ resource webappSignalRRoleassignment 'Microsoft.Authorization/roleAssignments@20
   }
 }
 
-output webappUrl string = webApp.properties.latestRevisionFqdn
-

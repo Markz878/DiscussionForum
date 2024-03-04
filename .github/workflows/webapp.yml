@@ -82,14 +82,19 @@ jobs:
 
       - name: Deploy Webapp Infra
         run: > 
-          webappUrl=$(az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/webapp.bicep --parameters
+          az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/webapp.bicep --parameters
           solutionName=discussionforum
           imageTag=$TAG
-          oidcClientId=${{ secrets.AZURE_CLIENT_ID }}  
-          --output json)
+          oidcClientId=${{ secrets.AZURE_CLIENT_ID }}
 
       - name: Set Webapp URL as output
         id: webapp_url
         run: |
-            website_url=$(echo $deployment_output | jq -r '.properties.outputs.webappUrl.value')"
+            website_url=$(az containerapp show -n discussionforum -g ${{ secrets.AZURE_RG }} --query properties.configuration.ingress.fqdn -o tsv)"
             echo "Deployed Website URL: $website_url"
+
+      - name: Set Webapp URL as redirect urls
+        run: |
+          az ad app update --id ${{ secrets.AZURE_CLIENT_ID }} --add replyUrls $website_url
+          az ad app update --id ${{ secrets.AZURE_CLIENT_ID }} --add replyUrls $website_url/setusername
+          az ad app update --id ${{ secrets.AZURE_CLIENT_ID }} --add replyUrls $website_url/.auth/login/aad/callback
