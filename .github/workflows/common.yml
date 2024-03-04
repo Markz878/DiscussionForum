@@ -44,6 +44,7 @@ jobs:
 
       - name: Check if the Custom SQL Server image exists
         id: check_image
+        continue-on-error: true
         run: az acr repository show --name $CONTAINER_REGISTRY_NAME --image discussionforumdb:latest
 
       - name: Publish Custom SQL Server image to Container Registry if not found
