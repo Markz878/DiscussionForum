@@ -42,11 +42,11 @@ jobs:
       - name: Log in to container registry
         run: az acr login -n $CONTAINER_REGISTRY_NAME
 
-      - name: Check if the image exists
+      - name: Check if the Custom SQL Server image exists
         id: check_image
         run: az acr repository show --name $CONTAINER_REGISTRY_NAME --image discussionforumdb:latest
 
-      - name: Publish Custom SQL Server Image To Container Registry
+      - name: Publish Custom SQL Server image to Container Registry if not found
         if: steps.check_image.outcome == 'failure'
         run: |
           cd DiscussionForum.Tests

@@ -1,4 +1,4 @@
-az deployment group create --resource-group rg-DiscussionForum --template-file common.bicep
+az deployment group create --resource-group rg-DiscussionForum --template-file common.bicep --parameters solutionName=discussionforum
 
 Give App registration API permissions -> Directory.Read.All for the pipeline to be able to run this SQL script:
 CREATE USER [discussionforum-identity] FROM EXTERNAL PROVIDER;
