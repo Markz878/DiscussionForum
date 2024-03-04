@@ -90,11 +90,9 @@ jobs:
       - name: Set Webapp URL as output
         id: webapp_url
         run: |
-            website_url=$(az containerapp show -n discussionforum -g ${{ secrets.AZURE_RG }} --query properties.configuration.ingress.fqdn -o tsv)"
+            website_url=$(az containerapp show -n discussionforum -g ${{ secrets.AZURE_RG }} --query properties.configuration.ingress.fqdn -o tsv)
             echo "Deployed Website URL: $website_url"
 
       - name: Set Webapp URL as redirect urls
         run: |
-          az ad app update --id ${{ secrets.AZURE_CLIENT_ID }} --add replyUrls $website_url
-          az ad app update --id ${{ secrets.AZURE_CLIENT_ID }} --add replyUrls $website_url/setusername
-          az ad app update --id ${{ secrets.AZURE_CLIENT_ID }} --add replyUrls $website_url/.auth/login/aad/callback
+          az ad app update --id '${{ secrets.AZURE_CLIENT_ID }}' --web-redirect-uris "$website_url"
