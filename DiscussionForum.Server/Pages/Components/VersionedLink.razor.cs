@@ -2,6 +2,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Security.Cryptography;
 
 namespace DiscussionForum.Server.Pages.Components;
+
 public partial class VersionedLink
 {
     [Parameter][EditorRequired] public required string Href { get; set; }

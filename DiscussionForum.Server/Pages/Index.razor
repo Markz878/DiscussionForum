@@ -30,16 +30,16 @@
 
         <div class="flex justify-around items-center">
             <a href="@GetUrl(0)" class="p-2 @(CanShowPreviousPageLink() ? "" : "collapse")">
-                <img src="icons/first.svg" alt="First page" class="h-6 dark:invert" />
+                <img src="icons/first.svg" alt="First page" class="h-6 w-6 dark:invert" />
             </a>
             <a href="@GetUrl(_pageNumber-1)" class="p-2 @(CanShowPreviousPageLink() ? "" : "collapse")">
-                <img src="icons/previous.svg" alt="Previous page" class="h-5 dark:invert" />
+                <img src="icons/previous.svg" alt="Previous page" class="h-5 w-5 dark:invert" />
             </a>
             <a href="@GetUrl(_pageNumber+1)" class="p-2 @(CanShowNextPageLink() ? "" : "collapse")">
-                <img src="icons/next.svg" alt="Next page" class="h-5 dark:invert" />
+                <img src="icons/next.svg" alt="Next page" class="h-5 w-5 dark:invert" />
             </a>
             <a href="@GetUrl(_topicsResult?.PageCount ?? 0)" class="p-2 @(CanShowNextPageLink() ? "" : "collapse")">
-                <img src="icons/last.svg" alt="Last page" class="h-6 dark:invert" />
+                <img src="icons/last.svg" alt="Last page" class="h-6 w-6 dark:invert" />
             </a>
         </div>
     }

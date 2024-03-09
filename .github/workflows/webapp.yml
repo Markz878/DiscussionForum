@@ -27,21 +27,21 @@ jobs:
       - name: Checkout to the branch
         uses: actions/checkout@v3
 
-      # - name: Set up .NET
-      #   uses: actions/setup-dotnet@v3
-      #   with:
-      #     dotnet-version: '8.x'
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
 
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 20.x
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
 
-      # - name: Minify tailwind output
-      #   run: |
-      #     cd DiscussionForum.Server
-      #     npm install -D tailwindcss
-      #     npx tailwindcss -i Styles/tailwind.css -o wwwroot/css/output.css --minify
+      - name: Minify tailwind output
+        run: |
+          cd DiscussionForum.Server
+          npm install -D tailwindcss
+          npx tailwindcss -i Styles/tailwind.css -o wwwroot/css/output.css --minify
           
       - name: Azure Login
         uses: azure/login@v1
@@ -50,42 +50,42 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           
-      # - name: Log in to container registry
-      #   run: az acr login -n $CONTAINER_REGISTRY_NAME
+      - name: Log in to container registry
+        run: az acr login -n $CONTAINER_REGISTRY_NAME
 
-      # - name: Run SQL Server in Docker
-      #   run: docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d  $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforumdb:latest
+      - name: Run SQL Server in Docker
+        run: docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -e MSSQL_PID='Developer' -p 1433:1433 -d  $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforumdb:latest
 
-      # - name: Run Azurite in Docker
-      #   run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
+      - name: Run Azurite in Docker
+        run: docker run -p 10000:10000 -d mcr.microsoft.com/azure-storage/azurite
 
-      # - name: Run Tests
-      #   run: dotnet test DiscussionForum.Tests -c Release
+      - name: Run Tests
+        run: dotnet test DiscussionForum.Tests -c Release
 
-      # - name: Setup Playwright
-      #   run: |
-      #       dotnet build DiscussionForum.TestE2E -c Release
-      #       pwsh DiscussionForum.TestE2E/bin/Release/net8.0/playwright.ps1 install
+      - name: Setup Playwright
+        run: |
+            dotnet build DiscussionForum.TestE2E -c Release
+            pwsh DiscussionForum.TestE2E/bin/Release/net8.0/playwright.ps1 install
 
-      # - name: Run E2E Tests
-      #   continue-on-error: true
-      #   run: dotnet test DiscussionForum.TestE2E -c Release
+      - name: Run E2E Tests
+        continue-on-error: true
+        run: dotnet test DiscussionForum.TestE2E -c Release
 
-      # - name: Set Current Datetime As TAG
-      #   run: |
-      #     echo "TAG=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+      - name: Set Current Datetime As TAG
+        run: |
+          echo "TAG=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
-      # - name: Publish App To Container Registry
-      #   run: |
-      #     docker build -t $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforum:$TAG -f DiscussionForum.Server/Dockerfile .
-      #     docker push $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforum:$TAG
+      - name: Publish App To Container Registry
+        run: |
+          docker build -t $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforum:$TAG -f DiscussionForum.Server/Dockerfile .
+          docker push $CONTAINER_REGISTRY_NAME.azurecr.io/discussionforum:$TAG
 
-      # - name: Deploy Webapp Infra
-      #   run: > 
-      #     az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/webapp.bicep --parameters
-      #     solutionName=discussionforum
-      #     imageTag=$TAG
-      #     oidcClientId=${{ secrets.AZURE_CLIENT_ID }}
+      - name: Deploy Webapp Infra
+        run: > 
+          az deployment group create --resource-group ${{ secrets.AZURE_RG }} --template-file Infrastructure/webapp.bicep --parameters
+          solutionName=discussionforum
+          imageTag=$TAG
+          oidcClientId=${{ secrets.AZURE_CLIENT_ID }}
 
       - name: Set Webapp URL as redirect URI
         id: webapp_url
