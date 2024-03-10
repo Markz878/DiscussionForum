@@ -31,6 +31,7 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
     public async Task InitializeAsync()
     {
         DataSeeder.SeedData(Services);
+        DataSeeder.CreateStorageContainer(Services);
         await Task.Delay(5000);
     }
 

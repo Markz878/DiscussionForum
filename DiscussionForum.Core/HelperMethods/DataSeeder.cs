@@ -1,4 +1,7 @@
+using Azure;
+using Azure.Storage.Blobs;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace DiscussionForum.Core.HelperMethods;
 
@@ -22,5 +25,14 @@ public static class DataSeeder
         List<Topic> topics = Fakers.GetTopics(topicMinCount, topicMaxCount, messageMinCount, messageMaxCount, attachedFileMinCount, attachedFileMaxCount);
         db.Topics.AddRange(topics);
         db.SaveChanges();
+    }
+
+    public static void CreateStorageContainer(IServiceProvider serviceProvider)
+    {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        BlobServiceClient blobService = scope.ServiceProvider.GetRequiredService<BlobServiceClient>();
+        IOptions<FileStorageSettings> storageSettings = scope.ServiceProvider.GetRequiredService<IOptions<FileStorageSettings>>();
+        BlobContainerClient containerClient = blobService.GetBlobContainerClient(storageSettings.Value.ContainerName);
+        containerClient.CreateIfNotExists();
     }
 }

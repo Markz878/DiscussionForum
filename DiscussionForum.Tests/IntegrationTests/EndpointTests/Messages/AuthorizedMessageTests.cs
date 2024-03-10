@@ -19,7 +19,7 @@ public class AuthorizedMessageTests : AuthorizedBaseTest
         {
             { new StringContent("2"), "topicid" },
             { new StringContent("Test message"), "message" },
-            //{ new StreamContent(new MemoryStream(Convert.FromBase64String("VGVzdCB0ZXh0"))), "file.txt", "file.txt" }
+            { new StreamContent(new MemoryStream(Convert.FromBase64String("VGVzdCB0ZXh0"))), "file.txt", "file.txt" }
         };
         HttpResponseMessage response = await client.PostAsync(uri, formData);
         string? body = await response.Content.ReadAsStringAsync();

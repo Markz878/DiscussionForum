@@ -42,10 +42,11 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
     public async Task InitializeAsync()
     {
         DataSeeder.SeedData(Server.Services);
+        DataSeeder.CreateStorageContainer(Services);
         PlaywrightInstance = await Playwright.CreateAsync();
         BrowserInstance = await PlaywrightInstance.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            Headless = true,
+            Headless = false,
             SlowMo = 400,
         });
     }
