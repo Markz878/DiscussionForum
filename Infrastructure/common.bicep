@@ -184,24 +184,24 @@ resource stPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
   }
 }
 
-
-
 resource stPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: stPrivateEndpointDnsZoneName
   location: 'global'
+}
 
-  resource link 'virtualNetworkLinks' = {
-    name: '${stPrivateEndpointDnsZoneName}-link'
-    location: 'global'
-    properties: {
-      registrationEnabled: false
-      virtualNetwork: { id: vnet.id }
-    }
+resource stPrivateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+  name: '${stPrivateEndpointName}-link'
+  parent: stPrivateDnsZone
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: { id: vnet.id }
   }
 }
 
 resource stPrivateEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-05-01' = {
-  name: '${stPrivateEndpointDnsZoneName}-group'
+  name: '${stPrivateEndpointName}-group'
+  parent: stPrivateEndpoint
   properties: {
     privateDnsZoneConfigs: [
       {
@@ -212,9 +212,6 @@ resource stPrivateEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDn
       }
     ]
   }
-  dependsOn: [
-    stPrivateEndpoint
-  ]
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
@@ -281,19 +278,21 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
 resource sqlPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: sqlPrivateEndpointDnsZoneName
   location: 'global'
+}
 
-  resource link 'virtualNetworkLinks' = {
-    name: '${sqlPrivateEndpointDnsZoneName}-link'
-    location: 'global'
-    properties: {
-      registrationEnabled: false
-      virtualNetwork: { id: vnet.id }
-    }
+resource sqlPrivateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+  name: '${sqlPrivateEndpointName}-link'
+  parent: sqlPrivateDnsZone
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: { id: vnet.id }
   }
 }
 
 resource sqlPrivateEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-05-01' = {
-  name: '${sqlPrivateEndpointDnsZoneName}-group'
+  name: '${sqlPrivateEndpointName}-group'
+  parent: sqlPrivateEndpoint
   properties: {
     privateDnsZoneConfigs: [
       {
@@ -304,9 +303,6 @@ resource sqlPrivateEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateD
       }
     ]
   }
-  dependsOn: [
-    sqlPrivateEndpoint
-  ]
 }
 
 resource signalR 'Microsoft.SignalRService/signalR@2023-02-01' = {
@@ -347,7 +343,6 @@ resource signalR 'Microsoft.SignalRService/signalR@2023-02-01' = {
     }
   }
 }
-
 
 resource webappIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: '${solutionName}-identity'
