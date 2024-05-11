@@ -48,6 +48,14 @@ resource "azurerm_container_app" "webapp" {
         name  = "Azure__SignalR__ConnectionString"
         value = "Endpoint=https://${azurerm_signalr_service.signalr.hostname};AuthType=azure.msi;ClientId=${azurerm_user_assigned_identity.webappIdentity.client_id};Version=1.0;"
       }
+      env {
+        name  = "ManagedIdentityId"
+        value = azurerm_user_assigned_identity.webappIdentity.client_id
+      }
+      env {
+        name  = "Version"
+        value = var.image_tag
+      }
       startup_probe {
         port      = 8080
         path      = "/health"

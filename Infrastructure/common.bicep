@@ -1,14 +1,20 @@
-param location string = resourceGroup().location
+@minLength(5)
 param solutionName string
-param containerRegistryName string = 'acr${solutionName}'
-param loganalyticsName string = 'log-${solutionName}'
-param appinsightsName string = 'ai-${solutionName}'
-param vnetName string = 'vnet-${solutionName}'
-param containerAppEnvironmentName string = 'cae-${solutionName}'
-param storageName string = 'st${solutionName}'
-param sqlServerName string = 'sql-${solutionName}'
-param databaseName string = 'sqldb-${solutionName}'
-param signalRName string = 'sigr-${solutionName}'
+
+var location = resourceGroup().location
+var containerRegistryName = 'acr${solutionName}'
+var loganalyticsName = 'log-${solutionName}'
+var appinsightsName = 'ai-${solutionName}'
+var vnetName = 'vnet-${solutionName}'
+var containerAppEnvironmentName = 'cae-${solutionName}'
+var storageName = 'st${solutionName}'
+var sqlServerName = 'sql-${solutionName}'
+var databaseName = 'sqldb-${solutionName}'
+var signalRName = 'sigr-${solutionName}'
+var sqlPrivateEndpointName = 'pe-sql-${solutionName}'
+var sqlPrivateEndpointDnsZoneName = 'privatelink${environment().suffixes.sqlServerHostname}'
+var stPrivateEndpointName = 'pe-st-${solutionName}'
+var stPrivateEndpointDnsZoneName = 'privatelink.blob.core.windows.net'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
   name: containerRegistryName
@@ -63,39 +69,86 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
         '10.0.0.0/16'
       ]
     }
-    subnets: [
-      {
-        name: 'default'
-        properties: {
-          addressPrefix: '10.0.0.0/23'
-          serviceEndpoints: [
-            {
-              service: 'Microsoft.Storage'
-              locations: [
-                'northeurope'
-              ]
-            }
-            {
-              service: 'Microsoft.Sql'
-              locations: [
-                'northeurope'
-              ]
-            }
-          ]
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
-    ]
   }
 }
 
-resource containerappEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
+  parent: vnet
+  name: 'default'
+  properties: {
+    addressPrefix: '10.0.0.0/23'
+    // serviceEndpoints: [
+    //   {
+    //     service: 'Microsoft.Storage'
+    //     locations: [
+    //       'northeurope'
+    //     ]
+    //   }
+    //   {
+    //     service: 'Microsoft.Sql'
+    //     locations: [
+    //       'northeurope'
+    //     ]
+    //   }
+    // ]
+    privateLinkServiceNetworkPolicies: 'Disabled'
+  }
+}
+
+// resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+//   parent: privateDnsZone
+//   name: '${sqlPrivateEndpointDnsZoneName}-link'
+//   location: 'global'
+//   properties: {
+//     registrationEnabled: false
+//     virtualNetwork: {
+//       id: vnet.id
+//     }
+//   }
+// }
+
+// resource pvtEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-05-01' = {
+//   name: sqlPrivateEndpointDnsGroupName
+//   properties: {
+//     privateDnsZoneConfigs: [
+//       {
+//         name: 'config1'
+//         properties: {
+//           privateDnsZoneId: privateDnsZone.id
+//         }
+//       }
+//     ]
+//   }
+//   dependsOn: [
+//     sqlPrivateEndpoint
+//   ]
+// }
+
+// resource sqlPrivateEndpointNic 'Microsoft.Network/networkInterfaces@2023-11-01' = {
+//   name: sqlPrivateEndpointNicName
+//   location: location
+//   properties: {
+//     ipConfigurations: [
+//       {
+//         name: 'ipConfig.${guid(sqlPrivateEndpointNicName)}'
+//         properties: {
+//           privateIPAllocationMethod: 'Dynamic'
+//           subnet: {
+//             id: subnet.id
+//           }
+//         }
+//       }
+//     ]
+//   }
+// }
+
+resource containerappEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: containerAppEnvironmentName
   location: location
   properties: {
     vnetConfiguration: {
       internal: false
-      infrastructureSubnetId: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'default')
+      infrastructureSubnetId: subnet.id
     }
     zoneRedundant: false
     appLogsConfiguration: {
@@ -120,12 +173,12 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     networkAcls: {
       bypass: 'None'
       defaultAction: 'Deny'
-      virtualNetworkRules: [
-        {
-          id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'default')
-          action: 'Allow'
-        }
-      ]
+      // virtualNetworkRules: [
+      //   {
+      //     id: subnet.id
+      //     action: 'Allow'
+      //   }
+      // ]
       ipRules: []
     }
     supportsHttpsTrafficOnly: true
@@ -154,6 +207,7 @@ resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
     }
   }
 }
+
 // resource defenderForStorageSettings 'Microsoft.Security/defenderForStorageSettings@2022-12-01-preview' = {
 //     name: 'current'
 //     scope: storageAccount
@@ -172,13 +226,38 @@ resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
 //     }
 // }
 
+resource stPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: stPrivateEndpointName
+  location: location
+  properties: {
+    subnet: {
+      id: subnet.id
+    }
+    privateLinkServiceConnections: [
+      {
+        name: stPrivateEndpointName
+        properties: {
+          privateLinkServiceId: storageAccount.id
+          groupIds: [
+            'blob'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource stPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+  name: stPrivateEndpointDnsZoneName
+  location: 'global'
+}
 
 resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
   name: sqlServerName
   location: location
   properties: {
     minimalTlsVersion: '1.2'
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
     restrictOutboundNetworkAccess: 'Enabled'
     administrators: {
       administratorType: 'ActiveDirectory'
@@ -190,14 +269,14 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
     }
   }
 }
-resource sqlServerVnetRule 'Microsoft.Sql/servers/virtualNetworkRules@2023-08-01-preview' = {
-  parent: sqlServer
-  name: 'vnet-rule'
-  properties: {
-    virtualNetworkSubnetId: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'default')
-    ignoreMissingVnetServiceEndpoint: false
-  }
-}
+// resource sqlServerVnetRule 'Microsoft.Sql/servers/virtualNetworkRules@2023-08-01-preview' = {
+//   parent: sqlServer
+//   name: 'vnet-rule'
+//   properties: {
+//     virtualNetworkSubnetId: subnet.id
+//     ignoreMissingVnetServiceEndpoint: false
+//   }
+// }
 
 resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
   parent: sqlServer
@@ -219,6 +298,32 @@ resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' 
     freeLimitExhaustionBehavior: 'AutoPause'
     availabilityZone: 'NoPreference'
   }
+}
+
+resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: sqlPrivateEndpointName
+  location: location
+  properties: {
+    subnet: {
+      id: subnet.id
+    }
+    privateLinkServiceConnections: [
+      {
+        name: sqlPrivateEndpointName
+        properties: {
+          privateLinkServiceId: sqlServer.id
+          groupIds: [
+            'sqlServer'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource sqlPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+  name: sqlPrivateEndpointDnsZoneName
+  location: 'global'
 }
 
 resource signalR 'Microsoft.SignalRService/signalR@2023-02-01' = {

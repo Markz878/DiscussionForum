@@ -23,7 +23,7 @@ if (!string.IsNullOrEmpty(tenantId))
         AppDbContext db = new(new DbContextOptionsBuilder<AppDbContext>()
             .UseSqlServer(sqlConnection)
             .LogTo(Console.WriteLine, LogLevel.Information).Options);
-        List<Topic> topics = Fakers.GetTopics(10000, 10000);
+        List<Topic> topics = Fakers.GetTopics(100, 100);
         db.Users.ExecuteDelete();
         db.Users.Add(Fakers.Admin);
         db.Users.Add(Fakers.User);

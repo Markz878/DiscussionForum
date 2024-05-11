@@ -228,3 +228,5 @@ resource webappSignalRRoleassignment 'Microsoft.Authorization/roleAssignments@20
     principalType: 'ServicePrincipal'
   }
 }
+
+
