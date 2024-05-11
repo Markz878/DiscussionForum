@@ -14,7 +14,7 @@ var signalRName = 'sigr-${solutionName}'
 var sqlPrivateEndpointName = 'pe-sql-${solutionName}'
 var sqlPrivateEndpointDnsZoneName = 'privatelink${environment().suffixes.sqlServerHostname}'
 var stPrivateEndpointName = 'pe-st-${solutionName}'
-var stPrivateEndpointDnsZoneName = 'privatelink.blob.core.windows.net'
+var stPrivateEndpointDnsZoneName = 'privatelink.blob.${environment().suffixes.storage}'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
   name: containerRegistryName
@@ -77,70 +77,9 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
   name: 'default'
   properties: {
     addressPrefix: '10.0.0.0/23'
-    // serviceEndpoints: [
-    //   {
-    //     service: 'Microsoft.Storage'
-    //     locations: [
-    //       'northeurope'
-    //     ]
-    //   }
-    //   {
-    //     service: 'Microsoft.Sql'
-    //     locations: [
-    //       'northeurope'
-    //     ]
-    //   }
-    // ]
     privateLinkServiceNetworkPolicies: 'Disabled'
   }
 }
-
-// resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
-//   parent: privateDnsZone
-//   name: '${sqlPrivateEndpointDnsZoneName}-link'
-//   location: 'global'
-//   properties: {
-//     registrationEnabled: false
-//     virtualNetwork: {
-//       id: vnet.id
-//     }
-//   }
-// }
-
-// resource pvtEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-05-01' = {
-//   name: sqlPrivateEndpointDnsGroupName
-//   properties: {
-//     privateDnsZoneConfigs: [
-//       {
-//         name: 'config1'
-//         properties: {
-//           privateDnsZoneId: privateDnsZone.id
-//         }
-//       }
-//     ]
-//   }
-//   dependsOn: [
-//     sqlPrivateEndpoint
-//   ]
-// }
-
-// resource sqlPrivateEndpointNic 'Microsoft.Network/networkInterfaces@2023-11-01' = {
-//   name: sqlPrivateEndpointNicName
-//   location: location
-//   properties: {
-//     ipConfigurations: [
-//       {
-//         name: 'ipConfig.${guid(sqlPrivateEndpointNicName)}'
-//         properties: {
-//           privateIPAllocationMethod: 'Dynamic'
-//           subnet: {
-//             id: subnet.id
-//           }
-//         }
-//       }
-//     ]
-//   }
-// }
 
 resource containerappEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: containerAppEnvironmentName
@@ -169,17 +108,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     name: 'Standard_ZRS'
   }
   properties: {
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
     networkAcls: {
       bypass: 'None'
       defaultAction: 'Deny'
-      // virtualNetworkRules: [
-      //   {
-      //     id: subnet.id
-      //     action: 'Allow'
-      //   }
-      // ]
-      ipRules: []
     }
     supportsHttpsTrafficOnly: true
     minimumTlsVersion: 'TLS1_2'
@@ -269,14 +201,6 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
     }
   }
 }
-// resource sqlServerVnetRule 'Microsoft.Sql/servers/virtualNetworkRules@2023-08-01-preview' = {
-//   parent: sqlServer
-//   name: 'vnet-rule'
-//   properties: {
-//     virtualNetworkSubnetId: subnet.id
-//     ignoreMissingVnetServiceEndpoint: false
-//   }
-// }
 
 resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
   parent: sqlServer
