@@ -1,7 +1,7 @@
 @minLength(5)
 param solutionName string
+param location string = resourceGroup().location
 
-var location = resourceGroup().location
 var containerRegistryName = 'acr${solutionName}'
 var loganalyticsName = 'log-${solutionName}'
 var appinsightsName = 'ai-${solutionName}'
@@ -69,16 +69,20 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
         '10.0.0.0/16'
       ]
     }
+    subnets: [
+      {
+        name: 'default'
+        properties: {
+          addressPrefix: '10.0.0.0/23'
+        }
+      }
+    ]
   }
 }
 
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' = {
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' existing = {
   parent: vnet
   name: 'default'
-  properties: {
-    addressPrefix: '10.0.0.0/23'
-    // privateLinkServiceNetworkPolicies: 'Disabled'
-  }
 }
 
 resource containerappEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {

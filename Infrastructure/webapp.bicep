@@ -1,15 +1,15 @@
 param location string = resourceGroup().location
 param solutionName string
-param containerRegistryName string = 'acr${solutionName}'
-param appinsightsName string = 'ai-${solutionName}'
-param containerAppEnvironmentName string = 'cae-${solutionName}'
-param storageName string = 'st${solutionName}'
-param sqlServerName string = 'sql-${solutionName}'
-param databaseName string = 'sqldb-${solutionName}'
-param signalRName string = 'sigr-${solutionName}'
-param appName string = solutionName
 param imageTag string
 param oidcClientId string
+
+var containerRegistryName = 'acr${solutionName}'
+var appinsightsName = 'ai-${solutionName}'
+var containerAppEnvironmentName = 'cae-${solutionName}'
+var storageName = 'st${solutionName}'
+var sqlServerName = 'sql-${solutionName}'
+var databaseName = 'sqldb-${solutionName}'
+var signalRName = 'sigr-${solutionName}'
 
 resource webappIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: '${solutionName}-identity'
@@ -40,7 +40,7 @@ resource signalR 'Microsoft.SignalRService/signalR@2023-02-01' existing = {
 }
 
 resource webApp 'Microsoft.App/containerApps@2023-05-01' = {
-  name: appName
+  name: solutionName
   location: location
   identity: {
     type: 'UserAssigned'
@@ -76,8 +76,8 @@ resource webApp 'Microsoft.App/containerApps@2023-05-01' = {
       revisionSuffix: imageTag
       containers: [
         {
-          name: appName
-          image: '${containerRegistry.properties.loginServer}/${appName}:${imageTag}'
+          name: solutionName
+          image: '${containerRegistry.properties.loginServer}/${solutionName}:${imageTag}'
           resources: {
             cpu: json('0.5')
             memory: '1.0Gi'
