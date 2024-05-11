@@ -72,12 +72,12 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
   }
 }
 
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' = {
   parent: vnet
   name: 'default'
   properties: {
     addressPrefix: '10.0.0.0/23'
-    privateLinkServiceNetworkPolicies: 'Disabled'
+    // privateLinkServiceNetworkPolicies: 'Disabled'
   }
 }
 
@@ -109,6 +109,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
   properties: {
     allowSharedKeyAccess: false
+    publicNetworkAccess: 'Disabled'
     networkAcls: {
       bypass: 'None'
       defaultAction: 'Deny'
@@ -158,7 +159,7 @@ resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
 //     }
 // }
 
-resource stPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+resource stPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
   name: stPrivateEndpointName
   location: location
   properties: {
@@ -224,7 +225,7 @@ resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' 
   }
 }
 
-resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
   name: sqlPrivateEndpointName
   location: location
   properties: {

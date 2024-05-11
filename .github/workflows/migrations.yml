@@ -36,6 +36,7 @@ jobs:
 
       - name: Add firewall rule
         run: |
+            az sql server update -g ${{ secrets.AZURE_RG }} -n $SQL_SERVER_NAME -e true
             az sql server firewall-rule create -n allow-github-migrate -g ${{ secrets.AZURE_RG }} -s $SQL_SERVER_NAME --start-ip-address $ip --end-ip-address $ip
 
       - name: Deploy the Database Changes
@@ -47,7 +48,9 @@ jobs:
 
       - name: Remove firewall rule
         if: always()
-        run: az sql server firewall-rule delete -n allow-github-migrate -g ${{ secrets.AZURE_RG }} -s $SQL_SERVER_NAME
+        run: |
+            az sql server firewall-rule delete -n allow-github-migrate -g ${{ secrets.AZURE_RG }} -s $SQL_SERVER_NAME
+            az sql server update -g ${{ secrets.AZURE_RG }} -n $SQL_SERVER_NAME -e false
 
 
 
