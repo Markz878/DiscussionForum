@@ -54,7 +54,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
   name: vnetName
   location: location
   properties: {
@@ -233,9 +233,6 @@ resource signalR 'Microsoft.SignalRService/signalR@2024-01-01-preview' = {
     type: 'None'
   }
   properties: {
-    tls: {
-      clientCertEnabled: false
-    }
     disableLocalAuth: true
     features: [
       {
@@ -259,17 +256,6 @@ resource signalR 'Microsoft.SignalRService/signalR@2024-01-01-preview' = {
       allowedOrigins: [
         '*'
       ]
-    }
-    networkACLs: {
-      defaultAction: 'Deny'
-      publicNetwork: {
-        allow: [
-          'ClientConnection'
-          'ServerConnection'
-          'RESTAPI'
-          'Trace'
-        ]
-      }
     }
   }
 }
