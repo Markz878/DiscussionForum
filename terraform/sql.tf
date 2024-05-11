@@ -14,6 +14,12 @@ resource "azurerm_mssql_server" "server" {
   }
 }
 
+resource "azurerm_mssql_virtual_network_rule" "networkrule" {
+  name      = "vnetrule1"
+  server_id = azurerm_mssql_server.server.id
+  subnet_id = azurerm_subnet.default.id
+}
+
 resource "azurerm_mssql_database" "database" {
   name                        = local.databaseName
   server_id                   = azurerm_mssql_server.server.id

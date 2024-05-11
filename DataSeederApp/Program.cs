@@ -60,7 +60,6 @@ else
         DataSeeder.SeedData(serviceProvider);
         Console.WriteLine("Database seeded.");
     }
-
 }
 
 

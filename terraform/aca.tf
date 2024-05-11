@@ -12,7 +12,6 @@ resource "azurerm_container_app" "webapp" {
     allow_insecure_connections = false
     external_enabled           = true
     target_port                = 8080
-    exposed_port               = 80
     traffic_weight {
       latest_revision = true
       percentage      = 100
@@ -39,7 +38,7 @@ resource "azurerm_container_app" "webapp" {
       }
       env {
         name  = "ConnectionStrings__SqlServer"
-        value = "Server=${azurerm_mssql_server.server.fully_qualified_domain_name};Initial Catalog=${local.databaseName};Authentication=Active Directory Managed Identity;User Id=${azurerm_user_assigned_identity.webappIdentity.client_id};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+        value = "Server=tcp:${azurerm_mssql_server.server.fully_qualified_domain_name},1433;Initial Catalog=${local.databaseName};Authentication=Active Directory Managed Identity;User Id=${azurerm_user_assigned_identity.webappIdentity.id};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
       }
       env {
         name  = "FileStorageSettings__StorageUri"
@@ -52,7 +51,7 @@ resource "azurerm_container_app" "webapp" {
       startup_probe {
         port      = 8080
         path      = "/health"
-        transport = "HTTPS"
+        transport = "HTTP"
       }
     }
   }

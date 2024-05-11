@@ -54,7 +54,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
   name: vnetName
   location: location
   properties: {
@@ -89,7 +89,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
   }
 }
 
-resource containerappEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
+resource containerappEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: containerAppEnvironmentName
   location: location
   properties: {
@@ -108,7 +108,7 @@ resource containerappEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' 
   }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
   name: storageName
   location: location
   kind: 'StorageV2'
@@ -134,7 +134,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     accessTier: 'Cool'
   }
 }
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-04-01' = {
   parent: storageAccount
   name: 'default'
   properties: {
@@ -144,7 +144,7 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01'
     isVersioningEnabled: false
   }
 }
-resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
+resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-04-01' = {
   parent: blobService
   name: 'files'
   properties: {
@@ -173,7 +173,7 @@ resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
 // }
 
 
-resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
+resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
   name: sqlServerName
   location: location
   properties: {
@@ -190,7 +190,7 @@ resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
     }
   }
 }
-resource sqlServerVnetRule 'Microsoft.Sql/servers/virtualNetworkRules@2023-05-01-preview' = {
+resource sqlServerVnetRule 'Microsoft.Sql/servers/virtualNetworkRules@2023-08-01-preview' = {
   parent: sqlServer
   name: 'vnet-rule'
   properties: {
@@ -199,7 +199,7 @@ resource sqlServerVnetRule 'Microsoft.Sql/servers/virtualNetworkRules@2023-05-01
   }
 }
 
-resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2023-05-01-preview' = {
+resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
   parent: sqlServer
   name: databaseName
   location: location
@@ -221,7 +221,7 @@ resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2023-05-01-preview' 
   }
 }
 
-resource signalR 'Microsoft.SignalRService/signalR@2023-08-01-preview' = {
+resource signalR 'Microsoft.SignalRService/signalR@2024-01-01-preview' = {
   name: signalRName
   location: location
   sku: {

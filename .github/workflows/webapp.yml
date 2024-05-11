@@ -24,18 +24,8 @@ jobs:
       CONTAINER_REGISTRY_NAME: acrdiscussionforum
 
     steps:
-      - name: Checkout to the branch
+      - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.x'
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.x
 
       - name: Minify tailwind output
         run: |
