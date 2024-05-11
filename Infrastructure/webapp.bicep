@@ -1,4 +1,5 @@
 param location string = resourceGroup().location
+@minLength(3)
 param solutionName string
 param imageTag string
 param oidcClientId string
@@ -85,7 +86,7 @@ resource webApp 'Microsoft.App/containerApps@2023-05-01' = {
           env: [
             {
               name: 'ConnectionStrings__SqlServer'
-              value: 'Server=${sqlServer.properties.fullyQualifiedDomainName};Initial Catalog=${databaseName};Authentication=Active Directory Managed Identity;User Id=${webappIdentity.properties.clientId};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+              value: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${databaseName};Authentication=Active Directory Managed Identity;User Id=${webappIdentity.properties.clientId};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
             }
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
