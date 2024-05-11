@@ -108,7 +108,7 @@ resource containerappEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' 
   }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageName
   location: location
   kind: 'StorageV2'
@@ -134,7 +134,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
     accessTier: 'Cool'
   }
 }
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-04-01' = {
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
   parent: storageAccount
   name: 'default'
   properties: {
@@ -144,7 +144,7 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-04-01'
     isVersioningEnabled: false
   }
 }
-resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-04-01' = {
+resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
   parent: blobService
   name: 'files'
   properties: {
@@ -221,7 +221,7 @@ resource sqlserverDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' 
   }
 }
 
-resource signalR 'Microsoft.SignalRService/signalR@2024-01-01-preview' = {
+resource signalR 'Microsoft.SignalRService/signalR@2023-02-01' = {
   name: signalRName
   location: location
   sku: {

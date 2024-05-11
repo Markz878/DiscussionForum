@@ -19,8 +19,6 @@ if (!string.IsNullOrEmpty(tenantId))
     {
         SqlConnection sqlConnection = new(configuration.GetConnectionString("SqlServer"));
         AzureCliCredential credential = new(new AzureCliCredentialOptions() { TenantId = tenantId });
-        AccessToken token = credential.GetToken(new TokenRequestContext(["https://database.windows.net/.default"], tenantId: tenantId));
-        sqlConnection.AccessToken = token.Token;
         sqlConnection.Open();
         AppDbContext db = new(new DbContextOptionsBuilder<AppDbContext>()
             .UseSqlServer(sqlConnection)
