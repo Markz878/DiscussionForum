@@ -170,6 +170,7 @@ resource stPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
     subnet: {
       id: subnet.id
     }
+    customNetworkInterfaceName: '${stPrivateEndpointName}-nic'
     privateLinkServiceConnections: [
       {
         name: stPrivateEndpointName
@@ -261,6 +262,7 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
     subnet: {
       id: subnet.id
     }
+    customNetworkInterfaceName: '${sqlPrivateEndpointName}-nic'
     privateLinkServiceConnections: [
       {
         name: sqlPrivateEndpointName

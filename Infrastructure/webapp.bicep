@@ -160,7 +160,7 @@ resource webappEasyauth 'Microsoft.App/containerApps/authConfigs@2023-05-01' = {
     identityProviders: {
       azureActiveDirectory: {
         registration: {
-          openIdIssuer: 'https://login.microsoftonline.com/common/v2.0'
+          openIdIssuer: '${environment().authentication.loginEndpoint}/common/v2.0'
           clientId: oidcClientId
         }
       }
