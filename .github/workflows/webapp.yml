@@ -55,7 +55,7 @@ jobs:
       - name: Setup Playwright
         run: |
             dotnet build DiscussionForum.TestE2E -c Release
-            pwsh DiscussionForum.TestE2E/bin/Release/net8.0/playwright.ps1 install
+            pwsh DiscussionForum.TestE2E/bin/Release/net9.0/playwright.ps1 install
 
       - name: Run E2E Tests
         continue-on-error: true

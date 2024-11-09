@@ -1,5 +1,6 @@
 ﻿using EntityFramework.Exceptions.SqlServer;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace DiscussionForum.Core.DataAccess;
 internal sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IDataProtectionKeyContext
@@ -14,6 +15,7 @@ internal sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbC
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseExceptionProcessor();
+        optionsBuilder.ConfigureWarnings(x => x.Ignore(RelationalEventId.NonTransactionalMigrationOperationWarning));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

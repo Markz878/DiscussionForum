@@ -20,7 +20,7 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
         builder.ConfigureServices((context, services) =>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
-            services.AddDbContextPool<AppDbContext>(options =>
+            services.AddDbContext<AppDbContext>(options =>
             {
                 string connectionString = "Data Source=127.0.0.1,1433;Initial Catalog=DiscussionForumE2ETests;User ID=sa;Password=yourStrong(!)Password;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;";
                 options.UseSqlServer(connectionString, options => options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
@@ -41,7 +41,7 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
 
     public async Task InitializeAsync()
     {
-        DataSeeder.SeedData(Server.Services);
+        DataSeeder.SeedData(Services);
         DataSeeder.CreateStorageContainer(Services);
         PlaywrightInstance = await Playwright.CreateAsync();
         BrowserInstance = await PlaywrightInstance.Chromium.LaunchAsync(new BrowserTypeLaunchOptions

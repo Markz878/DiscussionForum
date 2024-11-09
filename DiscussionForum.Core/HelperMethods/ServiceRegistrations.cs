@@ -14,7 +14,7 @@ public static class ServiceRegistrations
         services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<AppDbContext>().AddOpenRequestPreProcessor(typeof(ValidationBehavior<>)));
         services.AddDbContext<AppDbContext>(x =>
         {
-            x.UseSqlServer(configuration.GetConnectionString("SqlServer"), o => o.UseAzureSqlDefaults());
+            x.UseAzureSql(configuration.GetConnectionString("SqlServer"));
             if (isDevelopment)
             {
                 x.EnableSensitiveDataLogging();

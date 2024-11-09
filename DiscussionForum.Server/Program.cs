@@ -45,10 +45,7 @@ else
     app.UseResponseCompression();
 }
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = ctx => ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=600000")
-});
+app.MapStaticAssets();
 app.UseHttpLogging();
 app.AddDevelopmentAuthentication();
 app.UseSwagger();

@@ -14,7 +14,7 @@ public class LoggingInstaller : IInstaller
         builder.Services.AddHttpLogging(logging =>
         {
             logging.CombineLogs = true;
-            logging.LoggingFields = HttpLoggingFields.Duration | HttpLoggingFields.RequestProperties | HttpLoggingFields.ResponsePropertiesAndHeaders;
+            logging.LoggingFields = HttpLoggingFields.Duration | HttpLoggingFields.RequestMethod | HttpLoggingFields.RequestPath | HttpLoggingFields.ResponseStatusCode;
         });
         if (builder.Configuration.GetValue<bool>("AddLogging"))
         {

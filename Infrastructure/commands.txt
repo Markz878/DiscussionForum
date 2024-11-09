@@ -7,7 +7,7 @@ ALTER ROLE db_datawriter ADD MEMBER [discussionforum-identity];
 
 az containerapp logs show -n discussionforum -g rg-DiscussionForum --follow
 
-cd DiscussionForum\DiscussionForum.TestE2E\bin\Debug\net8.0
+cd DiscussionForum\DiscussionForum.TestE2E\bin\Debug\net9.0
 pwsh playwright.ps1 codegen
 
 docker run -e ConnectionStrings__SqlServer="Data Source=host.docker.internal,1433;Initial Catalog=DiscussionForum;User ID=sa;Password=yourStrong(!)Password;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;" -e FileStorageSettings__StorageUri="http://host.docker.internal:10000/devstoreaccount1" -e ASPNETCORE_ENVIRONMENT="Development" -p 8080:8080 -d forumtest-alpine

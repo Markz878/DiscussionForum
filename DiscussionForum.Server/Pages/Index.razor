@@ -2,9 +2,8 @@
 
 <PageTitle>Discussion Forum</PageTitle>
 
-<div class="p-4 center-container">
-    <div class="grid grid-cols-2 mb-4 justify-items-end items-center">
-        <h1 id="title" class="font-bold text-2xl mb-2">Topics</h1>
+<div class="center-container p-4">
+    <div class="grid-cols-2 mb-4 grid items-center justify-items-end">
         <AuthorizeView>
             <Authorized>
                 <a href="/createtopic" class="btn btn-primary">
@@ -12,23 +11,24 @@
                 </a>
             </Authorized>
         </AuthorizeView>
+        <h1 id="title" class="mb-2 text-2xl font-bold">Topics</h1>
     </div>
     @if (SearchText is not null)
     {
         <search>
             <EditForm class="flex" Model="@SearchText" OnSubmit="@SearchTopics" FormName="SearchTopics" Enhance>
-                 <label for="search" class="sr-only">Search</label>
-                 <InputText type="text" id="search" placeholder="Search" class="form-input" @bind-Value="SearchText.Text" />
-                 <button type="submit" class="btn btn-primary ml-1">Search</button>
-             </EditForm>
-         </search>
+                <label for="search" class="sr-only">Search</label>
+                <InputText type="text" id="search" placeholder="Search" class="form-input" @bind-Value="SearchText.Text" />
+                <button type="submit" class="btn btn-primary ml-1">Search</button>
+            </EditForm>
+        </search>
     }
 
     @if (_topicsResult is not null)
     {
         <TopicsListing Topics="_topicsResult.Topics" />
 
-        <div class="flex justify-around items-center">
+        <div class="flex items-center justify-around">
             <a href="@GetUrl(0)" class="p-2 @(CanShowPreviousPageLink() ? "" : "collapse")">
                 <img src="icons/first.svg" alt="First page" class="h-6 w-6 dark:invert" />
             </a>

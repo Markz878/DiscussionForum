@@ -5,18 +5,46 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Discussion Forum, best place to argue with strangers!" />
+    <meta http-equiv="Content-Security-Policy"
+          content="base-uri 'self';
+               default-src 'self';
+               connect-src *;
+               img-src data: 'self';
+               object-src 'none';
+               script-src 'self' 'wasm-unsafe-eval' 'sha256-2Pp9Er120kvJOb9p6lcQi/Dagx1ypQopwaA5B0yqlEI=';
+               style-src 'self';
+               upgrade-insecure-requests;">
+    <meta http-equiv="Permissions-Policy"
+          content="accelerometer=(),
+               autoplay=(),
+               camera=(),
+               display-capture=(),
+               encrypted-media=(),
+               geolocation=(),
+               gyroscope=(),
+               magnetometer=(),
+               microphone=(),
+               midi=(),
+               payment=(),
+               picture-in-picture=(),
+               publickey-credentials-get=(),
+               sync-xhr=(),
+               usb=(),
+               xr-spatial-tracking=()">
     <base href="/" />
-    <VersionedLink Href="css/app.css" />
-    <VersionedLink Href="css/output.css" />
-    <VersionedLink Href="DiscussionForum.Server.styles.css" />
+    <link rel="stylesheet" href="@Assets["css/app.css"]" />
+    <link rel="stylesheet" href="@Assets["css/output.css"]" />
+    <link rel="stylesheet" href="@Assets["DiscussionForum.Server.styles.css"]" />
+    <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
+
 </head>
 
-<body class="min-h-[100vh] text-gray-800 bg-[#FEF9F3] dark:text-gray-100 dark:bg-gray-800">
+<body class="min-h-[100vh] bg-[#FEF9F3] text-gray-800 dark:text-gray-100 dark:bg-gray-800">
     <Routes />
     <script src="_framework/blazor.web.js"></script>
-    <VersionedScript Src="js/scripts.js"></VersionedScript>
+    <script src="@Assets["js/scripts.js"]"></script>
 </body>
 
 </html>
