@@ -20,7 +20,7 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
             services.AddDbContext<AppDbContext>(options =>
             {
                 string connectionString = "Data Source=127.0.0.1,1433;Initial Catalog=DiscussionForumIntegrationTests;User ID=sa;Password=yourStrong(!)Password;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;";
-                options.UseSqlServer(connectionString, options => options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                options.UseAzureSql(connectionString);
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
                 options.EnableThreadSafetyChecks(false);
