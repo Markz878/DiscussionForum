@@ -27,6 +27,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
+
       - name: Minify tailwind output
         run: |
           cd DiscussionForum.Server
