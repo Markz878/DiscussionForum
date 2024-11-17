@@ -1,5 +1,5 @@
 param location string = resourceGroup().location
-@minLength(3)
+@minLength(5)
 param solutionName string
 param imageTag string
 param oidcClientId string

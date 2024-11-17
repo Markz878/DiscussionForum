@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
     content: [
         './Pages/**/*.razor',
         '../DiscussionForum.Client/Components/**/*.razor'

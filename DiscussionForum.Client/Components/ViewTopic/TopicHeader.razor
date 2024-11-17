@@ -1,33 +1,33 @@
-﻿<div class="flex justify-between w-full">
+﻿<div class="flex w-full justify-between">
     @if (_isEditingTitle)
     {
         <EditForm Model="_editTitle" OnValidSubmit="SubmitTitleEdit" FormName="EditTitle" Enhance class="flex w-full">
-             <InputText @bind-Value="_editTitle.Title" class="grow form-input-small text-2xl font-bold bg-transparent" />
+             <InputText @bind-Value="_editTitle.Title" class="form-input-small grow bg-transparent text-2xl font-bold" />
              <button class="btn-small btn-primary mx-1" type="submit">Submit</button>
              <button type="button" class="btn-small btn-secondary" @onclick="CancelTitleEdit">Cancel</button>
          </EditForm>
     }
     else
     {
-        <h1 class="font-bold text-lg break-words max-w-[calc(100%-2rem)] sm:text-2xl">@Topic.Title</h1>
+        <h1 class="max-w-[calc(100%-2rem)] break-words text-lg font-bold sm:text-2xl">@Topic.Title</h1>
         @if (CanUserEdit())
         {
-            <div class="flex shrink-0">
+            <div class="shrink-0 flex">
                 <button type="button" @onclick="StartTitleEdit">
                     <img src="icons/edit.svg" alt="Edit title" width="15" class="action-icon mx-1" />
                 </button>
                 <button type="button" @onclick="ShowDeleteTopicConfirm">
-                    <img src="icons/delete.svg" alt="Delete topic" class="h-3 action-icon mx-1" />
+                    <img src="icons/delete.svg" alt="Delete topic" class="action-icon mx-1 h-3" />
                 </button>
             </div>
         }
     }
 </div>
-<div class="sm:flex justify-between items-center pb-1">
+<div class="items-center justify-between pb-1 sm:flex">
     <p>#@Topic.UserName</p>
     <p>
         <img src="icons/comments.svg" alt="Messages"
-             class="inline h-5 mx-1 invert-[0.2] dark:invert" />@Topic.Messages.Count
+             class="mx-1 inline h-5 invert-[0.2] dark:invert" />@Topic.Messages.Count
     </p>
     <p class="text-sm">Created at @Topic.CreatedAt.LocalDateTime.ToString("dd/MM/yyyy HH:mm")</p>
 </div>

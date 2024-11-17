@@ -1,6 +1,6 @@
+param location string = resourceGroup().location
 @minLength(5)
 param solutionName string
-param location string = resourceGroup().location
 
 var containerRegistryName = 'acr${solutionName}'
 var loganalyticsName = 'log-${solutionName}'
@@ -93,6 +93,7 @@ resource containerappEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' 
       internal: false
       infrastructureSubnetId: subnet.id
     }
+    infrastructureResourceGroup: '${resourceGroup().name }-managed'
     zoneRedundant: false
     appLogsConfiguration: {
       destination: 'log-analytics'
