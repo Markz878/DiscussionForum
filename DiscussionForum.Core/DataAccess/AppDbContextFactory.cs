@@ -6,7 +6,7 @@ internal sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbCon
     public AppDbContext CreateDbContext(string[] args)
     {
         DbContextOptionsBuilder<AppDbContext> optionsBuilder = new();
-        optionsBuilder.UseSqlServer("");
+        optionsBuilder.UseAzureSql("");
         return new AppDbContext(optionsBuilder.Options);
     }
 }

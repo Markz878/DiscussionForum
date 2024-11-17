@@ -394,34 +394,6 @@ resource appinsights_monitoring_roleassignment 'Microsoft.Authorization/roleAssi
   }
 }
 
-resource sqldb_security_manager 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: sqlServer
-  name: '056cd41c-7e88-42e1-933e-88ba6a50c9c3'
-}
-resource sqldb_security_manager_roleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, webappIdentity.id, sqldb_security_manager.id)
-  scope: sqlServer
-  properties: {
-    roleDefinitionId: sqldb_security_manager.id
-    principalId: webappIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-resource sqldb_server_contributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: sqlServer
-  name: '6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437'
-}
-resource sqldb_server_contributor_roleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, webappIdentity.id, sqldb_server_contributor.id)
-  scope: sqlServer
-  properties: {
-    roleDefinitionId: sqldb_server_contributor.id
-    principalId: webappIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 resource signalRAppServerRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: signalR
   name: '420fcaa2-552c-430f-98ca-3264be4806c7'
