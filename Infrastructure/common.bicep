@@ -188,13 +188,13 @@ resource stPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
 
 resource stPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: stPrivateEndpointDnsZoneName
-  location: resourceGroup().location
+  location: 'global'
 }
 
 resource stPrivateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   name: '${stPrivateEndpointName}-link'
   parent: stPrivateDnsZone
-  location: resourceGroup().location
+  location: 'global'
   properties: {
     registrationEnabled: false
     virtualNetwork: { id: vnet.id }
@@ -280,13 +280,13 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
 
 resource sqlPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: sqlPrivateEndpointDnsZoneName
-  location: resourceGroup().location
+  location: 'global'
 }
 
 resource sqlPrivateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   name: '${sqlPrivateEndpointName}-link'
   parent: sqlPrivateDnsZone
-  location: resourceGroup().location
+  location: 'global'
   properties: {
     registrationEnabled: false
     virtualNetwork: { id: vnet.id }
