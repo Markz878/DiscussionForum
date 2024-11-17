@@ -351,6 +351,7 @@ resource webappIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-0
   name: '${solutionName}-identity'
   location: location
 }
+
 resource acrPullRoleDef 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: containerRegistry
   name: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
@@ -378,6 +379,7 @@ resource webappStorageRoleassignment 'Microsoft.Authorization/roleAssignments@20
     principalType: 'ServicePrincipal'
   }
 }
+
 resource appinsights_monitoring_publisher 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: appInsights
   name: '3913510d-42f4-4e42-8a64-420c390055eb'
@@ -387,6 +389,34 @@ resource appinsights_monitoring_roleassignment 'Microsoft.Authorization/roleAssi
   scope: appInsights
   properties: {
     roleDefinitionId: appinsights_monitoring_publisher.id
+    principalId: webappIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource sqldb_security_manager 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: sqlServer
+  name: '056cd41c-7e88-42e1-933e-88ba6a50c9c3'
+}
+resource sqldb_security_manager_roleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, webappIdentity.id, sqldb_security_manager.id)
+  scope: sqlServer
+  properties: {
+    roleDefinitionId: sqldb_security_manager.id
+    principalId: webappIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource sqldb_server_contributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: sqlServer
+  name: '6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437'
+}
+resource sqldb_server_contributor_roleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, webappIdentity.id, sqldb_server_contributor.id)
+  scope: sqlServer
+  properties: {
+    roleDefinitionId: sqldb_server_contributor.id
     principalId: webappIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
