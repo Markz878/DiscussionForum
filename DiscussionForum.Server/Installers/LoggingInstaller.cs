@@ -22,6 +22,7 @@ public class LoggingInstaller : IInstaller
             {
                 x.UseUtcTimestamp = true;
                 x.TimestampFormat = "dd/MM/yy HH:mm:ss ";
+                x.SingleLine = builder.Environment.IsProduction();
             });
             builder.Services.AddApplicationInsightsTelemetry(x => x.EnableDependencyTrackingTelemetryModule = false);
             builder.Logging.AddApplicationInsights();
