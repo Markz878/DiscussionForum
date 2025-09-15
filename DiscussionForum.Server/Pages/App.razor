@@ -32,6 +32,7 @@
                usb=(),
                xr-spatial-tracking=()">
     <base href="/" />
+    <ResourcePreloader />
     <link rel="stylesheet" href="@Assets["css/app.css"]" />
     <link rel="stylesheet" href="@Assets["css/output.css"]" />
     <link rel="stylesheet" href="@Assets["DiscussionForum.Server.styles.css"]" />
@@ -41,9 +42,9 @@
 
 </head>
 
-<body class="min-h-[100vh] bg-[#FEF9F3] text-gray-800 dark:text-gray-100 dark:bg-gray-800">
+<body class="min-h-[100vh] bg-[#FEF9F3] text-gray-800 dark:bg-gray-800 dark:text-gray-100">
     <Routes />
-    <script src="_framework/blazor.web.js"></script>
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
     <script src="@Assets["js/scripts.js"]"></script>
 </body>
 

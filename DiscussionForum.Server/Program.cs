@@ -13,7 +13,6 @@ global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using Microsoft.AspNetCore.Http.HttpResults;
 global using Microsoft.AspNetCore.SignalR;
-global using Microsoft.OpenApi.Models;
 global using System.Security.Claims;
 using DiscussionForum.Server.Endpoints;
 using DiscussionForum.Server.Installers;
@@ -48,8 +47,7 @@ else
 app.MapStaticAssets();
 app.UseHttpLogging();
 app.AddDevelopmentAuthentication();
-app.UseSwagger();
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discussion Forum API v1"));
+app.MapOpenApi();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
