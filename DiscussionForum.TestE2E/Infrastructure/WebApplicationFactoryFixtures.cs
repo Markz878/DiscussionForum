@@ -9,7 +9,7 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
     public ITestOutputHelper? TestOutputHelper { get; set; }
     public IPlaywright? PlaywrightInstance { get; private set; }
     public IBrowser? BrowserInstance { get; private set; }
-    public string BaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
+    public string BaseUrl { get; } = $"https://localhost:7777";
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -30,17 +30,10 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
         });
     }
 
-    protected override IHost CreateHost(IHostBuilder builder)
-    {
-        IHost fixtureHost = builder.Build();
-        builder.ConfigureWebHost(b => b.UseKestrel());
-        IHost host = builder.Build();
-        host.Start();
-        return fixtureHost;
-    }
-
     public async Task InitializeAsync()
     {
+        UseKestrel(x => x.ListenLocalhost(7777, o => o.UseHttps()));
+        StartServer();
         DataSeeder.SeedData(Services);
         DataSeeder.CreateStorageContainer(Services);
         PlaywrightInstance = await Playwright.CreateAsync();
@@ -58,14 +51,5 @@ public sealed class WebApplicationFactoryFixture : WebApplicationFactory<Server.
             await BrowserInstance.DisposeAsync();
             PlaywrightInstance.Dispose();
         }
-    }
-
-    private static int GetRandomUnusedPort()
-    {
-        TcpListener listener = new(IPAddress.Any, 0);
-        listener.Start();
-        int port = ((IPEndPoint)listener.LocalEndpoint).Port;
-        listener.Stop();
-        return port;
     }
 }
