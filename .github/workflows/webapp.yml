@@ -35,6 +35,7 @@ jobs:
       - name: Minify tailwind output
         run: |
           cd DiscussionForum.Server
+          npm ci
           npm run build:css
           
       - name: Azure Login
