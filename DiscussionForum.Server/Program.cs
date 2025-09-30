@@ -42,6 +42,7 @@ else
     app.UseHsts();
     app.UseResponseCompression();
 }
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
 app.MapStaticAssets();
 app.UseHttpLogging();
