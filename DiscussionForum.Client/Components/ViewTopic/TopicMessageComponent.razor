@@ -40,7 +40,7 @@
             <p class="my-2">@paragraph</p>
         }
         <div class="flex">
-            @if (CurrentUserInfo.IsAuthenticated)
+            @if (CurrentUserInfo is not null)
             {
                 <button type="button" class="mr-2" @onclick="ClickUpvote" aria-label="upvote comment">
                     <img src="icons/thumbs-up.svg" alt="upvote" width="18" class="@(Message.HasUserUpvoted ? "dark:invert" : "invert-[.5]") hover:scale-110" />

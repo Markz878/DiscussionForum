@@ -28,13 +28,16 @@ public sealed class PersistingServerAuthenticationStateProvider : Authentication
         {
             string? userId = principal.FindFirst(ClaimConstants.IdClaimName)?.Value;
             string? email = principal.FindFirst(ClaimConstants.EmailNameClaimName)?.Value;
-
+            Role role = Enum.TryParse(principal.FindFirst(ClaimConstants.RoleClaimName)?.Value, out Role parsedRole) ? parsedRole : Role.User;
+            string? userName = principal.FindFirst(ClaimConstants.UserNameClaimName)?.Value;
             if (userId != null && email != null)
             {
                 _state.PersistAsJson(nameof(UserInfo), new UserInfo
                 {
-                    Claims = principal.Claims.Select(x => new ClaimValue(x.Type, x.Value)).ToArray(),
-                    IsAuthenticated = true,
+                    Id = Guid.Parse(userId),
+                    Email = email,
+                    UserName = userName ?? "",
+                    Role = role
                 });
             }
         }

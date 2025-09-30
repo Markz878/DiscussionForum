@@ -1,18 +1,27 @@
-﻿<div class="center-container scroll-smooth p-2">
-    <TopicHeader Topic="Topic" UserInfo="UserInfo" InvokeDeleteConfirm="ShowDeleteTopicConfirm" />
+﻿@page "/topic/{topicid:long}"
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@rendermode InteractiveWebAssembly
 
-    <div class="mb-2 h-[1px] w-full bg-gray-400" />
+<PageTitle>@(Topic?.Title ?? "Discussion Forum")</PageTitle>
 
-    <TopicMessageComponent Message="@Topic.Messages[0]" CanDelete=false CurrentUserInfo="@UserInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
-    @foreach (TopicMessage message in Topic.Messages.Skip(1))
-    {
-        <TopicMessageComponent Message="@message" CurrentUserInfo="@UserInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
-    }
+@if (Topic is not null)
+{
+    <div class="center-container scroll-smooth p-2">
+        <TopicHeader Topic="Topic" UserInfo="UserInfo" InvokeDeleteConfirm="ShowDeleteTopicConfirm" />
 
-    <div class="my-2 mb-4 h-[1px] w-full bg-gray-400" />
+        <div class="mb-2 h-[1px] w-full bg-gray-400" />
 
-    <AddTopicMessageComponent TopicId="@Topic.Id" AdditionalClasses="mb-2" />
-</div>
+        <TopicMessageComponent Message="@Topic.Messages[0]" CanDelete=false CurrentUserInfo="@UserInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
+        @foreach (TopicMessage message in Topic.Messages.Skip(1))
+        {
+            <TopicMessageComponent Message="@message" CurrentUserInfo="@UserInfo" DeleteMessageHandler="@ShowDeleteMessageConfirm" />
+        }
+
+        <div class="my-2 mb-4 h-[1px] w-full bg-gray-400" />
+
+        <AddTopicMessageComponent TopicId="@Topic.Id" AdditionalClasses="mb-2" />
+    </div>
+}
 
 <Modal @ref=modal Header="@modalHeader">
     @modalContent

@@ -1,4 +1,3 @@
-using DiscussionForum.Core.Features.Users;
 using DiscussionForum.Shared.DTO.Users;
 using EntityFramework.Exceptions.Common;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +7,7 @@ namespace DiscussionForum.Server.Pages;
 [Authorize]
 public partial class SetUserName
 {
-    [Inject] public required IMediator Mediator { get; init; }
+    [Inject] public required IUsersService UsersService { get; init; }
     [Inject] public required NavigationManager Navigation { get; init; }
     [CascadingParameter] public required Task<AuthenticationState> AuthenticationStateTask { get; init; }
     [SupplyParameterFromForm] public CreateUserModel? CreateUserModel { get; set; }
@@ -19,7 +18,7 @@ public partial class SetUserName
     protected override async Task OnInitializedAsync()
     {
         _userInfo = await AuthenticationStateTask.GetUserInfo();
-        CreateUserModel ??= new() { UserName = _userInfo.GetUserName() ?? "" };
+        CreateUserModel ??= new() { UserName = _userInfo?.UserName ?? "" };
     }
 
     protected async Task SubmitUserName()
@@ -27,9 +26,9 @@ public partial class SetUserName
         try
         {
             _errorMessage = "";
-            if (_userInfo?.IsAuthenticated == true && string.IsNullOrEmpty(CreateUserModel?.UserName) is false)
+            if (_userInfo is not null && string.IsNullOrEmpty(CreateUserModel?.UserName) is false)
             {
-                await Mediator.Send(new UpsertUserCommand() { UserId = _userInfo.GetUserId(), Email = _userInfo.GetUserEmail(), UserName = CreateUserModel.UserName });
+                await UsersService.UpsertUser(_userInfo.Id, _userInfo.Email, CreateUserModel.UserName);
                 Navigation.NavigateToSecure("/");
             }
         }

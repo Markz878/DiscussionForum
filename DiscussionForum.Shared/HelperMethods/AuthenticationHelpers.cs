@@ -43,36 +43,9 @@ public static class AuthenticationHelpers
         return userName;
     }
 
-
-    public static async Task<UserInfo> GetUserInfo(this Task<AuthenticationState> authenticationStateTask)
+    public static string GetUserEmail(this ClaimsPrincipal user)
     {
-        AuthenticationState authenticationState = await authenticationStateTask;
-        return new UserInfo()
-        {
-            IsAuthenticated = authenticationState.User.Identity?.IsAuthenticated == true,
-            Claims = authenticationState.User.Claims.Select(x => new ClaimValue(x.Type, x.Value)).ToList(),
-        };
-    }
-
-    public static Guid GetUserId(this UserInfo userInfo)
-    {
-        string? userId = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.IdClaimName)?.Value;
-        if (string.IsNullOrEmpty(userId))
-        {
-            throw new ForbiddenException();
-        }
-        return Guid.Parse(userId);
-    }
-
-    public static Guid? TryGetUserId(this UserInfo userInfo)
-    {
-        string? userId = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.IdClaimName)?.Value;
-        return string.IsNullOrEmpty(userId) ? null : Guid.Parse(userId);
-    }
-
-    public static string GetUserEmail(this UserInfo userInfo)
-    {
-        string? email = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.EmailNameClaimName)?.Value;
+        string? email = user?.FindFirst(ClaimConstants.EmailNameClaimName)?.Value;
         if (string.IsNullOrEmpty(email))
         {
             throw new ForbiddenException();
@@ -80,15 +53,73 @@ public static class AuthenticationHelpers
         return email;
     }
 
-    public static Role? GetUserRole(this UserInfo userInfo)
+
+    public static async Task<UserInfo?> GetUserInfo(this Task<AuthenticationState> authenticationStateTask)
     {
-        string? role = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.RoleClaimName)?.Value;
-        return string.IsNullOrEmpty(role) ? null : Enum.Parse<Role>(role);
+        AuthenticationState authenticationState = await authenticationStateTask;
+        if (authenticationState.User.Identity == null || !authenticationState.User.Identity.IsAuthenticated)
+        {
+            return null;
+        }
+        return new UserInfo()
+        {
+            Id = authenticationState.User.GetUserId(),
+            UserName = authenticationState.User.GetUserName(),
+            Role = authenticationState.User.GetUserRole(),
+            Email = authenticationState.User.GetUserEmail()
+        };
     }
 
-    public static string? GetUserName(this UserInfo userInfo)
+    public static UserInfo? GetUserInfo(this ClaimsPrincipal claimsPrincipal)
     {
-        string? userName = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.UserNameClaimName)?.Value;
-        return userName;
+        if (claimsPrincipal.Identity == null || !claimsPrincipal.Identity.IsAuthenticated)
+        {
+            return null;
+        }
+        return new UserInfo()
+        {
+            Id = claimsPrincipal.GetUserId(),
+            UserName = claimsPrincipal.GetUserName(),
+            Role = claimsPrincipal.GetUserRole(),
+            Email = claimsPrincipal.GetUserEmail()
+        };
     }
+
+    //public static Guid GetUserId(this UserInfo userInfo)
+    //{
+    //    string? userId = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.IdClaimName)?.Value;
+    //    if (string.IsNullOrEmpty(userId))
+    //    {
+    //        throw new ForbiddenException();
+    //    }
+    //    return Guid.Parse(userId);
+    //}
+
+    //public static Guid? TryGetUserId(this UserInfo userInfo)
+    //{
+    //    string? userId = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.IdClaimName)?.Value;
+    //    return string.IsNullOrEmpty(userId) ? null : Guid.Parse(userId);
+    //}
+
+    //public static string GetUserEmail(this UserInfo userInfo)
+    //{
+    //    string? email = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.EmailNameClaimName)?.Value;
+    //    if (string.IsNullOrEmpty(email))
+    //    {
+    //        throw new ForbiddenException();
+    //    }
+    //    return email;
+    //}
+
+    //public static Role? GetUserRole(this UserInfo userInfo)
+    //{
+    //    string? role = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.RoleClaimName)?.Value;
+    //    return string.IsNullOrEmpty(role) ? null : Enum.Parse<Role>(role);
+    //}
+
+    //public static string? GetUserName(this UserInfo userInfo)
+    //{
+    //    string? userName = userInfo?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.UserNameClaimName)?.Value;
+    //    return userName;
+    //}
 }

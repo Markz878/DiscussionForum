@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DiscussionForum.Server.Filters;
 
@@ -27,9 +26,13 @@ public class ExceptionFilter : IEndpointFilter
         {
             return TypedResults.Conflict(ex.Message);
         }
-        catch (ValidationException ex)
+        catch (Exception)
         {
-            return TypedResults.ValidationProblem(new ValidationResult(ex.Errors).ToDictionary());
+            return TypedResults.Problem("An unexpected error occurred. Please try again later.");
         }
+        //catch (ValidationException ex)
+        //{
+        //    return TypedResults.ValidationProblem(ex.ValidationResult.ToDictionary());
+        //}
     }
 }

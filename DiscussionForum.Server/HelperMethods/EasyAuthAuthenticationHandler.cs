@@ -1,26 +1,17 @@
-﻿using DiscussionForum.Core.Features.Users;
+﻿using DiscussionForum.Shared.DTO.Users;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
 
 namespace DiscussionForum.Server.HelperMethods;
 
-public class EasyAuthAuthenticationHandler : AuthenticationHandler<EasyAuthAuthenticationOptions>
+public class EasyAuthAuthenticationHandler(IUsersService usersService, IDistributedCache cache, IOptionsMonitor<EasyAuthAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder) : AuthenticationHandler<EasyAuthAuthenticationOptions>(options, logger, encoder)
 {
     public const string EasyAuthPrincipalIDP = "X-MS-CLIENT-PRINCIPAL-IDP";
     public const string EasyAuthPrincipalName = "X-MS-CLIENT-PRINCIPAL-NAME";
     public const string EasyAuthPrincipalID = "X-MS-CLIENT-PRINCIPAL-ID";
-    private readonly ILogger<EasyAuthAuthenticationHandler> _logger;
-    private readonly IMediator _mediator;
-    private readonly IDistributedCache _cache;
+    private readonly ILogger<EasyAuthAuthenticationHandler> _logger = logger.CreateLogger<EasyAuthAuthenticationHandler>();
     private readonly DistributedCacheEntryOptions _cacheOptions = new() { SlidingExpiration = TimeSpan.FromMinutes(1) };
-
-    public EasyAuthAuthenticationHandler(IMediator mediator, IDistributedCache cache, IOptionsMonitor<EasyAuthAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
-    {
-        _logger = logger.CreateLogger<EasyAuthAuthenticationHandler>();
-        _mediator = mediator;
-        _cache = cache;
-    }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -54,27 +45,29 @@ public class EasyAuthAuthenticationHandler : AuthenticationHandler<EasyAuthAuthe
         }
     }
 
+    public sealed record GetUserInfoResult(Guid Id, string UserName, string Email, DateTimeOffset JoinedAt, Role Role);
+
     private async Task GetOrCreateUserClaims(Guid userId, List<Claim> claims)
     {
         string cacheKey = $"users/{userId}";
-        string? roleAndUserName = await _cache.GetStringAsync(cacheKey);
+        string? roleAndUserName = await cache.GetStringAsync(cacheKey);
         if (roleAndUserName == null)
         {
-            GetUserInfoResult? response = await _mediator.Send(new GetUserInfoQuery() { Id = userId });
+            UserInfo? response = await usersService.GetUserInfo(userId);
             if (response == null)
             {
                 return;
             }
             claims.Add(new Claim(ClaimConstants.RoleClaimName, response.Role.ToString()));
             claims.Add(new Claim(ClaimConstants.UserNameClaimName, response.UserName));
-            await _cache.SetStringAsync(cacheKey, $"{response.Role};{response.UserName}", _cacheOptions);
+            await cache.SetStringAsync(cacheKey, $"{response.Role};{response.UserName}", _cacheOptions);
         }
         else
         {
             string[] roleAndUserNameCacheValue = roleAndUserName.Split(';', 2);
             claims.Add(new Claim(ClaimConstants.RoleClaimName, roleAndUserNameCacheValue[0]));
             claims.Add(new Claim(ClaimConstants.UserNameClaimName, roleAndUserNameCacheValue[1]));
-            await _cache.RefreshAsync(cacheKey);
+            await cache.RefreshAsync(cacheKey);
         }
     }
 }

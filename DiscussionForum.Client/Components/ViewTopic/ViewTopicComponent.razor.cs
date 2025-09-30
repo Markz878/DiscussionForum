@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace DiscussionForum.Client.Components.ViewTopic;
 
-public sealed partial class ViewTopicComponent : IAsyncDisposable
+public sealed partial class ViewTopicComponent(ITopicsService topicsService, IMessagesService messagesService, NavigationManager navigation, RenderLocation renderLocation) : IAsyncDisposable
 {
-    [Inject] public required IMediator Mediator { get; set; }
-    [Inject] public required NavigationManager Navigation { get; init; }
-    [Inject] public required RenderLocation RenderLocation { get; init; }
-    [Parameter][EditorRequired] public required GetTopicByIdResult Topic { get; init; }
-    [Parameter][EditorRequired] public required UserInfo UserInfo { get; init; }
+    [Parameter][EditorRequired] public required long TopicId { get; set; }
+    [PersistentState] public GetTopicByIdResult? Topic { get; set; }
+    [CascadingParameter] public required Task<AuthenticationState> AuthenticationStateTask { get; init; }
+    public UserInfo? UserInfo { get; set; }
 
     private HubConnection? _hubConnection;
     private Modal? modal;
@@ -18,11 +17,22 @@ public sealed partial class ViewTopicComponent : IAsyncDisposable
     private string modalMessage = "";
     private RenderFragment? modalContent;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (RenderLocation is ClientRenderLocation && firstRender)
+        UserInfo = await AuthenticationStateTask.GetUserInfo();
+        if (Topic is null)
         {
-            _hubConnection = BuildHubConnection(Navigation.ToAbsoluteUri("/topichub"));
+            GetTopicByIdResult? getTopicResult = await topicsService.GetTopicById(TopicId);
+            if (getTopicResult is null)
+            {
+                navigation.NotFound();
+                return;
+            }
+            Topic = getTopicResult;
+        }
+        if (renderLocation is ClientRenderLocation)
+        {
+            _hubConnection = BuildHubConnection(navigation.ToAbsoluteUri("/topichub"));
             await _hubConnection.StartAsync();
             await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.JoinTopic), Topic.Id);
         }
@@ -50,7 +60,7 @@ public sealed partial class ViewTopicComponent : IAsyncDisposable
             modalContent = ModalMessage();
             await (modal?.Show() ?? Task.CompletedTask);
             await Task.Delay(3000);
-            Navigation.NavigateTo("/");
+            navigation.NavigateTo("/");
         });
 
         hub.On(nameof(ITopicHubNotifications.MessageAdded), (TopicMessage message) =>
@@ -86,7 +96,7 @@ public sealed partial class ViewTopicComponent : IAsyncDisposable
             if (messageToEdit is not null)
             {
                 messageToEdit.LikesCount = likesCount;
-                if (UserInfo?.TryGetUserId() == userId)
+                if (UserInfo?.Id == userId)
                 {
                     messageToEdit.HasUserUpvoted = likeAdded;
                 }
@@ -108,7 +118,7 @@ public sealed partial class ViewTopicComponent : IAsyncDisposable
     private async Task ConfirmTopicDeletion()
     {
         ArgumentNullException.ThrowIfNull(Topic);
-        await Mediator.Send(new DeleteTopicClientCommand() { TopicId = Topic.Id });
+        await topicsService.DeleteTopic(Topic.Id);
     }
 
     private async Task ShowDeleteMessageConfirm(long messageId)
@@ -124,12 +134,12 @@ public sealed partial class ViewTopicComponent : IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(Topic);
         Topic.Messages.RemoveAll(x => x.Id == messageIdToDelete);
-        await Mediator.Send(new DeleteMessageClientCommand() { MessageId = messageIdToDelete });
+        await messagesService.DeleteMessage(messageIdToDelete);
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (_hubConnection is not null)
+        if (_hubConnection is not null && Topic is not null)
         {
             await _hubConnection.InvokeAsync(nameof(ITopicHubClientActions.LeaveTopic), Topic.Id);
             await _hubConnection.DisposeAsync();

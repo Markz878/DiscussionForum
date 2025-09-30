@@ -10,7 +10,6 @@ public static class APIEndpointMapper
         RouteGroupBuilder apiGroup = app.MapGroup("api")
             .RequireAuthorization()
             .AddEndpointFilter<ExceptionFilter>()
-            .AddFluentValidation()
             .RequireRateLimiting(RateLimitInstaller.PolicyName)
             .CacheOutput()
             ;

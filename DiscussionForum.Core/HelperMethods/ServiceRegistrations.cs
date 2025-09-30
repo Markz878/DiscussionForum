@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using Azure.Storage.Blobs;
-using DiscussionForum.Core.Behaviors;
+using DiscussionForum.Core.Services;
+using DiscussionForum.Shared.Interfaces;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +11,12 @@ public static class ServiceRegistrations
 {
     public static IServiceCollection RegisterCoreServices(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {
-        services.AddValidatorsFromAssemblyContaining<AppDbContext>(ServiceLifetime.Singleton);
-        services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<AppDbContext>().AddOpenRequestPreProcessor(typeof(ValidationBehavior<>)));
+        // Register service implementations
+        services.AddScoped<ITopicsService, TopicsService>();
+        services.AddScoped<IMessagesService, MessagesService>();
+        services.AddScoped<IMessageLikesService, MessageLikesService>();
+        services.AddScoped<IUsersService, UsersService>();
+        
         services.AddDbContext<AppDbContext>(x =>
         {
             x.UseAzureSql(configuration.GetConnectionString("SqlServer"));
@@ -31,7 +36,7 @@ public static class ServiceRegistrations
             services.AddSingleton(new BlobServiceClient(new Uri(configuration["FileStorageSettings:StorageUri"] ?? throw new ArgumentNullException("StorageUri configuration value")), credential));
         }
         services.AddDataProtection().PersistKeysToDbContext<AppDbContext>();
-        services.AddSingleton<IFileService, AzureBlobStorageService>();
+        services.AddScoped<IFileService, AzureBlobStorageService>();
         return services;
     }
 }

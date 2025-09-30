@@ -2,9 +2,9 @@ namespace DiscussionForum.Client.Components.ViewTopic;
 
 public partial class TopicHeader
 {
-    [Inject] public required IMediator Mediator { get; init; }
+    [Inject] public required ITopicsService TopicsService { get; init; }
     [Parameter][EditorRequired] public required GetTopicByIdResult Topic { get; init; }
-    [Parameter][EditorRequired] public required UserInfo UserInfo { get; init; }
+    [Parameter][EditorRequired] public required UserInfo? UserInfo { get; init; }
     [Parameter][EditorRequired] public required EventCallback InvokeDeleteConfirm { get; init; }
 
     private EditTitleModel _editTitle = new();
@@ -17,7 +17,7 @@ public partial class TopicHeader
 
     private bool CanUserEdit()
     {
-        return (Topic?.Messages.Count <= 1 && UserInfo?.GetUserName() == Topic.UserName) || UserInfo?.GetUserRole() == Role.Admin;
+        return (Topic?.Messages.Count <= 1 && UserInfo?.UserName == Topic.UserName) || UserInfo?.Role == Role.Admin;
     }
 
     private void StartTitleEdit()
@@ -36,7 +36,7 @@ public partial class TopicHeader
         ArgumentNullException.ThrowIfNull(Topic);
         Topic.Title = _editTitle.Title;
         _isEditingTitle = false;
-        await Mediator.Send(new EditTopicTitleClientCommand() { NewTitle = _editTitle.Title, TopicId = Topic.Id });
+        await TopicsService.EditTopicTitle(Topic.Id, _editTitle.Title);
     }
 
     private async Task ShowDeleteTopicConfirm()

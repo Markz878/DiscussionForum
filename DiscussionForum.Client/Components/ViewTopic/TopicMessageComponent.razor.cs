@@ -1,10 +1,9 @@
 namespace DiscussionForum.Client.Components.ViewTopic;
 
-public partial class TopicMessageComponent
+public partial class TopicMessageComponent(IMessagesService messagesService, IMessageLikesService messageLikesService)
 {
-    [Inject] public required IMediator Mediator { get; set; }
     [Parameter][EditorRequired] public required TopicMessage Message { get; init; }
-    [Parameter][EditorRequired] public required UserInfo CurrentUserInfo { get; init; }
+    [Parameter][EditorRequired] public required UserInfo? CurrentUserInfo { get; init; }
     [Parameter] public bool CanDelete { get; init; } = true;
     [Parameter][EditorRequired] public required EventCallback<long> DeleteMessageHandler { get; init; }
 
@@ -19,7 +18,7 @@ public partial class TopicMessageComponent
 
     private bool CanUserEditMessage(string messageUserName)
     {
-        return messageUserName == CurrentUserInfo.GetUserName() || CurrentUserInfo.GetUserRole() == Role.Admin;
+        return messageUserName == CurrentUserInfo?.UserName || CurrentUserInfo?.Role == Role.Admin;
     }
 
     private void StartMessageEdit()
@@ -48,7 +47,7 @@ public partial class TopicMessageComponent
         try
         {
             Message.Content = _editingMessage.Message;
-            await Mediator.Send(new EditMessageClientCommand() { MessageId = Message.Id, Message = _editingMessage.Message });
+            await messagesService.EditMessage(Message.Id, _editingMessage.Message);
         }
         catch (Exception ex)
         {
@@ -72,13 +71,13 @@ public partial class TopicMessageComponent
             {
                 Message.HasUserUpvoted = false;
                 Message.LikesCount--;
-                await Mediator.Send(new DeleteMessageLikeClientCommand() { MessageId = Message.Id });
+                await messageLikesService.DeleteMessageLike(Message.Id);
             }
             else
             {
                 Message.HasUserUpvoted = true;
                 Message.LikesCount++;
-                await Mediator.Send(new AddMessageLikeClientCommand() { MessageId = Message.Id });
+                await messageLikesService.AddMessageLike(Message.Id);
             }
         }
         catch (Exception ex)

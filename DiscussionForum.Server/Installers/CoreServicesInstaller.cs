@@ -6,5 +6,6 @@ public class CoreServicesInstaller : IInstaller
     {
         builder.Services.RegisterCoreServices(builder.Configuration, builder.Environment.IsDevelopment());
         builder.Services.AddOptions<FileStorageSettings>().BindConfiguration(nameof(FileStorageSettings)).ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddScoped<IUserInfoService, HttpContextUserInfoService>();
     }
 }

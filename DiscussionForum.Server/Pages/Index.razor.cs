@@ -1,18 +1,16 @@
-﻿using DiscussionForum.Core.Features.Topics;
-using DiscussionForum.Shared.DTO.Topics;
+﻿using DiscussionForum.Shared.DTO.Topics;
 using DiscussionForum.Shared.DTO.Users;
 using Microsoft.AspNetCore.OutputCaching;
 
 namespace DiscussionForum.Server.Pages;
 
 [OutputCache]
-public partial class Index
+public partial class Index(ITopicsService topicsService)
 {
     [Parameter] public int? PageNumber { get; set; }
     [Parameter][SupplyParameterFromQuery] public string? Search { get; set; }
     [CascadingParameter] public required Task<AuthenticationState> AuthenticationStateTask { get; init; }
     [Inject] public required NavigationManager Navigation { get; init; }
-    [Inject] public required IMediator Mediator { get; init; }
     [SupplyParameterFromForm] public SearchText? SearchText { get; set; }
 
     private int _pageNumber;
@@ -24,13 +22,13 @@ public partial class Index
         _pageNumber = Math.Max(PageNumber.GetValueOrDefault(0), 0);
         SearchText ??= new SearchText() { Text = Search, IsManuallySet = true };
         _userInfo = await AuthenticationStateTask.GetUserInfo();
-        if (_userInfo.IsAuthenticated && string.IsNullOrEmpty(_userInfo.GetUserName()))
+        if (_userInfo is not null && string.IsNullOrEmpty(_userInfo.UserName))
         {
             Navigation.NavigateToSecure("/setusername");
         }
         if (SearchText.IsManuallySet)
         {
-            _topicsResult = await Mediator.Send(new ListLatestTopicsQuery() { PageNumber = _pageNumber, SearchText = Search });
+            _topicsResult = await topicsService.ListLatestTopics(_pageNumber, 10, Search);
         }
     }
 

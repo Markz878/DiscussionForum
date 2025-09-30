@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaliciousServer", "MaliciousServer\MaliciousServer.csproj", "{B2FD2340-4F7B-4B86-8B51-A55AD882B2F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryAllocationTester", "MemoryAllocationTester\MemoryAllocationTester.csproj", "{9131DDD8-CC41-4278-A480-A1EA64F7C207}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,6 +150,18 @@ Global
 		{B2FD2340-4F7B-4B86-8B51-A55AD882B2F6}.Release|x64.Build.0 = Release|Any CPU
 		{B2FD2340-4F7B-4B86-8B51-A55AD882B2F6}.Release|x86.ActiveCfg = Release|Any CPU
 		{B2FD2340-4F7B-4B86-8B51-A55AD882B2F6}.Release|x86.Build.0 = Release|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Debug|x64.Build.0 = Debug|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Debug|x86.Build.0 = Debug|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Release|x64.ActiveCfg = Release|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Release|x64.Build.0 = Release|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Release|x86.ActiveCfg = Release|Any CPU
+		{9131DDD8-CC41-4278-A480-A1EA64F7C207}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

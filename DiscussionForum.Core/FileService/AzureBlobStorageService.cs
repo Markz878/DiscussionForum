@@ -8,6 +8,7 @@ namespace DiscussionForum.Core.FileService;
 
 internal sealed class AzureBlobStorageService(
     BlobServiceClient blobService, 
+    AppDbContext db,
     IOptions<FileStorageSettings> storageSettings, 
     ILogger<AzureBlobStorageService> logger) : IFileService
 {
@@ -61,5 +62,13 @@ internal sealed class AzureBlobStorageService(
     {
         Response<BlobContainerProperties> props = await _blobContainerClient.GetPropertiesAsync(cancellationToken: cancellationToken);
         return props.GetRawResponse().Status == 200;
+    }
+
+    public async Task<string?> GetFileNameById(Guid id, CancellationToken cancellationToken)
+    {
+        return await db.MessageAttachedFiles
+            .Where(x => x.Id == id)
+            .Select(x => x.Name)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

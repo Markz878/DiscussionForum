@@ -14,10 +14,10 @@ public sealed class PersistentAuthenticationStateProvider(PersistentComponentSta
         }
 
         Claim[] claims = [
-            new Claim(ClaimConstants.IdClaimName, userInfo.GetUserId().ToString()),
-            new Claim(ClaimConstants.EmailNameClaimName, userInfo.GetUserEmail()),
-            new Claim(ClaimConstants.RoleClaimName, userInfo.GetUserRole().ToString() ?? ""),
-            new Claim(ClaimConstants.UserNameClaimName, userInfo.GetUserName() ?? "")];
+            new Claim(ClaimConstants.IdClaimName, userInfo.Id.ToString()),
+            new Claim(ClaimConstants.EmailNameClaimName, userInfo.Email),
+            new Claim(ClaimConstants.RoleClaimName, userInfo.Role.ToString()),
+            new Claim(ClaimConstants.UserNameClaimName, userInfo.UserName)];
 
         return Task.FromResult(
             new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "EasyAuth"))));

@@ -1,7 +1,4 @@
-﻿using DiscussionForum.Core.Features.MessageLikes;
-using DiscussionForum.Core.Features.Messages;
-
-namespace DiscussionForum.Server.Endpoints;
+﻿namespace DiscussionForum.Server.Endpoints;
 
 public static class MessageLikesEndpointsMapper
 {
@@ -14,28 +11,28 @@ public static class MessageLikesEndpointsMapper
         accountGroup.MapDelete("{messageid:long}", DeleteMessageLike);
     }
 
-    public static async Task<NoContent> AddMessageLike(long messageId, IMediator mediator, ClaimsPrincipal claimsPrincipal, IHubContext<TopicHub> hub)
+    public static async Task<NoContent> AddMessageLike(long messageId, IMessagesService messagesService, IMessageLikesService messageLikesService, ClaimsPrincipal claimsPrincipal, IHubContext<TopicHub> hub)
     {
-        await mediator.Send(new AddMessageLikeCommand() { MessageId = messageId, UserId = claimsPrincipal.GetUserId() });
-        await NotifyLikesCountUpdate(messageId, mediator, claimsPrincipal, hub, true);
+        await messageLikesService.AddMessageLike(messageId);
+        await NotifyLikesCountUpdate(messageId, messagesService, messageLikesService, claimsPrincipal, hub, true);
         return TypedResults.NoContent();
     }
 
-    public static async Task<NoContent> DeleteMessageLike(long messageId, IMediator mediator, ClaimsPrincipal claimsPrincipal, IHubContext<TopicHub> hub)
+    public static async Task<NoContent> DeleteMessageLike(long messageId, IMessagesService messagesService, IMessageLikesService messageLikesService, ClaimsPrincipal claimsPrincipal, IHubContext<TopicHub> hub)
     {
-        await mediator.Send(new DeleteMessageLikeCommand() { MessageId = messageId, UserId = claimsPrincipal.GetUserId() });
-        await NotifyLikesCountUpdate(messageId, mediator, claimsPrincipal, hub, false);
+        await messageLikesService.DeleteMessageLike(messageId);
+        await NotifyLikesCountUpdate(messageId, messagesService, messageLikesService, claimsPrincipal, hub, false);
         return TypedResults.NoContent();
     }
 
-    private static async Task NotifyLikesCountUpdate(long messageId, IMediator mediator, ClaimsPrincipal claimsPrincipal, IHubContext<TopicHub> hub, bool likeAdded)
+    private static async Task NotifyLikesCountUpdate(long messageId, IMessagesService messagesService, IMessageLikesService messageLikesService, ClaimsPrincipal claimsPrincipal, IHubContext<TopicHub> hub, bool likeAdded)
     {
-        (GetMessageLikesCountResult messageLikesCount, GetMessageTopicIdResult? topicId) = await TaskHelpers.RunParallel(
-            mediator.Send(new GetMessageLikesCountQuery() { MessageId = messageId }),
-            mediator.Send(new GetMessageTopicIdQuery() { MessageId = messageId }));
-        if (topicId is not null)
+        (int messageLikesCount, long topicId) = await TaskHelpers.RunParallel(
+            messageLikesService.GetMessageLikesCount(messageId),
+            messagesService.GetMessageTopicId(messageId));
+        if (topicId > 0)
         {
-            await hub.Clients.Group(topicId.TopicId.ToString()).SendAsync(nameof(ITopicHubNotifications.MessageLikesChanged), messageId, messageLikesCount.Count, likeAdded, claimsPrincipal.GetUserId());
+            await hub.Clients.Group(topicId.ToString()).SendAsync(nameof(ITopicHubNotifications.MessageLikesChanged), messageId, messageLikesCount, likeAdded, claimsPrincipal.GetUserId());
         }
     }
 }

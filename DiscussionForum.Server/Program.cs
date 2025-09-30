@@ -6,7 +6,6 @@ global using DiscussionForum.Shared;
 global using DiscussionForum.Shared.HelperMethods;
 global using DiscussionForum.Shared.Interfaces;
 global using DiscussionForum.Shared.Models.Errors;
-global using MediatR;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Components;

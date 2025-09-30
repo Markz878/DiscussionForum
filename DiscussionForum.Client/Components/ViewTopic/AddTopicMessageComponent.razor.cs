@@ -2,7 +2,7 @@ namespace DiscussionForum.Client.Components.ViewTopic;
 
 public partial class AddTopicMessageComponent
 {
-    [Inject] public required IMediator Mediator { get; init; }
+    [Inject] public required IMessagesService MessagesService { get; init; }
     [Parameter][EditorRequired] public required long TopicId { get; init; }
     [Parameter] public string? AdditionalClasses { get; init; }
 
@@ -30,12 +30,8 @@ public partial class AddTopicMessageComponent
         try
         {
             isBusy = true;
-            await Mediator.Send(new AddMessageClientCommand()
-            {
-                Message = newMessage.Message,
-                TopicId = TopicId,
-                AttachedFiles = newMessage?.Files?.Select(x => new AttachedFileInfo() { Name = x.Name, FileStream = x.OpenReadStream(ValidationConstants.FileMaxSize) }).ToArray()
-            });
+            AddMessageResponse response = await MessagesService.AddMessage(TopicId, newMessage.Message,
+                newMessage?.Files?.Select(x => new AttachedFileInfo() { Name = x.Name, FileStream = x.OpenReadStream(ValidationConstants.FileMaxSize) }).ToArray());
             newMessage = new();
         }
         catch (Exception ex)

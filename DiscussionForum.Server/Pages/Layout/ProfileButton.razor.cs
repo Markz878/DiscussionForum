@@ -14,10 +14,10 @@ public sealed partial class ProfileButton
 
     protected override async Task OnInitializedAsync()
     {
-        UserInfo userInfo = await AuthenticationStateTask.GetUserInfo();
-        _email = userInfo.GetUserEmail();
-        _userName = userInfo.GetUserName();
-        role = userInfo.GetUserRole();
+        UserInfo? userInfo = await AuthenticationStateTask.GetUserInfo();
+        _email = userInfo?.Email;
+        _userName = userInfo?.UserName;
+        role = userInfo?.Role;
     }
 
     public string GetUserInitials()
