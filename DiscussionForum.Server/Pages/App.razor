@@ -17,7 +17,12 @@
 
 <body class="min-h-[100vh] bg-[#FEF9F3] text-gray-800 dark:bg-gray-800 dark:text-gray-100">
     <Routes />
-    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script src="@Assets["_framework/blazor.web.js"]" autostart="false"></script>
+    <script>
+        Blazor.start({
+          ssr: { disableDomPreservation: true }
+        });
+    </script>
     <script src="@Assets["js/scripts.js"]"></script>
 </body>
 
