@@ -3,7 +3,7 @@
 <div class="mb-4 rounded border-[1px] border-gray-400 p-2">
     <div class="flex flex-wrap items-center gap-4">
         <b class="order-1">@Message.UserName</b>
-        <div class="order-2 flex w-full flex-wrap gap-x-6 sm:w-auto sm:order-1">
+        <div class="order-2 flex w-full flex-wrap gap-x-6 sm:order-1 sm:w-auto">
             <span class="text-sm">@DateTimeHelpers.GetDateTimeAge(Message.CreatedAt)</span>
             @if (Message.EditedAt is not null)
             {
@@ -26,7 +26,7 @@
         <EditForm Model="_editingMessage" OnValidSubmit="SubmitMessageEdit" FormName="EditMessage" Enhance>
          <DataAnnotationsValidator />
          <ValidationSummary />
-         <InputTextArea @bind-Value=_editingMessage.Message class="leading-6 my-2 max-h-80 min-h-[2rem] w-full rounded-md border-[1px] border-gray-100 bg-transparent bg-clip-padding p-2 text-gray-800 shadow transition-colors focus:border-gray-400 dark:bg-gray-900 dark:text-white" />
+         <InputTextArea @bind-Value=_editingMessage.Message class="my-2 max-h-80 min-h-[2rem] w-full rounded-md border-[1px] border-gray-100 bg-transparent bg-clip-padding p-2 leading-6 text-gray-800 shadow transition-colors focus:border-gray-400 dark:bg-gray-900 dark:text-white" />
          <div class="flex">
              <button class="btn-small btn-primary mr-1" type="submit">Submit</button>
              <button type="button" class="btn-small btn-secondary mx-1" @onclick="CancelMessageEdit">Cancel</button>

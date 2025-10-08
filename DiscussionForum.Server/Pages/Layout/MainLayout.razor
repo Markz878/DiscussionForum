@@ -2,8 +2,8 @@
 @inject NavigationManager navigation
 
 <nav class="bg-green-400 dark:bg-green-700">
-    <div class="min-h-[3rem] flex justify-between items-center center-container">
-        <a href="/" class="block ml-4 font-bold text-2xl sm:text-3xl">Discussion Forum</a>
+    <div class="center-container flex min-h-[3rem] items-center justify-between">
+        <a href="/" class="ml-4 block text-2xl font-bold sm:text-3xl">Discussion Forum</a>
         <AuthorizeView>
             <Authorized>
                 <ProfileButton />
@@ -21,6 +21,6 @@
 
 <div id="blazor-error-ui" class="bg-green-400 dark:bg-gray-900">
     An error has occurred.
-    <button type="button" href="" class="mx-1 btn btn-secondary">Reload</button>
+    <button type="button" href="" class="btn btn-secondary mx-1">Reload</button>
     <button type="button" class="dismiss">🗙</button>
 </div>

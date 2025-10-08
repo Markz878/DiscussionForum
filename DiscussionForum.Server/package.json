@@ -4,7 +4,7 @@
     "watch:css": "npx @tailwindcss/cli -i Styles/tailwind.css -o wwwroot/css/output.css --watch"
   },
   "dependencies": {
-    "@tailwindcss/cli": "^4.1.13",
-    "tailwindcss": "^4.1.13"
+    "@tailwindcss/cli": "^4.1.14",
+    "tailwindcss": "^4.1.14"
   }
 }

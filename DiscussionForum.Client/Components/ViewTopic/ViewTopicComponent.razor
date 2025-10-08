@@ -29,10 +29,10 @@
 
 @code {
     private RenderFragment ModalMessage() =>
-    @<p class="bg-[#FEF9F3] p-4 font-bold text-gray-800 dark:text-gray-200 dark:bg-gray-700">@modalMessage</p>;
+    @<p class="bg-[#FEF9F3] p-4 font-bold text-gray-800 dark:bg-gray-700 dark:text-gray-200">@modalMessage</p>;
 
     private RenderFragment ModalConfirm(Func<Task> action) =>
-    @<div class="bg-[#FEF9F3] text-gray-800 dark:text-gray-200 dark:bg-gray-700">
+    @<div class="bg-[#FEF9F3] text-gray-800 dark:bg-gray-700 dark:text-gray-200">
         <p class="p-4 font-bold">@modalMessage</p>
         <form method="dialog" class="pb-4 pl-4">
             <button type="submit" class="btn btn-primary" @onclick=action>Confirm</button>
