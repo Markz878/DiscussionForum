@@ -1,0 +1,25 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/common.yml" />
+    <File Path=".github/workflows/migrations.yml" />
+    <File Path=".github/workflows/webapp.yml" />
+    <File Path="Infrastructure/commands.txt" />
+    <File Path="Infrastructure/common.bicep" />
+    <File Path="Infrastructure/webapp.bicep" />
+  </Folder>
+  <Project Path="DataSeederApp/DataSeederApp.csproj" />
+  <Project Path="DiscussionForum.Client/DiscussionForum.Client.csproj" />
+  <Project Path="DiscussionForum.Core/DiscussionForum.Core.csproj" />
+  <Project Path="DiscussionForum.Server/DiscussionForum.Server.csproj" />
+  <Project Path="DiscussionForum.Shared/DiscussionForum.Shared.csproj" />
+  <Project Path="DiscussionForum.TestE2E/DiscussionForum.TestE2E.csproj" />
+  <Project Path="DiscussionForum.Tests/DiscussionForum.Tests.csproj" />
+  <Project Path="MaliciousServer/MaliciousServer.csproj" />
+  <Project Path="MemoryAllocationTester/MemoryAllocationTester.csproj" />
+  <Project Path="RateLimitTester/RateLimitTester.csproj" />
+</Solution>
